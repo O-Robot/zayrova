@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
 class ZayApp extends StatelessWidget {
@@ -12,6 +13,8 @@ class ZayApp extends StatelessWidget {
       title: 'Zayrova',
       theme: ZayTheme.lightTheme,
       initialRoute: ZayRoutes.splash,
+      navigatorKey: navigator,
+      onGenerateRoute: ZayRouter.generateRoute,
     );
   }
 }

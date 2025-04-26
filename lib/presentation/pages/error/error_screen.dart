@@ -10,6 +10,13 @@ class ErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+      body: Center(
+        child: Text(
+          'Error: $code',
+          style: const TextStyle(fontSize: 24, color: Colors.red),
+        ),
+      ),
+    );
   }
 }
