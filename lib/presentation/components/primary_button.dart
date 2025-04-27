@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CustomButton extends StatelessWidget {
-  const CustomButton({super.key, required this.action, required this.text});
+class PrimaryButton extends StatelessWidget {
+  const PrimaryButton({super.key, required this.action, required this.text});
 
   final VoidCallback action;
   final String text;
@@ -13,10 +13,8 @@ class CustomButton extends StatelessWidget {
       onPressed: action,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 20),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         alignment: Alignment.center,
       ),
       child: Text(

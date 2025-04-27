@@ -31,8 +31,8 @@ class _SplashscreenState extends State<Splashscreen> {
       }
     });
 
-    await Future.delayed(const Duration(seconds: 2));
-    // ZayRouter.exit(ZayRoutes.getStarted);
+    await Future.delayed(const Duration(seconds: 3));
+    ZayRouter.exit(ZayRoutes.getStarted);
   }
 
   @override
@@ -49,7 +49,8 @@ class _SplashscreenState extends State<Splashscreen> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             child: Center(
-              child: FadeIn(
+              child: FadeInUp(
+                delay: const Duration(milliseconds: 1100),
                 child: SvgPicture.asset(
                   ZayAssets.logoSplash,
                   width: 100,
