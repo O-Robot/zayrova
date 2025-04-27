@@ -1,5 +1,8 @@
 class ZayAssets {
   static const String logoSplash = 'assets/images/logo/logoSplash.svg';
+  static const String appleIcon = 'assets/images/logo/apple.svg';
+  static const String googleIcon = 'assets/images/logo/google.svg';
+  static const String facebookIcon = 'assets/images/logo/facebook.svg';
   static String getStarted = 'assets/images/logo/getStarted.svg';
 
   static const String splashBackground = 'assets/images/splashBackground.png';

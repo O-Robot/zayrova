@@ -88,7 +88,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 else
                   TextButton(
                     onPressed: () {
-                      ZayRouter.goto(ZayRoutes.login);
+                      ZayRouter.exit(ZayRoutes.login);
                     },
                     child: Text(
                       'Skip',
@@ -111,7 +111,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         curve: Curves.easeIn,
                       );
                     } else {
-                      // TODO: Navigate to Home Screen
+                      ZayRouter.exit(ZayRoutes.login);
                     }
                   },
                   child: Container(

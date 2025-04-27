@@ -3,6 +3,7 @@ import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
 import 'package:zayrova/presentation/pages/error/error_screen.dart';
+import 'package:zayrova/presentation/pages/auth/sign_in.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
 class ZayScreens {
@@ -18,6 +19,8 @@ class ZayScreens {
         return MaterialPageRoute(
           builder: (context) => const OnboardingScreen(),
         );
+      case ZayRoutes.login:
+        return MaterialPageRoute(builder: (context) => const SignIn());
 
       default:
         return MaterialPageRoute(
