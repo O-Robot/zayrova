@@ -4,6 +4,7 @@ class ZayColors {
   static const Color primary = Color(0xFF2D6A4F);
   static const Color secondary = Color(0xFFFFB703);
   static const Color accent = Color(0xFF64B5F6);
+  static const Color white = Color(0xFFFFFFFF);
   static const Color background = Color(0xFFF3F4F6);
   static const Color textPrimary = Color(0xFF1E1E1E);
   static const Color textSecondary = Color(0xFF9B9B9B);

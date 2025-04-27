@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
+import 'package:zayrova/presentation/pages/onboarding/onboarding_one.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
 import 'package:zayrova/presentation/pages/error/error_screen.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
@@ -13,6 +14,8 @@ class ZayScreens {
         return MaterialPageRoute(
           builder: (context) => const GetStartedScreen(),
         );
+      case ZayRoutes.onboard1:
+        return MaterialPageRoute(builder: (context) => const OnboardingOne());
       default:
         return MaterialPageRoute(
           builder: (context) => const ErrorScreen(code: 404),

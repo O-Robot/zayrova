@@ -14,7 +14,7 @@ class GetStartedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-        children: [
+        children: <Widget>[
           Positioned.fill(
             child: Image.asset(ZayAssets.background, fit: BoxFit.cover),
           ),
