@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
@@ -10,14 +9,14 @@ import 'package:zayrova/presentation/widgets/button.dart';
 import 'package:zayrova/presentation/widgets/input.dart';
 import 'package:zayrova/presentation/widgets/social_buttons.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  State<SignUp> createState() => _SignUpState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignUpState extends State<SignUp> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool showPassword = false;
@@ -36,7 +35,7 @@ class _SignInState extends State<SignIn> {
                 const SizedBox(height: 60),
                 Center(
                   child: Text(
-                    'Sign In',
+                    'Create Account',
                     style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
                       color: ZayColors.textPrimary,
                     ),
@@ -45,13 +44,22 @@ class _SignInState extends State<SignIn> {
                 const SizedBox(height: 10),
                 Center(
                   child: Text(
-                    'Hi! Welcome back, you’ve been missed',
+                    'Fill your information below or register with your social account',
+                    textAlign: TextAlign.center,
                     style: ZayTheme.lightTheme.textTheme.displayMedium
                         ?.copyWith(color: ZayColors.textSecondary),
                   ),
                 ),
                 const SizedBox(height: 40),
 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: ZayTextInput.primary("First Name")),
+                    const SizedBox(width: 10),
+                    Expanded(child: ZayTextInput.primary("Last Name")),
+                  ],
+                ),
                 // Email Input
                 ZayTextInput.primary("Email", controller: email),
                 const SizedBox(height: 5),
@@ -70,30 +78,44 @@ class _SignInState extends State<SignIn> {
                     });
                   },
                 ),
-                const SizedBox(height: 2),
 
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      // TODO: Navigate to Forgot Password screen
-                    },
-                    child: Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: ZayColors.primary,
-                        fontWeight: FontWeight.w500,
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Checkbox(
+                      fillColor: WidgetStatePropertyAll(ZayColors.primary),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      value: true,
+                      onChanged: (bool? value) {
+                        // Handle checkbox state change
+                      },
+                    ),
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text: "Agree with ",
+                              style: TextStyle(color: ZayColors.textPrimary),
+                            ),
+                            TextSpan(
+                              text: "Terms & Conditions",
+                              style: TextStyle(color: ZayColors.primary),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 20),
 
-                // Sign In Button
+                // Register Button
                 SizedBox(
                   width: double.infinity,
-                  child: ZayButton.primary(action: () {}, text: 'Sign In'),
+                  child: ZayButton.primary(action: () {}, text: 'Sign Up'),
                 ),
                 const SizedBox(height: 30),
 
@@ -107,7 +129,7 @@ class _SignInState extends State<SignIn> {
                     Padding(
                       padding: EdgeInsets.symmetric(horizontal: 10),
                       child: Text(
-                        'Or sign in with',
+                        'Or sign up with',
                         style: ZayTheme.lightTheme.textTheme.displayMedium
                             ?.copyWith(color: ZayColors.textSecondary),
                       ),
@@ -135,7 +157,7 @@ class _SignInState extends State<SignIn> {
                 ),
                 const SizedBox(height: 30),
 
-                // Sign Up Link
+                // Sign In Link
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -155,7 +177,7 @@ class _SignInState extends State<SignIn> {
                               recognizer:
                                   TapGestureRecognizer()
                                     ..onTap = () {
-                                      ZayRouter.goto(ZayRoutes.register);
+                                      ZayRouter.goto(ZayRoutes.login);
                                     },
                             ),
                           ],
@@ -171,6 +193,4 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
-  // Widget for social icons
 }

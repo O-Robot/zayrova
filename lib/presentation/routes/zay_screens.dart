@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zayrova/presentation/pages/auth/sign_up.dart';
 import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
@@ -21,6 +22,8 @@ class ZayScreens {
         );
       case ZayRoutes.login:
         return MaterialPageRoute(builder: (context) => const SignIn());
+      case ZayRoutes.register:
+        return MaterialPageRoute(builder: (context) => const SignUp());
 
       default:
         return MaterialPageRoute(

@@ -83,10 +83,7 @@ class GetStartedScreen extends StatelessWidget {
                       TextSpan(
                         text: "Sign In",
                         style: ZayTheme.lightTheme.textTheme.displayLarge
-                            ?.copyWith(
-                              color: ZayColors.primary,
-                              decoration: TextDecoration.underline,
-                            ),
+                            ?.copyWith(color: ZayColors.primary),
                         recognizer:
                             TapGestureRecognizer()
                               ..onTap = () {
