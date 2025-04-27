@@ -1,9 +1,7 @@
 class ZayRoutes {
   static const String splash = '/';
   static const String getStarted = '/get-started';
-  static const String onboard1 = '/onboard-one';
-  static const String onboard2 = '/onboard-two';
-  static const String onboard3 = '/onboard-three';
+  static const String onboardingPage = '/onboard-page';
   static const String home = '/home';
   static const String categories = '/categories';
   static const String categoryDetails = '/category-details';

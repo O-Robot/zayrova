@@ -67,7 +67,7 @@ class GetStartedScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 PrimaryButton(
                   action: () {
-                    ZayRouter.exit(ZayRoutes.onboard1);
+                    ZayRouter.exit(ZayRoutes.onboardingPage);
                   },
                   text: 'Get Started',
                 ),
