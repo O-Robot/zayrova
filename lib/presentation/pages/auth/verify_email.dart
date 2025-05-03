@@ -1,11 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
-import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
-import 'package:zayrova/presentation/widgets/input.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
@@ -16,9 +15,51 @@ class VerifyEmail extends StatefulWidget {
 
 class _VerifyEmailState extends State<VerifyEmail> {
   final List<TextEditingController> otpControllers = List.generate(
-    4,
+    6,
     (_) => TextEditingController(),
   );
+  final List<FocusNode> focusNodes = List.generate(6, (_) => FocusNode());
+  bool isButtonEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    // Add listeners to all controllers to check if button should be enabled
+    for (var controller in otpControllers) {
+      controller.addListener(_checkIfComplete);
+    }
+
+    // Focus on first field when screen opens
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        FocusScope.of(context).requestFocus(focusNodes[0]);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    // Dispose all controllers and focus nodes
+    for (var controller in otpControllers) {
+      controller.dispose();
+    }
+    for (var node in focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
+  // Check if all fields are filled
+  void _checkIfComplete() {
+    final allFilled = otpControllers.every(
+      (controller) => controller.text.isNotEmpty,
+    );
+    if (allFilled != isButtonEnabled) {
+      setState(() {
+        isButtonEnabled = allFilled;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -81,27 +122,56 @@ class _VerifyEmailState extends State<VerifyEmail> {
               // OTP Inputs
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(4, (index) {
+                children: List.generate(6, (index) {
                   return SizedBox(
-                    width: 60,
-                    child: TextField(
-                      controller: otpControllers[index],
-                      maxLength: 1,
-                      keyboardType: TextInputType.number,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 20),
-                      decoration: InputDecoration(
-                        counterText: '',
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey.shade400),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onChanged: (value) {
-                        if (value.isNotEmpty && index < 3) {
-                          FocusScope.of(context).nextFocus();
+                    width: 40,
+                    child: KeyboardListener(
+                      focusNode: FocusNode(),
+                      onKeyEvent: (KeyEvent event) {
+                        if (event is KeyDownEvent &&
+                            event.logicalKey == LogicalKeyboardKey.backspace &&
+                            otpControllers[index].text.isEmpty &&
+                            index > 0) {
+                          otpControllers[index - 1].clear();
+                          FocusScope.of(
+                            context,
+                          ).requestFocus(focusNodes[index - 1]);
                         }
                       },
+                      child: TextField(
+                        controller: otpControllers[index],
+                        focusNode: focusNodes[index],
+                        maxLength: 1,
+                        keyboardType: TextInputType.number,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(fontSize: 20),
+                        decoration: InputDecoration(
+                          counterText: '',
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey.shade400),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: ZayColors.primary,
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        onChanged: (value) {
+                          if (value.isNotEmpty && index < 5) {
+                            FocusScope.of(
+                              context,
+                            ).requestFocus(focusNodes[index + 1]);
+                          }
+                        },
+                        // Enable paste functionality
+                        enableInteractiveSelection: true,
+                      ),
                     ),
                   );
                 }),
@@ -140,10 +210,10 @@ class _VerifyEmailState extends State<VerifyEmail> {
                 width: double.infinity,
                 child: ZayButton.primary(
                   text: 'Verify',
+                  isDisabled: !isButtonEnabled,
                   action: () {
-                    // Combine OTP and verify
                     final code = otpControllers.map((e) => e.text).join();
-                    // Handle verification
+                    print('Verifying code: $code');
                   },
                 ),
               ),

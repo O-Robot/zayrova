@@ -2,11 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:zayrova/core/constants/colors.dart';
 
 class ZayButton {
-  static Widget primary({required VoidCallback action, required String text}) {
+  static Widget primary({
+    required VoidCallback action,
+    required String text,
+    bool? isDisabled,
+  }) {
     return ElevatedButton(
-      onPressed: action,
+      onPressed: (isDisabled ?? false) ? null : action,
       style: ElevatedButton.styleFrom(
-        backgroundColor: ZayColors.primary,
+        backgroundColor:
+            (isDisabled ?? false)
+                ? ZayColors.primary.withAlpha(80)
+                : ZayColors.primary,
         minimumSize: const Size(300, 56),
         maximumSize: const Size(300, 56),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -14,10 +21,11 @@ class ZayButton {
       ),
       child: Text(
         text,
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 16,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color:
+              (isDisabled ?? false) ? ZayColors.textSecondary : ZayColors.white,
         ),
       ),
     );

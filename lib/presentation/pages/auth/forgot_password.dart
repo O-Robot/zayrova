@@ -81,7 +81,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                   width: double.infinity,
                   child: ZayButton.primary(
                     action: () {
-                      ZayRouter.goto(ZayRoutes.setPassword);
+                      ZayRouter.goto(ZayRoutes.verifyEmail);
                     },
                     text: 'Send Email',
                   ),
