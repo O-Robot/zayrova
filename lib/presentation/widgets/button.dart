@@ -7,7 +7,8 @@ class ZayButton {
       onPressed: action,
       style: ElevatedButton.styleFrom(
         backgroundColor: ZayColors.primary,
-        padding: const EdgeInsets.symmetric(horizontal: 120, vertical: 20),
+        minimumSize: const Size(300, 56),
+        maximumSize: const Size(300, 56),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         alignment: Alignment.center,
       ),

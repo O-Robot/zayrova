@@ -1,26 +1,24 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
 import 'package:zayrova/presentation/widgets/input.dart';
-import 'package:zayrova/presentation/widgets/social_buttons.dart';
 
-class SignIn extends StatefulWidget {
-  const SignIn({super.key});
+class SetPassword extends StatefulWidget {
+  const SetPassword({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  State<SetPassword> createState() => _SetPasswordState();
 }
 
-class _SignInState extends State<SignIn> {
-  final TextEditingController email = TextEditingController();
+class _SetPasswordState extends State<SetPassword> {
   final TextEditingController password = TextEditingController();
+  final TextEditingController confirmPassword = TextEditingController();
   bool showPassword = false;
+  bool showConfirmPassword = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,28 +31,48 @@ class _SignInState extends State<SignIn> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        ZayRouter.goBack();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: ZayColors.textSecondary),
+                        ),
+                        child: const Icon(
+                          Icons.chevron_left,
+                          color: ZayColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 30),
+
                 Center(
                   child: Text(
-                    'Sign In',
+                    'New Password',
                     style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
                       color: ZayColors.textPrimary,
                     ),
                   ),
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 5),
                 Center(
                   child: Text(
-                    'Hi! Welcome back, you’ve been missed',
+                    'Your new password must be different from previously used passwords',
+                    textAlign: TextAlign.center,
                     style: ZayTheme.lightTheme.textTheme.displayMedium
                         ?.copyWith(color: ZayColors.textSecondary),
                   ),
                 ),
                 const SizedBox(height: 40),
-
-                // Email Input
-                ZayTextInput.primary("Email", controller: email),
-                const SizedBox(height: 5),
 
                 // Password Input
                 ZayTextInput.primary(
@@ -70,72 +88,37 @@ class _SignInState extends State<SignIn> {
                     });
                   },
                 ),
-                const SizedBox(height: 2),
 
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () {
-                      ZayRouter.goto(ZayRoutes.forgotPassword);
-                    },
-                    child: Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: ZayColors.primary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
+                const SizedBox(height: 5),
+                ZayTextInput.primary(
+                  "Confirm Password",
+                  controller: confirmPassword,
+                  password: !showConfirmPassword,
+                  margin: EdgeInsets.only(bottom: 2),
+                  trailingIcon:
+                      showConfirmPassword
+                          ? Icons.visibility
+                          : Icons.visibility_off,
+                  onTrailingIconTap: () {
+                    setState(() {
+                      showConfirmPassword = !showConfirmPassword;
+                    });
+                  },
                 ),
+
                 const SizedBox(height: 20),
 
-                // Sign In Button
+                // Create Button
                 SizedBox(
                   width: double.infinity,
-                  child: ZayButton.primary(action: () {}, text: 'Sign In'),
+                  child: ZayButton.primary(
+                    action: () {},
+                    text: 'Create New Password',
+                  ),
                 ),
                 const SizedBox(height: 30),
 
-                // Divider with OR
-                Row(
-                  children: [
-                    Padding(padding: const EdgeInsets.only(left: 30)),
-                    const Expanded(
-                      child: Divider(color: ZayColors.textSecondary),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Or sign in with',
-                        style: ZayTheme.lightTheme.textTheme.displayMedium
-                            ?.copyWith(color: ZayColors.textSecondary),
-                      ),
-                    ),
-                    const Expanded(
-                      child: Divider(color: ZayColors.textSecondary),
-                    ),
-                    Padding(padding: const EdgeInsets.only(right: 30)),
-                  ],
-                ),
-                const SizedBox(height: 30),
-
-                // Social Login Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SocialButtons.primary(
-                      ZayAssets.appleIcon,
-                    ), // Replace with your asset
-                    const SizedBox(width: 20),
-                    SocialButtons.primary(ZayAssets.googleIcon),
-                    const SizedBox(width: 20),
-                    SocialButtons.primary(ZayAssets.facebookIcon),
-                  ],
-                ),
-                const SizedBox(height: 30),
-
-                // Sign Up Link
+                // Sign In Link
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -145,17 +128,17 @@ class _SignInState extends State<SignIn> {
                         text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "Don’t have an account? ",
+                              text: "Remembered Password? ",
                               style: ZayTheme.lightTheme.textTheme.displayLarge,
                             ),
                             TextSpan(
-                              text: "Sign Up",
+                              text: "Sign In",
                               style: ZayTheme.lightTheme.textTheme.displayLarge
                                   ?.copyWith(color: ZayColors.primary),
                               recognizer:
                                   TapGestureRecognizer()
                                     ..onTap = () {
-                                      ZayRouter.goto(ZayRoutes.register);
+                                      ZayRouter.goto(ZayRoutes.login);
                                     },
                             ),
                           ],
@@ -171,6 +154,4 @@ class _SignInState extends State<SignIn> {
       ),
     );
   }
-
-  // Widget for social icons
 }

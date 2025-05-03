@@ -17,13 +17,17 @@ class ZayRoutes {
   static const String orderTracking = '/order-tracking';
   static const String orderReview = '/order-review';
   static const String orderRating = '/order-rating';
-  static const String login = '/login';
-  static const String register = '/register';
-  static const String forgotPassword = '/forgot-password';
-  static const String resetPassword = '/reset-password';
+
   static const String profile = '/profile';
   static const String settings = '/settings';
   static const String notifications = '/notifications';
   static const String chat = '/chat';
   static const String search = '/search';
+
+  //auth
+  static const String login = '/login';
+  static const String register = '/register';
+  static const String forgotPassword = '/forgot-password';
+  static const String setPassword = '/set-password';
+  static const String verifyEmail = '/verify-email';
 }

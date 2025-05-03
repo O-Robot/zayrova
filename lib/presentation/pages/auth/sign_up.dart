@@ -171,7 +171,7 @@ class _SignUpState extends State<SignUp> {
                               style: ZayTheme.lightTheme.textTheme.displayLarge,
                             ),
                             TextSpan(
-                              text: "Sign Up",
+                              text: "Sign In",
                               style: ZayTheme.lightTheme.textTheme.displayLarge
                                   ?.copyWith(color: ZayColors.primary),
                               recognizer:
