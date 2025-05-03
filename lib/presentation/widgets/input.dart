@@ -109,4 +109,52 @@ class ZayTextInput {
       onSubmitted: onSubmit,
     );
   }
+
+  static Widget dropdown(
+    String label, {
+    required List<String> items,
+    String? value,
+    Function(String? value)? onChanged,
+    double height = 50,
+    EdgeInsets? margin,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(label, style: ZayTheme.lightTheme.textTheme.displayMedium),
+        SizedBox(height: 6),
+        Container(
+          height: height,
+          margin: margin ?? EdgeInsets.only(bottom: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            color: ZayColors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: ZayColors.inputBorder),
+          ),
+          child: DropdownButtonFormField<String>(
+            value: value,
+            hint: Text(label, style: TextStyle(color: ZayColors.textSecondary)),
+            items:
+                items
+                    .map(
+                      (item) => DropdownMenuItem<String>(
+                        value: item,
+                        child: Text(
+                          item,
+                          style: TextStyle(color: ZayColors.textPrimary),
+                        ),
+                      ),
+                    )
+                    .toList(),
+            onChanged: onChanged,
+            icon: Icon(Icons.arrow_drop_down, color: ZayColors.inputBorder),
+            decoration: InputDecoration(
+              border: InputBorder.none, 
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 }

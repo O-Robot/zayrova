@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zayrova/presentation/pages/auth/complete_profile.dart';
 import 'package:zayrova/presentation/pages/auth/sign_up.dart';
 import 'package:zayrova/presentation/pages/auth/forgot_password.dart';
 import 'package:zayrova/presentation/pages/auth/set_password.dart';
@@ -33,6 +34,8 @@ class ZayScreens {
         return MaterialPageRoute(builder: (context) => const VerifyEmail());
       case ZayRoutes.setPassword:
         return MaterialPageRoute(builder: (context) => const SetPassword());
+      case ZayRoutes.completeProfile:
+        return MaterialPageRoute(builder: (context) => const CompleteProfile());
       default:
         return MaterialPageRoute(
           builder: (context) => const ErrorScreen(code: 404),

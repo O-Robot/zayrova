@@ -30,4 +30,5 @@ class ZayRoutes {
   static const String forgotPassword = '/forgot-password';
   static const String setPassword = '/set-password';
   static const String verifyEmail = '/verify-email';
+  static const String completeProfile = '/complete-profile';
 }

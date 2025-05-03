@@ -92,7 +92,12 @@ class _SignInState extends State<SignIn> {
                 // Sign In Button
                 SizedBox(
                   width: double.infinity,
-                  child: ZayButton.primary(action: () {}, text: 'Sign In'),
+                  child: ZayButton.primary(
+                    action: () {
+                      ZayRouter.goto(ZayRoutes.completeProfile);
+                    },
+                    text: 'Sign In',
+                  ),
                 ),
                 const SizedBox(height: 30),
 

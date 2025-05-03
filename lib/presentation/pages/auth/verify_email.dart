@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
+import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
 
 class VerifyEmail extends StatefulWidget {
@@ -213,7 +214,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                   isDisabled: !isButtonEnabled,
                   action: () {
                     final code = otpControllers.map((e) => e.text).join();
-                    print('Verifying code: $code');
+                    ZayRouter.goto(ZayRoutes.completeProfile);
                   },
                 ),
               ),
