@@ -16,4 +16,6 @@ class ZayIllustrations {
   static String onboardingThree = 'assets/illustrations/onboardThree.png';
 }
 
-class ZayIcons {}
+class ZayIcons {
+  static String editIcon = 'assets/icons/edit.png';
+}

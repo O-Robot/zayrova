@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
-import 'package:zayrova/presentation/components/profile_image.dart';
+import 'package:zayrova/presentation/components/profile_image_picker.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
 import 'package:zayrova/presentation/widgets/input.dart';
@@ -17,11 +18,13 @@ class CompleteProfile extends StatefulWidget {
 class _CompleteProfileState extends State<CompleteProfile> {
   final phoneNumber = TextEditingController();
   String? selectedGender;
-  File? _pickedImage;
+  XFile? _pickedImage;
 
-  void _handleImagePicked(File? image) {
+  void _handleImagePicked(XFile? image) {
     setState(() {
-      _pickedImage = image;
+      if (image != null) {
+        _pickedImage = image;
+      }
     });
   }
 

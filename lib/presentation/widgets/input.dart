@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
@@ -117,44 +119,115 @@ class ZayTextInput {
     Function(String? value)? onChanged,
     double height = 50,
     EdgeInsets? margin,
+    BuildContext? context,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: ZayTheme.lightTheme.textTheme.displayMedium),
-        SizedBox(height: 6),
-        Container(
-          height: height,
-          margin: margin ?? EdgeInsets.only(bottom: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            color: ZayColors.transparent,
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: ZayColors.inputBorder),
-          ),
-          child: DropdownButtonFormField<String>(
-            value: value,
-            hint: Text(label, style: TextStyle(color: ZayColors.textSecondary)),
-            items:
-                items
-                    .map(
-                      (item) => DropdownMenuItem<String>(
-                        value: item,
-                        child: Text(
-                          item,
-                          style: TextStyle(color: ZayColors.textPrimary),
+    final bool isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+
+    if (isIOS && context != null) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: ZayTheme.lightTheme.textTheme.displayMedium),
+          const SizedBox(height: 6),
+          GestureDetector(
+            onTap: () {
+              showCupertinoModalPopup(
+                context: context,
+                builder:
+                    (_) => Container(
+                      height: 250,
+                      color: Colors.white,
+                      child: CupertinoPicker(
+                        itemExtent: 32,
+                        scrollController: FixedExtentScrollController(
+                          initialItem: value != null ? items.indexOf(value) : 0,
                         ),
+                        onSelectedItemChanged: (index) {
+                          onChanged?.call(items[index]);
+                        },
+                        children:
+                            items
+                                .map(
+                                  (item) => Center(
+                                    child: Text(
+                                      item,
+                                      style: TextStyle(
+                                        color: ZayColors.textPrimary,
+                                      ),
+                                    ),
+                                  ),
+                                )
+                                .toList(),
                       ),
-                    )
-                    .toList(),
-            onChanged: onChanged,
-            icon: Icon(Icons.arrow_drop_down, color: ZayColors.inputBorder),
-            decoration: InputDecoration(
-              border: InputBorder.none, 
+                    ),
+              );
+            },
+            child: Container(
+              height: height,
+              margin: margin ?? const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: ZayColors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: ZayColors.inputBorder),
+              ),
+              alignment: Alignment.centerLeft,
+              child: Text(
+                value ?? label,
+                style: TextStyle(
+                  color:
+                      value == null
+                          ? ZayColors.textSecondary
+                          : ZayColors.textPrimary,
+                ),
+              ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: ZayTheme.lightTheme.textTheme.displayMedium),
+          const SizedBox(height: 6),
+          Container(
+            height: height,
+            margin: margin ?? const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            decoration: BoxDecoration(
+              color: ZayColors.transparent,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: ZayColors.inputBorder),
+            ),
+            child: DropdownButtonFormField<String>(
+              value: value,
+              hint: Text(
+                label,
+                style: TextStyle(color: ZayColors.textSecondary),
+              ),
+              items:
+                  items
+                      .map(
+                        (item) => DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            style: TextStyle(color: ZayColors.textPrimary),
+                          ),
+                        ),
+                      )
+                      .toList(),
+              onChanged: onChanged,
+              icon: Transform.rotate(
+                angle: 1.5708, // Rotate 90 degrees (in radians)
+                child: Icon(Icons.chevron_right, color: ZayColors.inputBorder),
+              ),
+              decoration: const InputDecoration(border: InputBorder.none),
+            ),
+          ),
+        ],
+      );
+    }
   }
 }
