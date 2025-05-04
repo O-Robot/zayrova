@@ -60,7 +60,8 @@ class TextInput extends StatelessWidget {
         controller: controller,
         autofocus: false,
         textAlign: align,
-        textAlignVertical: TextAlignVertical.top,
+        textAlignVertical: TextAlignVertical.center,
+
         obscureText: password,
         keyboardType: type,
         textInputAction: action,

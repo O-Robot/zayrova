@@ -18,4 +18,7 @@ class ZayIllustrations {
 
 class ZayIcons {
   static String editIcon = 'assets/icons/edit.png';
+  static String locationIcon = 'assets/icons/location.png';
+  static String cancelIcon = 'assets/icons/cancel.png';
+  static String searchIcon = 'assets/icons/search.svg';
 }

@@ -12,7 +12,9 @@ class ZayTextInput {
     String label, {
     TextEditingController? controller,
     IconData? leadingIcon,
+    dynamic leadingIconS,
     IconData? trailingIcon,
+    dynamic trailingIconS,
     VoidCallback? onTrailingIconTap,
     int maxLines = 1,
     int maxLength = 255,
@@ -23,6 +25,7 @@ class ZayTextInput {
     Function(String value)? onChanged,
     Function(String value)? onSubmit,
     EdgeInsets? margin,
+    Color? border,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,18 +39,14 @@ class ZayTextInput {
           height: height,
           backgroundColor: ZayColors.transparent,
           borderRadius: 8,
-          border: ZayColors.inputBorder,
+          border: border ?? ZayColors.inputBorder,
           // Removed invalid parameter 'borderColor'
           maxLength: maxLength,
           type: type,
           icon:
               leadingIcon != null
-                  ? Icon(
-                    leadingIcon,
-                    color: ZayColors.inputBorder,
-                    size: ZayTextInput.iconSize,
-                  )
-                  : null,
+                  ? Icon(leadingIcon, size: iconSize)
+                  : leadingIconS,
           trailingIcon:
               trailingIcon != null
                   ? GestureDetector(
@@ -57,6 +56,11 @@ class ZayTextInput {
                       color: ZayColors.inputBorder,
                       size: ZayTextInput.iconSize,
                     ),
+                  )
+                  : trailingIconS != null
+                  ? GestureDetector(
+                    onTap: onTrailingIconTap,
+                    child: trailingIconS,
                   )
                   : null,
           maxLines: maxLines,

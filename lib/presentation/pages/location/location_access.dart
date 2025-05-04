@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
@@ -36,7 +35,7 @@ class _LocationAccessState extends State<LocationAccess> {
                   ),
                   child: Center(
                     child: Icon(
-                      Icons.location_pin,
+                      Icons.location_on_rounded,
                       color: ZayColors.primary,
                       size: 60,
                     ),
