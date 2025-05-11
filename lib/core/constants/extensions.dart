@@ -8,3 +8,10 @@ extension StringExtension on String {
         .join(' ');
   }
 }
+
+extension TruncateExtension on String {
+  String truncate(int maxLength, {String omission = '...'}) {
+    if (length <= maxLength) return this;
+    return '${substring(0, maxLength)}$omission';
+  }
+}

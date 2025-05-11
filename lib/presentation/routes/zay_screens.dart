@@ -4,6 +4,7 @@ import 'package:zayrova/presentation/pages/auth/sign_up.dart';
 import 'package:zayrova/presentation/pages/auth/forgot_password.dart';
 import 'package:zayrova/presentation/pages/auth/set_password.dart';
 import 'package:zayrova/presentation/pages/auth/verify_email.dart';
+import 'package:zayrova/presentation/pages/home/home_screen.dart';
 import 'package:zayrova/presentation/pages/location/location_access.dart';
 import 'package:zayrova/presentation/pages/location/location_page.dart';
 import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
@@ -42,6 +43,8 @@ class ZayScreens {
         return MaterialPageRoute(builder: (context) => const LocationAccess());
       case ZayRoutes.locationPage:
         return MaterialPageRoute(builder: (context) => const LocationPage());
+      case ZayRoutes.home:
+        return MaterialPageRoute(builder: (context) => const HomeScreen());
       default:
         return MaterialPageRoute(
           builder: (context) => const ErrorScreen(code: 404),
