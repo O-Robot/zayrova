@@ -21,4 +21,9 @@ class ZayIcons {
   static String locationIcon = 'assets/icons/location.png';
   static String cancelIcon = 'assets/icons/cancel.png';
   static String searchIcon = 'assets/icons/search.svg';
+  static String homeIcon = 'assets/icons/home.svg';
+  static String orderIcon = 'assets/icons/orders.svg';
+  static String wishlistIcon = 'assets/icons/wishlist.svg';
+  static String chatIcon = 'assets/icons/chat.svg';
+  static String profileIcon = 'assets/icons/profile.svg';
 }
