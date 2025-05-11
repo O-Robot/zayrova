@@ -94,7 +94,7 @@ class _SignInState extends State<SignIn> {
                   width: double.infinity,
                   child: ZayButton.primary(
                     action: () {
-                      ZayRouter.goto(ZayRoutes.locationAccess);
+                      ZayRouter.goto(ZayRoutes.home);
                     },
                     text: 'Sign In',
                   ),

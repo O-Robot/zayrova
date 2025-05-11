@@ -12,8 +12,7 @@ class ZayApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Zayrova',
       theme: ZayTheme.lightTheme,
-      // initialRoute: ZayRoutes.splash,
-      initialRoute: ZayRoutes.home,
+      initialRoute: ZayRoutes.splash,
       navigatorKey: navigator,
       onGenerateRoute: ZayRouter.generateRoute,
     );
