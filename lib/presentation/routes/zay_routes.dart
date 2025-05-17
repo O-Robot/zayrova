@@ -4,7 +4,6 @@ class ZayRoutes {
   static const String onboardingPage = '/onboard-page';
   static const String categories = '/categories';
   static const String categoryDetails = '/category-details';
-  static const String productDetails = '/product-details';
   static const String cart = '/cart';
   static const String checkout = '/checkout';
   static const String orderSummary = '/order-summary';
@@ -39,4 +38,5 @@ class ZayRoutes {
   static const String wishlist = '/wishlist';
   static const String chat = '/chat';
   static const String profile = '/profile';
+  static const String productDetails = '/product-details';
 }

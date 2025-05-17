@@ -12,6 +12,7 @@ import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
 import 'package:zayrova/presentation/pages/error/error_screen.dart';
 import 'package:zayrova/presentation/pages/auth/sign_in.dart';
+import 'package:zayrova/presentation/pages/product/product_details.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
 class ZayScreens {
@@ -45,6 +46,8 @@ class ZayScreens {
         return MaterialPageRoute(builder: (context) => const LocationPage());
       case ZayRoutes.home:
         return MaterialPageRoute(builder: (context) => const HomeScreen());
+      case ZayRoutes.productDetails:
+        return MaterialPageRoute(builder: (context) => const ProductDetails());
       default:
         return MaterialPageRoute(
           builder: (context) => const ErrorScreen(code: 404),

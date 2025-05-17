@@ -8,7 +8,6 @@ import 'package:zayrova/presentation/components/bottom_navigation.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
-import 'package:zayrova/presentation/widgets/input.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -285,6 +284,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ProductCard(
+                            action:
+                                () => ZayRouter.goto(ZayRoutes.productDetails),
                             imagePath:
                                 'https://images.pexels.com/photos/7974/pexels-photo.jpg',
                             isFavorite: true,
@@ -294,6 +295,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             rating: 0,
                           ),
                           ProductCard(
+                            action:
+                                () => ZayRouter.goto(ZayRoutes.productDetails),
                             imagePath:
                                 'https://images.pexels.com/photos/7974/pexels-photo.jpg',
                             isFavorite: false,
@@ -312,6 +315,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           ProductCard(
+                            action:
+                                () => ZayRouter.goto(ZayRoutes.productDetails),
                             imagePath:
                                 'https://images.pexels.com/photos/7974/pexels-photo.jpg',
                             isFavorite: true,
@@ -321,6 +326,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             rating: 0,
                           ),
                           ProductCard(
+                            action:
+                                () => ZayRouter.goto(ZayRoutes.productDetails),
                             imagePath:
                                 'https://images.pexels.com/photos/7974/pexels-photo.jpg',
                             isFavorite: false,
