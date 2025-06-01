@@ -17,44 +17,46 @@ import 'package:zayrova/presentation/pages/product/wishlist_screen.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
 class ZayScreens {
+  // 🔧 Helper to wrap pages with route name
+  static MaterialPageRoute _page(String name, Widget child) {
+    return MaterialPageRoute(
+      settings: RouteSettings(name: name),
+      builder: (_) => child,
+    );
+  }
+
   static MaterialPageRoute route(String? route, data) {
     switch (route) {
       case ZayRoutes.splash:
-        return MaterialPageRoute(builder: (context) => const Splashscreen());
+        return _page(ZayRoutes.splash, const Splashscreen());
       case ZayRoutes.getStarted:
-        return MaterialPageRoute(
-          builder: (context) => const GetStartedScreen(),
-        );
+        return _page(ZayRoutes.getStarted, const GetStartedScreen());
       case ZayRoutes.onboardingPage:
-        return MaterialPageRoute(
-          builder: (context) => const OnboardingScreen(),
-        );
+        return _page(ZayRoutes.onboardingPage, const OnboardingScreen());
       case ZayRoutes.login:
-        return MaterialPageRoute(builder: (context) => const SignIn());
+        return _page(ZayRoutes.login, const SignIn());
       case ZayRoutes.register:
-        return MaterialPageRoute(builder: (context) => const SignUp());
+        return _page(ZayRoutes.register, const SignUp());
       case ZayRoutes.forgotPassword:
-        return MaterialPageRoute(builder: (context) => const ForgotPassword());
+        return _page(ZayRoutes.forgotPassword, const ForgotPassword());
       case ZayRoutes.verifyEmail:
-        return MaterialPageRoute(builder: (context) => const VerifyEmail());
+        return _page(ZayRoutes.verifyEmail, const VerifyEmail());
       case ZayRoutes.setPassword:
-        return MaterialPageRoute(builder: (context) => const SetPassword());
+        return _page(ZayRoutes.setPassword, const SetPassword());
       case ZayRoutes.completeProfile:
-        return MaterialPageRoute(builder: (context) => const CompleteProfile());
+        return _page(ZayRoutes.completeProfile, const CompleteProfile());
       case ZayRoutes.locationAccess:
-        return MaterialPageRoute(builder: (context) => const LocationAccess());
+        return _page(ZayRoutes.locationAccess, const LocationAccess());
       case ZayRoutes.locationPage:
-        return MaterialPageRoute(builder: (context) => const LocationPage());
+        return _page(ZayRoutes.locationPage, const LocationPage());
       case ZayRoutes.home:
-        return MaterialPageRoute(builder: (context) => const HomeScreen());
+        return _page(ZayRoutes.home, const HomeScreen());
       case ZayRoutes.productDetails:
-        return MaterialPageRoute(builder: (context) => const ProductDetails());
+        return _page(ZayRoutes.productDetails, const ProductDetails());
       case ZayRoutes.wishlist:
-        return MaterialPageRoute(builder: (context) => const WishlistScreen());
+        return _page(ZayRoutes.wishlist, const WishlistScreen());
       default:
-        return MaterialPageRoute(
-          builder: (context) => const ErrorScreen(code: 404),
-        );
+        return _page('404', const ErrorScreen(code: 404));
     }
   }
 }

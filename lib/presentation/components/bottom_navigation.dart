@@ -12,7 +12,7 @@ class BottomNavigation extends StatefulWidget {
   State<BottomNavigation> createState() => _BottomNavigationState();
 }
 
-class _BottomNavigationState extends State<BottomNavigation> {
+class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
   final List<_NavItem> _navItems = [
     _NavItem(icon: ZayIcons.homeIcon, route: ZayRoutes.home),
     _NavItem(icon: ZayIcons.orderIcon, route: ZayRoutes.orders),
@@ -26,9 +26,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final args = ModalRoute.of(context)?.settings.arguments as Map?;
-    _currentRoute = args?['route'] ?? ZayRoutes.home;
-    print(args);
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    if (currentRoute != null && currentRoute != _currentRoute) {
+      setState(() {
+        _currentRoute = currentRoute;
+      });
+    }
+    // print('Route: $_currentRoute');
   }
 
   @override
@@ -53,7 +57,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                     setState(() {
                       _currentRoute = item.route;
                     });
-                    print(_currentRoute);
+                    // print('Current: $_currentRoute');
                   }
                 },
                 child: Container(
