@@ -97,8 +97,8 @@ class _ProductDetailsState extends State<ProductDetails> {
                   ),
                   Text(
                     'Product Details',
-                    style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
-                      color: Colors.white,
+                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                      color: ZayColors.white,
                     ),
                   ),
                   // Favorite button
@@ -108,7 +108,7 @@ class _ProductDetailsState extends State<ProductDetails> {
                       padding: const EdgeInsets.all(10),
                       decoration: const BoxDecoration(
                         shape: BoxShape.circle,
-                        color: Colors.white,
+                        color: ZayColors.white,
                       ),
                       child: const Icon(
                         Icons.favorite_border,

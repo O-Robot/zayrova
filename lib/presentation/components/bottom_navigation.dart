@@ -21,16 +21,14 @@ class _BottomNavigationState extends State<BottomNavigation> {
     _NavItem(icon: ZayIcons.profileIcon, route: ZayRoutes.profile),
   ];
 
-  String _currentRoute = ZayRoutes.home;
+  String _currentRoute = '';
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final routeName = ModalRoute.of(context)?.settings.name;
-    _currentRoute =
-        (routeName != null && routeName.isNotEmpty)
-            ? routeName
-            : ZayRoutes.home;
+    final args = ModalRoute.of(context)?.settings.arguments as Map?;
+    _currentRoute = args?['route'] ?? ZayRoutes.home;
+    print(args);
   }
 
   @override
@@ -55,6 +53,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
                     setState(() {
                       _currentRoute = item.route;
                     });
+                    print(_currentRoute);
                   }
                 },
                 child: Container(

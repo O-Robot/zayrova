@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/presentation/components/top_navigation.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/widgets/input.dart';
 
@@ -27,37 +28,7 @@ class _LocationPageState extends State<LocationPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      ZayRouter.goBack();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(color: ZayColors.textSecondary),
-                      ),
-                      child: const Icon(
-                        Icons.chevron_left,
-                        color: ZayColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Center(
-                      child: Text(
-                        'Enter Your Location',
-                        style: ZayTheme.lightTheme.textTheme.displayLarge
-                            ?.copyWith(color: ZayColors.textPrimary),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 48), // Placeholder for symmetry
-                ],
-              ),
+              TopNavigation(text: 'Enter Your Location'),
               const SizedBox(height: 8),
               ZayTextInput.primary(
                 "",
