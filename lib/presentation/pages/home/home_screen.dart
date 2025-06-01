@@ -186,27 +186,32 @@ class _HomeScreenState extends State<HomeScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children:
                                 categories.map((title) {
-                                  return Column(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 35,
-                                        backgroundColor: ZayColors.secondary,
-                                        child: SvgPicture.asset(
-                                          ZayIcons.logoIcon,
-                                          colorFilter: ColorFilter.mode(
-                                            ZayColors.white,
-                                            BlendMode.srcIn,
+                                  return GestureDetector(
+                                    onTap: () {
+                                      ZayRouter.goto(ZayRoutes.category);
+                                    },
+                                    child: Column(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 35,
+                                          backgroundColor: ZayColors.secondary,
+                                          child: SvgPicture.asset(
+                                            ZayIcons.logoIcon,
+                                            colorFilter: ColorFilter.mode(
+                                              ZayColors.white,
+                                              BlendMode.srcIn,
+                                            ),
+                                            width: 30,
+                                            height: 30,
                                           ),
-                                          width: 30,
-                                          height: 30,
                                         ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        title,
-                                        style: const TextStyle(fontSize: 12),
-                                      ),
-                                    ],
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          title,
+                                          style: const TextStyle(fontSize: 12),
+                                        ),
+                                      ],
+                                    ),
                                   );
                                 }).toList(),
                           ),

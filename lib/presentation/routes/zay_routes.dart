@@ -36,6 +36,7 @@ class ZayRoutes {
   static const String home = '/home';
   static const String orders = '/orders';
   static const String wishlist = '/wishlist';
+  static const String category = '/category';
   static const String chat = '/chat';
   static const String profile = '/profile';
   static const String productDetails = '/product-details';
