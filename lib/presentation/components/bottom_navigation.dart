@@ -15,7 +15,7 @@ class BottomNavigation extends StatefulWidget {
 class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
   final List<_NavItem> _navItems = [
     _NavItem(icon: ZayIcons.homeIcon, route: ZayRoutes.home),
-    _NavItem(icon: ZayIcons.orderIcon, route: ZayRoutes.orders),
+    _NavItem(icon: ZayIcons.orderIcon, route: ZayRoutes.cart),
     _NavItem(icon: ZayIcons.wishlistIcon, route: ZayRoutes.wishlist),
     _NavItem(icon: ZayIcons.chatIcon, route: ZayRoutes.chat),
     _NavItem(icon: ZayIcons.profileIcon, route: ZayRoutes.profile),

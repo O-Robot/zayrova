@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/presentation/components/bottom_navigation.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
 import 'package:zayrova/presentation/components/top_navigation.dart';

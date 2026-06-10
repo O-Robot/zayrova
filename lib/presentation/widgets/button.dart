@@ -76,4 +76,35 @@ class ZayButton {
       ),
     );
   }
+
+  static Widget cancel({
+    required VoidCallback action,
+    String? text,
+    bool? isDisabled,
+  }) {
+    return ElevatedButton(
+      onPressed: (isDisabled ?? false) ? null : action,
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+            (isDisabled ?? false)
+                ? ZayColors.cancel.withAlpha(80)
+                : ZayColors.cancel,
+        minimumSize: const Size(300, 56),
+        maximumSize: const Size(300, 56),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        alignment: Alignment.center,
+      ),
+      child: Text(
+        text ?? 'Cancel',
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color:
+              (isDisabled ?? false)
+                  ? ZayColors.textSecondary
+                  : ZayColors.textPrimary,
+        ),
+      ),
+    );
+  }
 }

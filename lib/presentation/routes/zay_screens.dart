@@ -4,6 +4,7 @@ import 'package:zayrova/presentation/pages/auth/sign_up.dart';
 import 'package:zayrova/presentation/pages/auth/forgot_password.dart';
 import 'package:zayrova/presentation/pages/auth/set_password.dart';
 import 'package:zayrova/presentation/pages/auth/verify_email.dart';
+import 'package:zayrova/presentation/pages/cart/cart_screen.dart';
 import 'package:zayrova/presentation/pages/home/home_screen.dart';
 import 'package:zayrova/presentation/pages/home/category_screen.dart';
 import 'package:zayrova/presentation/pages/location/location_access.dart';
@@ -58,6 +59,8 @@ class ZayScreens {
         return _page(ZayRoutes.wishlist, const WishlistScreen());
       case ZayRoutes.category:
         return _page(ZayRoutes.category, const CategoryScreen());
+      case ZayRoutes.cart:
+        return _page(ZayRoutes.cart, CartScreen());
       default:
         return _page('404', const ErrorScreen(code: 404));
     }
