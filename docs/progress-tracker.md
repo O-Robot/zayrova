@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: Use Cases
+- Current Feature: Dependency Providers
 - Status: In Progress
 
 ## Completed Work
@@ -35,11 +35,15 @@
 - Added domain use cases for products, categories, cart, auth, users, orders, notifications, and messages.
 - Confirmed the new use cases do not import Flutter or data-layer files.
 - Attempted `flutter analyze` after adding use cases, but the local Dart VM crashed before analysis could run.
+- Wrapped the app with `ProviderScope` while preserving Device Preview.
+- Added Riverpod dependency providers for `ApiClient`, remote datasources, repositories, and use cases.
+- Confirmed the new providers do not create screen-level notifiers or import UI pages.
+- Attempted `flutter analyze` after adding dependency providers, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create Riverpod providers for repositories and use cases without connecting UI screens yet.
+- Create feature-level Riverpod controllers for catalog/cart/auth flows without connecting UI screens yet.
 
 ## Suggested Commit Message
 
-feat: add domain use cases
+feat: add riverpod dependency providers
