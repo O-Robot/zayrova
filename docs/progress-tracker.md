@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Navigation Setup
-- Current Feature: Navigation Shell Stabilisation
+- Current Phase: API Integration
+- Current Feature: Home Catalog Integration
 - Status: In Progress
 
 ## Completed Work
@@ -46,11 +46,17 @@
 - Stabilised the app navigation shell with planned route constants and placeholder route mappings for search, filter, checkout, orders, profile, notifications, messages, legal, and help flows.
 - Updated the bottom navigation destinations to Home, My Order, Favorite, and My Profile.
 - Attempted `flutter analyze` after navigation shell updates, but the local Dart VM crashed before analysis could run.
+- Connected Home to the Riverpod CatalogController.
+- Replaced hardcoded Home products and categories with Product and Category domain entities from catalog state.
+- Added Home loading, empty, full error, partial error, retry, and pull-to-refresh states.
+- Updated ProductCard with a Product-based factory while preserving the existing constructor for current screens.
+- Passed product ids and category slug/name route arguments from Home without connecting destination screens yet.
+- Attempted `flutter analyze` after Home catalog integration, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Replace placeholder navigation destinations with real screens incrementally, starting with Search and Filter.
+- Connect Product Details to CatalogController using the passed product id.
 
 ## Suggested Commit Message
 
-feat: stabilise navigation shell
+feat: connect home catalog state

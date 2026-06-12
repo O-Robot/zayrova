@@ -1,37 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/domain/entities/category_entity.dart';
+import 'package:zayrova/domain/entities/product_entity.dart';
 import 'package:zayrova/presentation/components/banner_carousel.dart';
 import 'package:zayrova/presentation/components/bottom_navigation.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
+import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final categories = ['T-Shirt', 'Pant', 'Dress', 'Jacket'];
-  final filters = [
-    'All',
-    'Computing',
-    'Electronics',
-    'Special Offers',
-    'Fashion',
-  ];
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadCatalog());
+  }
+
+  Future<void> _loadCatalog() async {
+    final controller = ref.read(catalogControllerProvider.notifier);
+    await controller.loadCategories();
+    await controller.loadProducts(limit: 20);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final catalogState = ref.watch(catalogControllerProvider);
+    final isInitialLoading =
+        catalogState.isLoading &&
+        (!catalogState.hasLoadedProducts || !catalogState.hasLoadedCategories);
+    final hasCatalogContent =
+        catalogState.products.isNotEmpty || catalogState.categories.isNotEmpty;
+    final shouldShowError = catalogState.hasError && !hasCatalogContent;
+    final shouldShowEmpty =
+        catalogState.hasLoadedProducts &&
+        catalogState.hasLoadedCategories &&
+        !hasCatalogContent;
+
     return Scaffold(
       appBar: null,
-      bottomNavigationBar: BottomNavigation(),
+      bottomNavigationBar: const BottomNavigation(),
       extendBody: true,
-      backgroundColor: Colors.white,
+      backgroundColor: ZayColors.white,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -53,15 +73,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             style: ZayTheme.lightTheme.textTheme.displaySmall
                                 ?.copyWith(color: ZayColors.textSecondary),
                           ),
-                          SizedBox(height: 5),
+                          const SizedBox(height: 5),
                           Row(
                             children: [
-                              Icon(
+                              const Icon(
                                 Icons.location_on_rounded,
                                 color: ZayColors.primary,
                                 size: 20,
                               ),
-                              SizedBox(width: 4),
+                              const SizedBox(width: 4),
                               Text(
                                 'New York, USA',
                                 style: ZayTheme
@@ -73,20 +93,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                       fontWeight: FontWeight.w500,
                                     ),
                               ),
-                              Icon(Icons.keyboard_arrow_down),
+                              const Icon(Icons.keyboard_arrow_down),
                             ],
                           ),
                         ],
                       ),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: ZayColors.textSecondary,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.all(12),
-                        child: Icon(
-                          Icons.notifications,
-                          color: ZayColors.white,
+                      GestureDetector(
+                        onTap: () => ZayRouter.goto(ZayRoutes.notifications),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: ZayColors.textSecondary,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          child: const Icon(
+                            Icons.notifications,
+                            color: ZayColors.white,
+                          ),
                         ),
                       ),
                     ],
@@ -116,10 +139,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
-                                  "Search",
-                                  style: TextStyle(
+                                  'Search',
+                                  style: ZayTheme
+                                      .lightTheme
+                                      .textTheme
+                                      .displayLarge
+                                      ?.copyWith(
                                     color: ZayColors.textSecondary,
-                                    fontSize: 16,
                                   ),
                                 ),
                               ],
@@ -128,13 +154,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: ZayColors.primary,
-                          borderRadius: BorderRadius.circular(50),
+                      GestureDetector(
+                        onTap: () => ZayRouter.goto(ZayRoutes.filter),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: ZayColors.primary,
+                            borderRadius: BorderRadius.circular(50),
+                          ),
+                          padding: const EdgeInsets.all(12),
+                          child: const Icon(Icons.tune, color: ZayColors.white),
                         ),
-                        padding: const EdgeInsets.all(12),
-                        child: const Icon(Icons.tune, color: Colors.white),
                       ),
                     ],
                   ),
@@ -143,210 +172,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    // banner
-                    BannerCarousel(
-                      imageUrls: [
-                        'https://images.pexels.com/photos/7974/pexels-photo.jpg',
-                        'https://images.pexels.com/photos/7974/pexels-photo.jpg',
-                        'https://images.pexels.com/photos/7974/pexels-photo.jpg',
-                      ],
-                    ),
-                    SizedBox(height: 10),
-                    // categories
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Category',
-                                style: ZayTheme
-                                    .lightTheme
-                                    .textTheme
-                                    .displayLarge
-                                    ?.copyWith(color: ZayColors.textPrimary),
-                              ),
-                              Text(
-                                'See All',
-                                style: ZayTheme
-                                    .lightTheme
-                                    .textTheme
-                                    .displayMedium
-                                    ?.copyWith(color: ZayColors.textSecondary),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children:
-                                categories.map((title) {
-                                  return GestureDetector(
-                                    onTap: () {
-                                      ZayRouter.goto(ZayRoutes.category);
-                                    },
-                                    child: Column(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 35,
-                                          backgroundColor: ZayColors.secondary,
-                                          child: SvgPicture.asset(
-                                            ZayIcons.logoIcon,
-                                            colorFilter: ColorFilter.mode(
-                                              ZayColors.white,
-                                              BlendMode.srcIn,
-                                            ),
-                                            width: 30,
-                                            height: 30,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          title,
-                                          style: const TextStyle(fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }).toList(),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // filters
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: const [
-                              Text(
-                                'Flash Sale',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              Spacer(),
-                              Text('Closing in : '),
-                              _CountdownBox('24'),
-                              Text(':'),
-                              _CountdownBox('00'),
-                              Text(':'),
-                              _CountdownBox('00'),
-                            ],
-                          ),
-                          const SizedBox(height: 12),
-                          SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children:
-                                  filters.map((text) {
-                                    final selected = text == 'Computing';
-                                    return Container(
-                                      margin: const EdgeInsets.only(right: 8),
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 6,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            selected
-                                                ? Colors.green.shade800
-                                                : Colors.white,
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(
-                                          color: Colors.grey.shade300,
-                                        ),
-                                      ),
-                                      child: Text(
-                                        text,
-                                        style: TextStyle(
-                                          color:
-                                              selected
-                                                  ? Colors.white
-                                                  : Colors.black,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // products
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ProductCard(
-                            action:
-                                () => ZayRouter.goto(ZayRoutes.productDetails),
-                            imagePath:
-                                'https://images.pexels.com/photos/7974/pexels-photo.jpg',
-                            isFavorite: true,
-                            onFavoriteToggle: () {},
-                            price: '899.00',
-                            title: 'HP Elitebook 840',
-                            rating: 0,
-                          ),
-                          ProductCard(
-                            action:
-                                () => ZayRouter.goto(ZayRoutes.productDetails),
-                            imagePath:
-                                'https://images.pexels.com/photos/7974/pexels-photo.jpg',
-                            isFavorite: false,
-                            onFavoriteToggle: () {},
-                            price: '899.00',
-                            title: 'HP Elitebook 840',
-                            rating: 0,
-                          ),
-                          // Add more cards here...
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          ProductCard(
-                            action:
-                                () => ZayRouter.goto(ZayRoutes.productDetails),
-                            imagePath:
-                                'https://images.pexels.com/photos/7974/pexels-photo.jpg',
-                            isFavorite: true,
-                            onFavoriteToggle: () {},
-                            price: '899.00',
-                            title: 'HP Elitebook 840',
-                            rating: 0,
-                          ),
-                          ProductCard(
-                            action:
-                                () => ZayRouter.goto(ZayRoutes.productDetails),
-                            imagePath:
-                                'https://images.pexels.com/photos/7974/pexels-photo.jpg',
-                            isFavorite: false,
-                            onFavoriteToggle: () {},
-                            price: '899.00',
-                            title: 'HP Elitebook 840',
-                            rating: 0,
-                          ),
-                          // Add more cards here...
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+              child: _HomeBody(
+                state: catalogState,
+                isInitialLoading: isInitialLoading,
+                shouldShowError: shouldShowError,
+                shouldShowEmpty: shouldShowEmpty,
+                onRetry: _loadCatalog,
               ),
             ),
           ],
@@ -356,26 +187,415 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-class _CountdownBox extends StatelessWidget {
-  final String value;
-  const _CountdownBox(this.value);
+class _HomeBody extends StatelessWidget {
+  const _HomeBody({
+    required this.state,
+    required this.isInitialLoading,
+    required this.shouldShowError,
+    required this.shouldShowEmpty,
+    required this.onRetry,
+  });
+
+  final CatalogState state;
+  final bool isInitialLoading;
+  final bool shouldShowError;
+  final bool shouldShowEmpty;
+  final Future<void> Function() onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-      decoration: BoxDecoration(
-        gradient: ZayColors.gradient,
-        borderRadius: BorderRadius.circular(6),
-      ),
-      child: Text(
-        value,
-        style: const TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.bold,
+    if (isInitialLoading) {
+      return const _HomeLoadingState();
+    }
+
+    if (shouldShowError) {
+      return _HomeErrorState(
+        message: state.errorMessage ?? 'Unable to load catalog.',
+        onRetry: onRetry,
+      );
+    }
+
+    if (shouldShowEmpty) {
+      return const _HomeEmptyState();
+    }
+
+    final bannerImages = _bannerImagesFromProducts(state.products);
+
+    return RefreshIndicator(
+      color: ZayColors.primary,
+      onRefresh: onRetry,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: const EdgeInsets.only(bottom: 120),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (bannerImages.isNotEmpty) ...[
+              BannerCarousel(imageUrls: bannerImages),
+              const SizedBox(height: 10),
+            ],
+            if (state.categories.isNotEmpty)
+              _CategorySection(categories: state.categories),
+            if (state.hasError)
+              _InlineErrorState(
+                message: state.errorMessage ?? 'Unable to refresh catalog.',
+                onRetry: onRetry,
+              ),
+            _ProductFilterChips(categories: state.categories),
+            _ProductSection(products: state.products),
+          ],
         ),
       ),
+    );
+  }
+
+  List<String> _bannerImagesFromProducts(List<Product> products) {
+    final images = <String>[];
+
+    for (final product in products) {
+      final thumbnailUrl = product.thumbnailUrl;
+      if (thumbnailUrl != null && thumbnailUrl.isNotEmpty) {
+        images.add(thumbnailUrl);
+      }
+
+      images.addAll(product.imageUrls.where((url) => url.isNotEmpty));
+
+      if (images.length >= 3) {
+        break;
+      }
+    }
+
+    return images.take(3).toList();
+  }
+}
+
+class _CategorySection extends StatelessWidget {
+  const _CategorySection({required this.categories});
+
+  final List<Category> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          _SectionHeader(
+            title: 'Category',
+            actionText: 'See All',
+            onAction: () => ZayRouter.goto(ZayRoutes.categories),
+          ),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: categories.take(8).map((category) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 16),
+                  child: GestureDetector(
+                    onTap: () => ZayRouter.goto(ZayRoutes.category, {
+                      'categorySlug': category.slug ?? category.id,
+                      'categoryName': category.name,
+                    }),
+                    child: SizedBox(
+                      width: 74,
+                      child: Column(
+                        children: [
+                          CircleAvatar(
+                            radius: 35,
+                            backgroundColor: ZayColors.secondary,
+                            child: SvgPicture.asset(
+                              ZayIcons.logoIcon,
+                              colorFilter: const ColorFilter.mode(
+                                ZayColors.white,
+                                BlendMode.srcIn,
+                              ),
+                              width: 30,
+                              height: 30,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            category.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: ZayTheme.lightTheme.textTheme.displaySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProductFilterChips extends StatelessWidget {
+  const _ProductFilterChips({required this.categories});
+
+  final List<Category> categories;
+
+  @override
+  Widget build(BuildContext context) {
+    final labels = [
+      'All',
+      ...categories.take(5).map((category) => category.name),
+    ];
+
+    if (labels.length <= 1) {
+      return const SizedBox(height: 16);
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(title: 'Popular Products'),
+          const SizedBox(height: 12),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: labels.map((text) {
+                final selected = text == 'All';
+                return Container(
+                  margin: const EdgeInsets.only(right: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected ? ZayColors.primary : ZayColors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: ZayColors.inputBorder),
+                  ),
+                  child: Text(
+                    text,
+                    style: ZayTheme.lightTheme.textTheme.displayMedium
+                        ?.copyWith(
+                          color:
+                              selected ? ZayColors.white : ZayColors.textPrimary,
+                          fontWeight: FontWeight.w500,
+                        ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProductSection extends StatelessWidget {
+  const _ProductSection({required this.products});
+
+  final List<Product> products;
+
+  @override
+  Widget build(BuildContext context) {
+    if (products.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16),
+        child: _InlineEmptyState(message: 'No products available yet.'),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          const spacing = 12.0;
+          final cardWidth = (constraints.maxWidth - spacing) / 2;
+
+          return Wrap(
+            spacing: spacing,
+            runSpacing: 16,
+            children: products.map((product) {
+              return ProductCard.fromProduct(
+                product: product,
+                width: cardWidth,
+                action: () => ZayRouter.goto(ZayRoutes.productDetails, {
+                  'productId': product.id,
+                }),
+                onFavoriteToggle: () {},
+              );
+            }).toList(),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({
+    required this.title,
+    this.actionText,
+    this.onAction,
+  });
+
+  final String title;
+  final String? actionText;
+  final VoidCallback? onAction;
+
+  @override
+  Widget build(BuildContext context) {
+    final actionText = this.actionText;
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          title,
+          style: ZayTheme.lightTheme.textTheme.displayLarge
+              ?.copyWith(color: ZayColors.textPrimary),
+        ),
+        if (actionText != null)
+          GestureDetector(
+            onTap: onAction,
+            child: Text(
+              actionText,
+              style: ZayTheme.lightTheme.textTheme.displayMedium
+                  ?.copyWith(color: ZayColors.textSecondary),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _InlineErrorState extends StatelessWidget {
+  const _InlineErrorState({
+    required this.message,
+    required this.onRetry,
+  });
+
+  final String message;
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: ZayColors.cancel,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: ZayTheme.lightTheme.textTheme.displayMedium
+                  ?.copyWith(color: ZayColors.textPrimary),
+            ),
+            TextButton(
+              onPressed: () => onRetry(),
+              child: Text(
+                'Retry',
+                style: ZayTheme.lightTheme.textTheme.displayMedium
+                    ?.copyWith(color: ZayColors.primary),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HomeLoadingState extends StatelessWidget {
+  const _HomeLoadingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CircularProgressIndicator(color: ZayColors.primary),
+    );
+  }
+}
+
+class _HomeErrorState extends StatelessWidget {
+  const _HomeErrorState({
+    required this.message,
+    required this.onRetry,
+  });
+
+  final String message;
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.wifi_off_rounded,
+              color: ZayColors.primary,
+              size: 42,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: ZayTheme.lightTheme.textTheme.displayLarge,
+            ),
+            const SizedBox(height: 16),
+            TextButton(
+              onPressed: () => onRetry(),
+              child: Text(
+                'Retry',
+                style: ZayTheme.lightTheme.textTheme.displayLarge
+                    ?.copyWith(color: ZayColors.primary),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HomeEmptyState extends StatelessWidget {
+  const _HomeEmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(24),
+        child: _InlineEmptyState(message: 'No catalog items found.'),
+      ),
+    );
+  }
+}
+
+class _InlineEmptyState extends StatelessWidget {
+  const _InlineEmptyState({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      message,
+      textAlign: TextAlign.center,
+      style: ZayTheme.lightTheme.textTheme.displayMedium
+          ?.copyWith(color: ZayColors.textSecondary),
     );
   }
 }
