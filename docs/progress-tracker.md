@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: API Foundation
+- Current Feature: Domain Entities
 - Status: In Progress
 
 ## Completed Work
@@ -18,11 +18,13 @@
 - Refactored the shared API client from Dart `HttpClient` to the web-compatible `http` package.
 - Cleaned up current Flutter analyze warnings for unused imports and unused variables.
 - Restored the complete profile picked image field to preserve existing image picker behavior.
+- Added first API-agnostic domain entities for products, categories, cart, users, addresses, payments, orders, notifications, and messaging.
+- Attempted `flutter analyze`, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create the first API-ready model and remote datasource without connecting UI screens yet.
+- Create data models that map API responses into the new domain entities without connecting UI screens yet.
 
 ## Suggested Commit Message
 
-chore: clean up analyzer warnings
+feat: add core domain entities

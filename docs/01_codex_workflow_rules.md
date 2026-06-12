@@ -2,22 +2,44 @@
 
 ## Core instruction
 
-Codex must not execute Flutter, build, git, install, analyse, or test commands.
-
 Codex may inspect and read files in the workspace when needed.
 
-Codex should only inspect files, propose changes, and edit files when asked. Any command that needs to be executed must be written clearly for the developer to run manually.
+Codex should only inspect files, propose changes, and edit files when asked.
 
 ## Command rule
 
-When a command is needed, Codex must respond with:
+Codex is allowed to inspect files, read files, list folders, search the workspace, and run safe verification commands.
 
-```text
+Allowed commands:
+
+- flutter analyze
+- flutter test
+- flutter pub get
+- file listing commands
+- file reading commands
+- workspace search commands
+
+Codex must not run install or dependency-changing commands without approval.
+
+Forbidden unless explicitly approved:
+
+- flutter pub add
+- flutter pub upgrade
+- flutter upgrade
+- pod install
+- pod update
+- npm install
+- yarn install
+- git commands
+- build commands
+- deployment commands
+- deleting files through terminal commands
+- starting the app with flutter run
+
+If a forbidden command is needed, Codex must write:
+
 Run this command manually:
 <command>
-```
-
-Codex must not execute the command itself.
 
 ## Before making changes
 
