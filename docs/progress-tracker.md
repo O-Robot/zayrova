@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: Repositories
+- Current Feature: Cart Domain Structure
 - Status: In Progress
 
 ## Completed Work
@@ -29,6 +29,9 @@
 - Added repository contracts for products, categories, cart, auth, users, orders, notifications, and messages.
 - Added repository implementations that consume remote datasources and return domain entities through `ApiResult`.
 - Attempted `flutter analyze` after adding repositories, but the local Dart VM crashed before analysis could run.
+- Added a proper `Cart` domain entity and `CartModel`.
+- Updated cart datasource and repository layers to return `Cart` aggregates instead of nested cart item lists.
+- Attempted `flutter analyze` after fixing cart structure, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
@@ -36,4 +39,4 @@
 
 ## Suggested Commit Message
 
-feat: add repository layer
+refactor: add cart aggregate model

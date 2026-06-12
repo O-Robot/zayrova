@@ -1,19 +1,19 @@
 import 'package:zayrova/core/utils/api_result.dart';
-import 'package:zayrova/domain/entities/cart_item_entity.dart';
+import 'package:zayrova/domain/entities/cart_entity.dart';
 
 abstract class CartRepository {
-  Future<ApiResult<List<List<CartItem>>>> getCarts({int? limit, int? skip});
+  Future<ApiResult<List<Cart>>> getCarts({int? limit, int? skip});
 
-  Future<ApiResult<List<CartItem>>> getCartById(int id);
+  Future<ApiResult<Cart>> getCartById(int id);
 
-  Future<ApiResult<List<CartItem>>> getUserCart(int userId);
+  Future<ApiResult<Cart>> getUserCart(int userId);
 
-  Future<ApiResult<List<CartItem>>> addToCart({
+  Future<ApiResult<Cart>> addToCart({
     required int userId,
     required List<Map<String, dynamic>> products,
   });
 
-  Future<ApiResult<List<CartItem>>> updateCart({
+  Future<ApiResult<Cart>> updateCart({
     required int cartId,
     required List<Map<String, dynamic>> products,
     bool merge = true,

@@ -1,13 +1,13 @@
 import 'package:zayrova/config/api_constants.dart';
 import 'package:zayrova/core/services/network/api_client.dart';
-import 'package:zayrova/data/models/cart_item_model.dart';
+import 'package:zayrova/data/models/cart_model.dart';
 
 class CartRemoteDatasource {
   const CartRemoteDatasource(this._apiClient);
 
   final ApiClient _apiClient;
 
-  Future<List<List<CartItemModel>>> getCarts({
+  Future<List<CartModel>> getCarts({
     int? limit,
     int? skip,
   }) async {
@@ -26,28 +26,28 @@ class CartRemoteDatasource {
 
     return carts
         .whereType<Map<String, dynamic>>()
-        .map(_cartItemsFromResponse)
+        .map(CartModel.fromJson)
         .toList();
   }
 
-  Future<List<CartItemModel>> getCartById(int id) async {
+  Future<CartModel> getCartById(int id) async {
     final response = await _apiClient.get(ApiConstants.cartById(id));
-    return _cartItemsFromResponse(response);
+    return CartModel.fromJson(_mapFromResponse(response));
   }
 
-  Future<List<CartItemModel>> getUserCart(int userId) async {
+  Future<CartModel> getUserCart(int userId) async {
     final response = await _apiClient.get(ApiConstants.cartsByUser(userId));
     final carts = response is Map<String, dynamic> ? response['carts'] : null;
 
     if (carts is List && carts.isNotEmpty) {
       final firstCart = carts.first;
-      return _cartItemsFromResponse(firstCart);
+      return CartModel.fromJson(_mapFromResponse(firstCart));
     }
 
-    return _cartItemsFromResponse(response);
+    return CartModel.fromJson(_mapFromResponse(response));
   }
 
-  Future<List<CartItemModel>> addToCart({
+  Future<CartModel> addToCart({
     required int userId,
     required List<Map<String, dynamic>> products,
   }) async {
@@ -56,10 +56,10 @@ class CartRemoteDatasource {
       body: {'userId': userId, 'products': products},
     );
 
-    return _cartItemsFromResponse(response);
+    return CartModel.fromJson(_mapFromResponse(response));
   }
 
-  Future<List<CartItemModel>> updateCart({
+  Future<CartModel> updateCart({
     required int cartId,
     required List<Map<String, dynamic>> products,
     bool merge = true,
@@ -69,7 +69,7 @@ class CartRemoteDatasource {
       body: {'merge': merge, 'products': products},
     );
 
-    return _cartItemsFromResponse(response);
+    return CartModel.fromJson(_mapFromResponse(response));
   }
 
   Future<bool> deleteCart(int cartId) async {
@@ -82,18 +82,11 @@ class CartRemoteDatasource {
     return false;
   }
 
-  List<CartItemModel> _cartItemsFromResponse(dynamic response) {
-    final source = response is Map<String, dynamic>
-        ? response['products']
-        : response;
-
-    if (source is! List) {
-      return const [];
+  Map<String, dynamic> _mapFromResponse(dynamic response) {
+    if (response is Map<String, dynamic>) {
+      return response;
     }
 
-    return source
-        .whereType<Map<String, dynamic>>()
-        .map(CartItemModel.fromJson)
-        .toList();
+    return const {};
   }
 }
