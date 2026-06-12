@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: Domain Entities
+- Current Feature: Data Models
 - Status: In Progress
 
 ## Completed Work
@@ -20,11 +20,14 @@
 - Restored the complete profile picked image field to preserve existing image picker behavior.
 - Added first API-agnostic domain entities for products, categories, cart, users, addresses, payments, orders, notifications, and messaging.
 - Attempted `flutter analyze`, but the local Dart VM crashed before analysis could run.
+- Added API-ready data models that map JSON responses into the domain entities.
+- Kept DummyJSON-specific parsing inside the data model layer.
+- Attempted `flutter analyze` after adding data models, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create data models that map API responses into the new domain entities without connecting UI screens yet.
+- Create remote datasources that use `ApiClient` and return data models without connecting UI screens yet.
 
 ## Suggested Commit Message
 
-feat: add core domain entities
+feat: add api data models
