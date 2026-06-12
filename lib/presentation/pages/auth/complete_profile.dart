@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zayrova/core/constants/colors.dart';
@@ -18,12 +17,12 @@ class CompleteProfile extends StatefulWidget {
 class _CompleteProfileState extends State<CompleteProfile> {
   final phoneNumber = TextEditingController();
   String? selectedGender;
-  XFile? _pickedImage;
+  XFile? pickedImage;
 
   void _handleImagePicked(XFile? image) {
     setState(() {
       if (image != null) {
-        _pickedImage = image;
+        pickedImage = image;
       }
     });
   }

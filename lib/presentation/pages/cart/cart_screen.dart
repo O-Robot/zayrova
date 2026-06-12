@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zayrova/presentation/components/top_navigation.dart';
 import 'package:zayrova/presentation/components/confirmation_modal.dart';
-import 'package:zayrova/presentation/widgets/button.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});

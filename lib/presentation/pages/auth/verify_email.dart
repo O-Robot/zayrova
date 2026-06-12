@@ -1,4 +1,6 @@
 import 'package:flutter/gestures.dart';
+// ignore_for_file: unused_local_variable
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zayrova/core/constants/colors.dart';
