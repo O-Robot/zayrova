@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: Remote Datasources
+- Current Feature: Repositories
 - Status: In Progress
 
 ## Completed Work
@@ -26,11 +26,14 @@
 - Added remote datasources for products, categories, carts, auth, users, orders, notifications, and messages.
 - Kept temporary DummyJSON cart-to-order adaptation isolated inside the order datasource.
 - Attempted `flutter analyze` after adding datasources, but the local Dart VM crashed before analysis could run.
+- Added repository contracts for products, categories, cart, auth, users, orders, notifications, and messages.
+- Added repository implementations that consume remote datasources and return domain entities through `ApiResult`.
+- Attempted `flutter analyze` after adding repositories, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create repository contracts and implementations that consume the remote datasources without connecting UI screens yet.
+- Create use cases that consume repository contracts without connecting UI screens yet.
 
 ## Suggested Commit Message
 
-feat: add remote datasources
+feat: add repository layer
