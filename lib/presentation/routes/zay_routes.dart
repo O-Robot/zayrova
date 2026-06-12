@@ -4,11 +4,13 @@ class ZayRoutes {
   static const String onboardingPage = '/onboard-page';
   static const String categories = '/categories';
   static const String categoryDetails = '/category-details';
+  static const String filter = '/filter';
   static const String cart = '/cart';
   static const String checkout = '/checkout';
   static const String orderSummary = '/order-summary';
   static const String orderDetails = '/order-details';
   static const String payment = '/payment';
+  static const String address = '/address';
   static const String paymentSuccess = '/payment-success';
   static const String paymentFailed = '/payment-failed';
   static const String orderHistory = '/order-history';
@@ -19,6 +21,10 @@ class ZayRoutes {
   static const String settings = '/settings';
   static const String notifications = '/notifications';
   static const String search = '/search';
+  static const String messages = '/messages';
+  static const String messageDetail = '/message-detail';
+  static const String helpSupport = '/help-support';
+  static const String legalAndPolicies = '/legal-and-policies';
 
   //auth
   static const String login = '/login';

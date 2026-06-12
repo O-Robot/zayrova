@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
-import 'package:zayrova/presentation/routes/zay_routes.dart'; // Assuming you have a routes file
+import 'package:zayrova/presentation/routes/zay_routes.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({super.key});
@@ -14,11 +15,22 @@ class BottomNavigation extends StatefulWidget {
 
 class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
   final List<_NavItem> _navItems = [
-    _NavItem(icon: ZayIcons.homeIcon, route: ZayRoutes.home),
-    _NavItem(icon: ZayIcons.orderIcon, route: ZayRoutes.cart),
-    _NavItem(icon: ZayIcons.wishlistIcon, route: ZayRoutes.wishlist),
-    _NavItem(icon: ZayIcons.chatIcon, route: ZayRoutes.chat),
-    _NavItem(icon: ZayIcons.profileIcon, route: ZayRoutes.profile),
+    _NavItem(label: 'Home', icon: ZayIcons.homeIcon, route: ZayRoutes.home),
+    _NavItem(
+      label: 'My Order',
+      icon: ZayIcons.orderIcon,
+      route: ZayRoutes.orders,
+    ),
+    _NavItem(
+      label: 'Favorite',
+      icon: ZayIcons.wishlistIcon,
+      route: ZayRoutes.wishlist,
+    ),
+    _NavItem(
+      label: 'My Profile',
+      icon: ZayIcons.profileIcon,
+      route: ZayRoutes.profile,
+    ),
   ];
 
   String _currentRoute = '';
@@ -50,31 +62,50 @@ class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
             _navItems.map((item) {
               final isActive = item.route == _currentRoute;
 
-              return GestureDetector(
-                onTap: () {
-                  if (_currentRoute != item.route) {
-                    ZayRouter.goto(item.route);
-                    setState(() {
-                      _currentRoute = item.route;
-                    });
-                    // print('Current: $_currentRoute');
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: isActive ? ZayColors.white : Colors.transparent,
-                    shape: BoxShape.circle,
-                  ),
-
-                  child: SvgPicture.asset(
-                    item.icon,
-                    colorFilter: ColorFilter.mode(
-                      isActive ? ZayColors.primary : ZayColors.white,
-                      BlendMode.srcIn,
-                    ),
-                    width: 24,
-                    height: 24,
+              return Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    if (_currentRoute != item.route) {
+                      ZayRouter.goto(item.route);
+                      setState(() {
+                        _currentRoute = item.route;
+                      });
+                      // print('Current: $_currentRoute');
+                    }
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color:
+                              isActive ? ZayColors.white : Colors.transparent,
+                          shape: BoxShape.circle,
+                        ),
+                        child: SvgPicture.asset(
+                          item.icon,
+                          colorFilter: ColorFilter.mode(
+                            isActive ? ZayColors.primary : ZayColors.white,
+                            BlendMode.srcIn,
+                          ),
+                          width: 24,
+                          height: 24,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: ZayTheme.lightTheme.textTheme.displaySmall
+                            ?.copyWith(
+                              color: ZayColors.white,
+                              fontWeight:
+                                  isActive ? FontWeight.w600 : FontWeight.w400,
+                            ),
+                      ),
+                    ],
                   ),
                 ),
               );
@@ -85,8 +116,9 @@ class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
 }
 
 class _NavItem {
-  final dynamic icon;
+  final String label;
+  final String icon;
   final String route;
 
-  _NavItem({required this.icon, required this.route});
+  _NavItem({required this.label, required this.icon, required this.route});
 }

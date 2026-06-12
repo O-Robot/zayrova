@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Foundation Setup
-- Current Feature: Feature State Controllers
+- Current Phase: Navigation Setup
+- Current Feature: Navigation Shell Stabilisation
 - Status: In Progress
 
 ## Completed Work
@@ -43,11 +43,14 @@
 - Kept controllers disconnected from UI screens and limited to existing use case providers.
 - Confirmed feature controllers do not import data-layer files or UI pages.
 - Attempted `flutter analyze` after adding feature controllers, but the local Dart VM crashed before analysis could run.
+- Stabilised the app navigation shell with planned route constants and placeholder route mappings for search, filter, checkout, orders, profile, notifications, messages, legal, and help flows.
+- Updated the bottom navigation destinations to Home, My Order, Favorite, and My Profile.
+- Attempted `flutter analyze` after navigation shell updates, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Connect the Auth, Catalog, and Cart controllers to UI screens incrementally, starting with non-destructive read-only catalog screens.
+- Replace placeholder navigation destinations with real screens incrementally, starting with Search and Filter.
 
 ## Suggested Commit Message
 
-feat: add auth catalog cart controllers
+feat: stabilise navigation shell

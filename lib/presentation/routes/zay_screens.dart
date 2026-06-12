@@ -12,6 +12,7 @@ import 'package:zayrova/presentation/pages/location/location_page.dart';
 import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
+import 'package:zayrova/presentation/pages/placeholder/placeholder_screen.dart';
 import 'package:zayrova/presentation/pages/error/error_screen.dart';
 import 'package:zayrova/presentation/pages/auth/sign_in.dart';
 import 'package:zayrova/presentation/pages/product/product_details.dart';
@@ -57,12 +58,63 @@ class ZayScreens {
         return _page(ZayRoutes.productDetails, const ProductDetails());
       case ZayRoutes.wishlist:
         return _page(ZayRoutes.wishlist, const WishlistScreen());
+      case ZayRoutes.categories:
+        return _page(ZayRoutes.categories, const CategoryScreen());
       case ZayRoutes.category:
         return _page(ZayRoutes.category, const CategoryScreen());
+      case ZayRoutes.categoryDetails:
+        return _placeholder(ZayRoutes.categoryDetails, 'Category Details');
+      case ZayRoutes.search:
+        return _placeholder(ZayRoutes.search, 'Search');
+      case ZayRoutes.filter:
+        return _placeholder(ZayRoutes.filter, 'Filter');
       case ZayRoutes.cart:
-        return _page(ZayRoutes.cart, CartScreen());
+        return _page(ZayRoutes.cart, const CartScreen());
+      case ZayRoutes.checkout:
+        return _placeholder(ZayRoutes.checkout, 'Checkout');
+      case ZayRoutes.orderSummary:
+        return _placeholder(ZayRoutes.orderSummary, 'Order Summary');
+      case ZayRoutes.payment:
+        return _placeholder(ZayRoutes.payment, 'Payment');
+      case ZayRoutes.address:
+        return _placeholder(ZayRoutes.address, 'Address');
+      case ZayRoutes.paymentSuccess:
+        return _placeholder(ZayRoutes.paymentSuccess, 'Payment Success');
+      case ZayRoutes.paymentFailed:
+        return _placeholder(ZayRoutes.paymentFailed, 'Payment Failed');
+      case ZayRoutes.orders:
+        return _placeholder(ZayRoutes.orders, 'My Order');
+      case ZayRoutes.orderHistory:
+        return _placeholder(ZayRoutes.orderHistory, 'Order History');
+      case ZayRoutes.orderDetails:
+        return _placeholder(ZayRoutes.orderDetails, 'Order Detail');
+      case ZayRoutes.orderTracking:
+        return _placeholder(ZayRoutes.orderTracking, 'Order Tracking');
+      case ZayRoutes.orderReview:
+        return _placeholder(ZayRoutes.orderReview, 'Order Review');
+      case ZayRoutes.orderRating:
+        return _placeholder(ZayRoutes.orderRating, 'Order Rating');
+      case ZayRoutes.profile:
+        return _placeholder(ZayRoutes.profile, 'My Profile');
+      case ZayRoutes.settings:
+        return _placeholder(ZayRoutes.settings, 'Settings');
+      case ZayRoutes.notifications:
+        return _placeholder(ZayRoutes.notifications, 'Notifications');
+      case ZayRoutes.chat:
+      case ZayRoutes.messages:
+        return _placeholder(ZayRoutes.messages, 'Messages');
+      case ZayRoutes.messageDetail:
+        return _placeholder(ZayRoutes.messageDetail, 'Message Detail');
+      case ZayRoutes.helpSupport:
+        return _placeholder(ZayRoutes.helpSupport, 'Help and Support');
+      case ZayRoutes.legalAndPolicies:
+        return _placeholder(ZayRoutes.legalAndPolicies, 'Legal and Policies');
       default:
         return _page('404', const ErrorScreen(code: 404));
     }
+  }
+
+  static MaterialPageRoute _placeholder(String route, String title) {
+    return _page(route, PlaceholderScreen(title: title));
   }
 }
