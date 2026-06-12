@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: Data Models
+- Current Feature: Remote Datasources
 - Status: In Progress
 
 ## Completed Work
@@ -23,11 +23,14 @@
 - Added API-ready data models that map JSON responses into the domain entities.
 - Kept DummyJSON-specific parsing inside the data model layer.
 - Attempted `flutter analyze` after adding data models, but the local Dart VM crashed before analysis could run.
+- Added remote datasources for products, categories, carts, auth, users, orders, notifications, and messages.
+- Kept temporary DummyJSON cart-to-order adaptation isolated inside the order datasource.
+- Attempted `flutter analyze` after adding datasources, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create remote datasources that use `ApiClient` and return data models without connecting UI screens yet.
+- Create repository contracts and implementations that consume the remote datasources without connecting UI screens yet.
 
 ## Suggested Commit Message
 
-feat: add api data models
+feat: add remote datasources
