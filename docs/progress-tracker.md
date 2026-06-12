@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: Cart Domain Structure
+- Current Feature: Use Cases
 - Status: In Progress
 
 ## Completed Work
@@ -32,11 +32,14 @@
 - Added a proper `Cart` domain entity and `CartModel`.
 - Updated cart datasource and repository layers to return `Cart` aggregates instead of nested cart item lists.
 - Attempted `flutter analyze` after fixing cart structure, but the local Dart VM crashed before analysis could run.
+- Added domain use cases for products, categories, cart, auth, users, orders, notifications, and messages.
+- Confirmed the new use cases do not import Flutter or data-layer files.
+- Attempted `flutter analyze` after adding use cases, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create use cases that consume repository contracts without connecting UI screens yet.
+- Create Riverpod providers for repositories and use cases without connecting UI screens yet.
 
 ## Suggested Commit Message
 
-refactor: add cart aggregate model
+feat: add domain use cases
