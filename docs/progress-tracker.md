@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Foundation Setup
-- Current Feature: Dependency Providers
+- Current Feature: Feature State Controllers
 - Status: In Progress
 
 ## Completed Work
@@ -39,11 +39,15 @@
 - Added Riverpod dependency providers for `ApiClient`, remote datasources, repositories, and use cases.
 - Confirmed the new providers do not create screen-level notifiers or import UI pages.
 - Attempted `flutter analyze` after adding dependency providers, but the local Dart VM crashed before analysis could run.
+- Added feature-level Riverpod controllers for Auth, Catalog, and Cart.
+- Kept controllers disconnected from UI screens and limited to existing use case providers.
+- Confirmed feature controllers do not import data-layer files or UI pages.
+- Attempted `flutter analyze` after adding feature controllers, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create feature-level Riverpod controllers for catalog/cart/auth flows without connecting UI screens yet.
+- Connect the Auth, Catalog, and Cart controllers to UI screens incrementally, starting with non-destructive read-only catalog screens.
 
 ## Suggested Commit Message
 
-feat: add riverpod dependency providers
+feat: add auth catalog cart controllers
