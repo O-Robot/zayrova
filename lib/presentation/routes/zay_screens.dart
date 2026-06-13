@@ -55,7 +55,10 @@ class ZayScreens {
       case ZayRoutes.home:
         return _page(ZayRoutes.home, const HomeScreen());
       case ZayRoutes.productDetails:
-        return _page(ZayRoutes.productDetails, const ProductDetails());
+        return _page(
+          ZayRoutes.productDetails,
+          ProductDetails(productId: data['productId']?.toString()),
+        );
       case ZayRoutes.wishlist:
         return _page(ZayRoutes.wishlist, const WishlistScreen());
       case ZayRoutes.categories:

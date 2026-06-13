@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Home Catalog Integration
+- Current Feature: Product Details Catalog Integration
 - Status: In Progress
 
 ## Completed Work
@@ -52,11 +52,17 @@
 - Updated ProductCard with a Product-based factory while preserving the existing constructor for current screens.
 - Passed product ids and category slug/name route arguments from Home without connecting destination screens yet.
 - Attempted `flutter analyze` after Home catalog integration, but the local Dart VM crashed before analysis could run.
+- Passed `productId` route arguments into ProductDetails.
+- Connected ProductDetails to the Riverpod CatalogController and loaded product details by id.
+- Replaced hardcoded ProductDetails title, price, description, rating, images, brand/category, and stock display with Product entity data.
+- Added ProductDetails loading, error with retry, and missing/invalid product id states.
+- Preserved image thumbnail selection and kept Add to Cart visible as a disabled coming-soon action.
+- Attempted `flutter analyze` after ProductDetails integration, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Connect Product Details to CatalogController using the passed product id.
+- Connect Category screen to CatalogController using the passed category slug/name.
 
 ## Suggested Commit Message
 
-feat: connect home catalog state
+feat: connect product details catalog state
