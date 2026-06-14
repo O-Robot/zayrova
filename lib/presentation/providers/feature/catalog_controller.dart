@@ -178,7 +178,12 @@ class CatalogController extends Notifier<CatalogState> {
     int? limit,
     int? skip,
   }) async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(
+      categoryProducts: const [],
+      isLoading: true,
+      hasLoadedCategoryProducts: false,
+      clearError: true,
+    );
 
     final result = await ref.read(getProductsByCategoryUseCaseProvider).call(
       categorySlug,

@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Product Details Catalog Integration
+- Current Feature: Category Catalog Integration
 - Status: In Progress
 
 ## Completed Work
@@ -58,11 +58,17 @@
 - Added ProductDetails loading, error with retry, and missing/invalid product id states.
 - Preserved image thumbnail selection and kept Add to Cart visible as a disabled coming-soon action.
 - Attempted `flutter analyze` after ProductDetails integration, but the local Dart VM crashed before analysis could run.
+- Passed category slug/name route arguments into CategoryScreen.
+- Connected CategoryScreen to the Riverpod CatalogController and loaded products by category slug.
+- Replaced hardcoded CategoryScreen product cards with Product entity data from category products state.
+- Added CategoryScreen loading, error with retry, empty, missing category, pull-to-refresh, and filter placeholder states.
+- Cleared stale category products when loading a new category.
+- Attempted `flutter analyze` after CategoryScreen integration, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Connect Category screen to CatalogController using the passed category slug/name.
+- Create real Search screen using CatalogController search results while keeping Filter as a placeholder.
 
 ## Suggested Commit Message
 
-feat: connect product details catalog state
+feat: connect category catalog state

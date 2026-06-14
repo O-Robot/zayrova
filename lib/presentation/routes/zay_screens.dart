@@ -64,7 +64,13 @@ class ZayScreens {
       case ZayRoutes.categories:
         return _page(ZayRoutes.categories, const CategoryScreen());
       case ZayRoutes.category:
-        return _page(ZayRoutes.category, const CategoryScreen());
+        return _page(
+          ZayRoutes.category,
+          CategoryScreen(
+            categorySlug: data['categorySlug']?.toString(),
+            categoryName: data['categoryName']?.toString(),
+          ),
+        );
       case ZayRoutes.categoryDetails:
         return _placeholder(ZayRoutes.categoryDetails, 'Category Details');
       case ZayRoutes.search:
