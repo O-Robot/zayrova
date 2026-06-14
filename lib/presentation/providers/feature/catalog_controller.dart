@@ -150,7 +150,12 @@ class CatalogController extends Notifier<CatalogState> {
     int? limit,
     int? skip,
   }) async {
-    state = state.copyWith(isLoading: true, clearError: true);
+    state = state.copyWith(
+      searchResults: const [],
+      isLoading: true,
+      hasLoadedSearchResults: false,
+      clearError: true,
+    );
 
     final result = await ref.read(searchProductsUseCaseProvider).call(
       query,

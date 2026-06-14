@@ -13,6 +13,7 @@ import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
 import 'package:zayrova/presentation/pages/placeholder/placeholder_screen.dart';
+import 'package:zayrova/presentation/pages/search/search_screen.dart';
 import 'package:zayrova/presentation/pages/error/error_screen.dart';
 import 'package:zayrova/presentation/pages/auth/sign_in.dart';
 import 'package:zayrova/presentation/pages/product/product_details.dart';
@@ -74,7 +75,7 @@ class ZayScreens {
       case ZayRoutes.categoryDetails:
         return _placeholder(ZayRoutes.categoryDetails, 'Category Details');
       case ZayRoutes.search:
-        return _placeholder(ZayRoutes.search, 'Search');
+        return _page(ZayRoutes.search, const SearchScreen());
       case ZayRoutes.filter:
         return _placeholder(ZayRoutes.filter, 'Filter');
       case ZayRoutes.cart:

@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Category Catalog Integration
+- Current Feature: Search Catalog Integration
 - Status: In Progress
 
 ## Completed Work
@@ -64,11 +64,18 @@
 - Added CategoryScreen loading, error with retry, empty, missing category, pull-to-refresh, and filter placeholder states.
 - Cleared stale category products when loading a new category.
 - Attempted `flutter analyze` after CategoryScreen integration, but the local Dart VM crashed before analysis could run.
+- Replaced the Search placeholder route with a real SearchScreen.
+- Connected SearchScreen to CatalogController.searchProducts with submit-based search.
+- Added SearchScreen initial, loading, error with retry, empty, and results states.
+- Rendered search results with ProductCard using Product domain entities.
+- Routed search result taps to ProductDetails with productId and kept Filter as a placeholder route.
+- Cleared stale search results when starting a new search.
+- Attempted `flutter analyze` after SearchScreen integration, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Create real Search screen using CatalogController search results while keeping Filter as a placeholder.
+- Build the Filter screen UI as a placeholder-ready catalog filtering surface without connecting final filter logic yet.
 
 ## Suggested Commit Message
 
-feat: connect category catalog state
+feat: connect search catalog state
