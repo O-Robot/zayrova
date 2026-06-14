@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Search Catalog Integration
+- Current Feature: Filter UI Foundation
 - Status: In Progress
 
 ## Completed Work
@@ -71,11 +71,16 @@
 - Routed search result taps to ProductDetails with productId and kept Filter as a placeholder route.
 - Cleared stale search results when starting a new search.
 - Attempted `flutter analyze` after SearchScreen integration, but the local Dart VM crashed before analysis could run.
+- Replaced the Filter placeholder route with a real FilterScreen.
+- Added filter UI sections for category, price range, rating, sort by, and availability.
+- Used existing catalog category state for category filter choices when available.
+- Added Reset and Apply Filter actions without connecting final filtering logic or fake product results.
+- Attempted `flutter analyze` after FilterScreen UI foundation, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Build the Filter screen UI as a placeholder-ready catalog filtering surface without connecting final filter logic yet.
+- Connect filter selections to Search/Catalog state after defining the final filter behavior.
 
 ## Suggested Commit Message
 
-feat: connect search catalog state
+feat: add filter screen ui
