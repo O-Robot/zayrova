@@ -2,6 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/domain/entities/cart_entity.dart';
 import 'package:zayrova/presentation/providers/usecase_providers.dart';
 
+// Temporary DummyJSON user used until real authenticated user/session cart exists.
+const int temporaryDummyJsonCartUserId = 1;
+
 final cartControllerProvider = NotifierProvider<CartController, CartState>(
   CartController.new,
 );
@@ -123,11 +126,12 @@ class CartController extends Notifier<CartState> {
 
     final result = await ref.read(getUserCartUseCaseProvider).call(userId);
 
-    if (result.isSuccess && result.data != null) {
+    if (result.isSuccess) {
       state = state.copyWith(
         userCart: result.data,
         isLoading: false,
         hasLoadedUserCart: true,
+        clearUserCart: result.data == null,
       );
       return;
     }

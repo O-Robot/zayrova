@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
+import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
-import 'package:zayrova/presentation/widgets/button.dart';
 
 class ProductDetails extends ConsumerStatefulWidget {
   const ProductDetails({super.key, this.productId});
@@ -21,6 +21,8 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
   int _selectedSizeIndex = 0;
   int _selectedColorIndex = 0;
   int _selectedImageIndex = 0;
+  int _quantity = 1;
+  bool _isAddingToCart = false;
 
   int? get _parsedProductId {
     final productId = widget.productId;
@@ -52,6 +54,44 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
     await ref
         .read(catalogControllerProvider.notifier)
         .loadProductDetails(parsedProductId);
+  }
+
+  Future<void> _addToCart(Product product) async {
+    final productId = int.tryParse(product.id);
+    if (productId == null) {
+      _showCartSnackBar('Unable to add this product to cart.');
+      return;
+    }
+
+    setState(() => _isAddingToCart = true);
+    await ref.read(cartControllerProvider.notifier).addToCart(
+      userId: temporaryDummyJsonCartUserId,
+      products: [
+        {'id': productId, 'quantity': _quantity},
+      ],
+    );
+
+    if (!mounted) {
+      return;
+    }
+
+    final cartState = ref.read(cartControllerProvider);
+    setState(() => _isAddingToCart = false);
+
+    _showCartSnackBar(
+      cartState.hasError
+          ? cartState.errorMessage ?? 'Unable to add product to cart.'
+          : 'Added to cart.',
+    );
+  }
+
+  void _showCartSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: ZayColors.primary,
+      ),
+    );
   }
 
   @override
@@ -91,10 +131,14 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
       selectedImageIndex: _selectedImageIndex,
       selectedSizeIndex: _selectedSizeIndex,
       selectedColorIndex: _selectedColorIndex,
+      quantity: _quantity,
+      isAddingToCart: _isAddingToCart,
       onToggleExpanded: () => setState(() => _isExpanded = !_isExpanded),
       onImageSelected: (index) => setState(() => _selectedImageIndex = index),
       onSizeSelected: (index) => setState(() => _selectedSizeIndex = index),
       onColorSelected: (index) => setState(() => _selectedColorIndex = index),
+      onQuantityChanged: (quantity) => setState(() => _quantity = quantity),
+      onAddToCart: () => _addToCart(product),
     );
   }
 }
@@ -106,10 +150,14 @@ class _ProductDetailsContent extends StatelessWidget {
     required this.selectedImageIndex,
     required this.selectedSizeIndex,
     required this.selectedColorIndex,
+    required this.quantity,
+    required this.isAddingToCart,
     required this.onToggleExpanded,
     required this.onImageSelected,
     required this.onSizeSelected,
     required this.onColorSelected,
+    required this.onQuantityChanged,
+    required this.onAddToCart,
   });
 
   final Product product;
@@ -117,10 +165,14 @@ class _ProductDetailsContent extends StatelessWidget {
   final int selectedImageIndex;
   final int selectedSizeIndex;
   final int selectedColorIndex;
+  final int quantity;
+  final bool isAddingToCart;
   final VoidCallback onToggleExpanded;
   final ValueChanged<int> onImageSelected;
   final ValueChanged<int> onSizeSelected;
   final ValueChanged<int> onColorSelected;
+  final ValueChanged<int> onQuantityChanged;
+  final VoidCallback onAddToCart;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +183,13 @@ class _ProductDetailsContent extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7F7),
-      bottomNavigationBar: _AddToCart(product: product),
+      bottomNavigationBar: _AddToCart(
+        product: product,
+        quantity: quantity,
+        isAddingToCart: isAddingToCart,
+        onQuantityChanged: onQuantityChanged,
+        onAddToCart: onAddToCart,
+      ),
       body: Stack(
         children: [
           SizedBox(
@@ -683,12 +741,24 @@ class _MissingProductIdState extends StatelessWidget {
 }
 
 class _AddToCart extends StatelessWidget {
-  const _AddToCart({required this.product});
+  const _AddToCart({
+    required this.product,
+    required this.quantity,
+    required this.isAddingToCart,
+    required this.onQuantityChanged,
+    required this.onAddToCart,
+  });
 
   final Product product;
+  final int quantity;
+  final bool isAddingToCart;
+  final ValueChanged<int> onQuantityChanged;
+  final VoidCallback onAddToCart;
 
   @override
   Widget build(BuildContext context) {
+    final total = product.price * quantity;
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
       decoration: BoxDecoration(
@@ -713,7 +783,7 @@ class _AddToCart extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${product.price.toStringAsFixed(2)}',
+                '\$${total.toStringAsFixed(2)}',
                 style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
                   color: ZayColors.textPrimary,
                   fontWeight: FontWeight.w600,
@@ -721,15 +791,120 @@ class _AddToCart extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(
-            width: 200,
-            child: ZayButton.icon(
-              action: () {},
-              text: 'Coming Soon',
-              isDisabled: true,
-            ),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _QuantitySelector(
+                quantity: quantity,
+                onChanged: onQuantityChanged,
+              ),
+              const SizedBox(height: 8),
+              ElevatedButton.icon(
+                onPressed: isAddingToCart ? null : onAddToCart,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isAddingToCart
+                      ? ZayColors.primary.withAlpha(80)
+                      : ZayColors.primary,
+                  fixedSize: const Size(190, 48),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                icon: isAddingToCart
+                    ? const SizedBox(
+                        width: 18,
+                        height: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: ZayColors.white,
+                        ),
+                      )
+                    : const Icon(
+                        Icons.shopping_bag_outlined,
+                        color: ZayColors.white,
+                        size: 20,
+                      ),
+                label: Text(
+                  isAddingToCart ? 'Adding...' : 'Add to Cart',
+                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                    color: isAddingToCart
+                        ? ZayColors.textSecondary
+                        : ZayColors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _QuantitySelector extends StatelessWidget {
+  const _QuantitySelector({
+    required this.quantity,
+    required this.onChanged,
+  });
+
+  final int quantity;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: ZayColors.cancel,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _QuantityButton(
+            icon: Icons.remove,
+            onTap: quantity > 1 ? () => onChanged(quantity - 1) : null,
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Text(
+              '$quantity',
+              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                color: ZayColors.textPrimary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+          _QuantityButton(
+            icon: Icons.add,
+            onTap: () => onChanged(quantity + 1),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  const _QuantityButton({
+    required this.icon,
+    this.onTap,
+  });
+
+  final IconData icon;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(6),
+        child: Icon(
+          icon,
+          size: 18,
+          color: onTap == null ? ZayColors.textSecondary : ZayColors.primary,
+        ),
       ),
     );
   }

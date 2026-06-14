@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Filter UI Foundation
+- Current Feature: Basic Cart Integration
 - Status: In Progress
 
 ## Completed Work
@@ -76,11 +76,17 @@
 - Used existing catalog category state for category filter choices when available.
 - Added Reset and Apply Filter actions without connecting final filtering logic or fake product results.
 - Attempted `flutter analyze` after FilterScreen UI foundation, but the local Dart VM crashed before analysis could run.
+- Enabled ProductDetails add-to-cart through the Riverpod CartController using Product domain entity data.
+- Added a ProductDetails quantity selector and loading SnackBar feedback for add-to-cart actions.
+- Kept the temporary DummyJSON cart user id isolated in the cart controller layer.
+- Connected CartScreen to CartController and loaded the temporary DummyJSON user cart.
+- Rendered Cart and CartItem domain entities in CartScreen with loading, error, empty, retry, refresh, quantity update, remove, and summary states.
+- Attempted `flutter analyze` after basic cart integration, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Connect filter selections to Search/Catalog state after defining the final filter behavior.
+- Build the checkout screen foundation from the cart route without connecting payment/order submission yet.
 
 ## Suggested Commit Message
 
-feat: add filter screen ui
+feat: connect basic cart flow
