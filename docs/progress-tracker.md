@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Orders UI Implementation
-- Current Feature: Orders Experience
+- Current Phase: Checkout UI Implementation
+- Current Feature: Payment Result Screens
 - Status: In Progress
 
 ## Completed Work
@@ -181,10 +181,17 @@
 - Kept payment/order submission untouched and kept DummyJSON cart-to-order adaptation isolated in the existing data layer.
 - Attempted `dart format` after the Orders work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after the Orders work, but the local Dart VM crashed before analysis could run.
+- Replaced the Payment Success placeholder with a real PaymentSuccessScreen.
+- Replaced the Payment Failed placeholder with a real PaymentFailedScreen.
+- Added shared payment result layout with success/error visual, confirmation/failure copy, temporary reference label, and primary/secondary actions.
+- Preserved navigation from success to My Orders, failure retry to Checkout, and continue shopping to Home.
+- Kept order creation and payment processing untouched; reference labels remain temporary UI placeholders until checkout creates real orders.
+- Attempted `dart format` after Payment Result screen work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after Payment Result screen work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Redesign Address and Payment Method management screens using docs/new Address, Change Payment Method, and Add New Card references.
+- Continue project completion with Notifications and Messaging screens using docs/new references.
 
 ## Known Risks
 
@@ -207,6 +214,8 @@
 - Orders currently depend on the existing DummyJSON cart-to-order adaptation until a real orders API is available.
 - Order tracking map/courier actions are visual placeholders until live tracking/provider data exists.
 - History tab may be empty with DummyJSON-adapted orders because status data is limited.
+- Payment result reference labels are temporary until real order creation and payment transaction references are connected.
+- Payment success currently navigates to My Orders rather than a newly created order detail because checkout does not create persisted orders yet.
 
 ## Blockers
 
@@ -214,4 +223,4 @@
 
 ## Suggested Commit Message
 
-feat: build orders experience
+feat: add payment result screens

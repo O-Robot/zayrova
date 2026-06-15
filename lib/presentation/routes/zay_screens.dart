@@ -10,6 +10,7 @@ import 'package:zayrova/presentation/pages/checkout/add_payment_method_screen.da
 import 'package:zayrova/presentation/pages/checkout/address_list_screen.dart';
 import 'package:zayrova/presentation/pages/checkout/checkout_screen.dart';
 import 'package:zayrova/presentation/pages/checkout/payment_method_list_screen.dart';
+import 'package:zayrova/presentation/pages/checkout/payment_result_screen.dart';
 import 'package:zayrova/presentation/pages/home/all_products_screen.dart';
 import 'package:zayrova/presentation/pages/home/home_screen.dart';
 import 'package:zayrova/presentation/pages/home/category_screen.dart';
@@ -117,9 +118,9 @@ class ZayScreens {
       case ZayRoutes.addAddress:
         return _page(ZayRoutes.addAddress, const AddAddressScreen());
       case ZayRoutes.paymentSuccess:
-        return _placeholder(ZayRoutes.paymentSuccess, 'Payment Success');
+        return _page(ZayRoutes.paymentSuccess, const PaymentSuccessScreen());
       case ZayRoutes.paymentFailed:
-        return _placeholder(ZayRoutes.paymentFailed, 'Payment Failed');
+        return _page(ZayRoutes.paymentFailed, const PaymentFailedScreen());
       case ZayRoutes.orders:
         return _page(ZayRoutes.orders, const OrdersScreen());
       case ZayRoutes.orderHistory:
