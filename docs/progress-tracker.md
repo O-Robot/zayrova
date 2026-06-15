@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Payment Method Management Foundation
+- Current Feature: Shared UI Component Upgrades
 - Status: In Progress
 
 ## Completed Work
@@ -101,11 +101,17 @@
 - Masked card numbers in list and checkout views, and avoided storing full card numbers or CVV after save.
 - Integrated the selected payment method into CheckoutScreen while keeping real payment gateway integration deferred.
 - Attempted `flutter analyze` after payment method foundation work, but the local Dart VM crashed before analysis could run.
+- Extended ZayButton with full-width, loading, disabled, outline, danger, and compact variants while preserving existing calls.
+- Upgraded ProductCard styling and kept the existing constructor and ProductCard.fromProduct data-driven API intact.
+- Added reusable empty, loading, error, and summary card components for upcoming screen redesigns.
+- Reused shared state components in Home and Cart where safe without redesigning the full screens.
+- Replaced Cart summary totals with the reusable summary card pattern.
+- Attempted `flutter analyze` after shared UI component upgrades, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Build payment success and payment failed result screens without creating orders or submitting payments yet.
+- Start the Product Details visual redesign using the upgraded shared components.
 
 ## Suggested Commit Message
 
-feat: add payment method foundation
+feat: upgrade shared ui components

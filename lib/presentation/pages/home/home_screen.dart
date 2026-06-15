@@ -8,6 +8,9 @@ import 'package:zayrova/domain/entities/category_entity.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
 import 'package:zayrova/presentation/components/banner_carousel.dart';
 import 'package:zayrova/presentation/components/bottom_navigation.dart';
+import 'package:zayrova/presentation/components/empty_state.dart';
+import 'package:zayrova/presentation/components/error_state.dart';
+import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
@@ -520,9 +523,7 @@ class _HomeLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: ZayColors.primary),
-    );
+    return const ZayLoadingState(message: 'Loading catalog...');
   }
 }
 
@@ -537,35 +538,10 @@ class _HomeErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.wifi_off_rounded,
-              color: ZayColors.primary,
-              size: 42,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.displayLarge,
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => onRetry(),
-              child: Text(
-                'Retry',
-                style: ZayTheme.lightTheme.textTheme.displayLarge
-                    ?.copyWith(color: ZayColors.primary),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ZayErrorState(
+      title: 'Catalog unavailable',
+      message: message,
+      onRetry: () => onRetry(),
     );
   }
 }
@@ -575,11 +551,10 @@ class _HomeEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(24),
-        child: _InlineEmptyState(message: 'No catalog items found.'),
-      ),
+    return const ZayEmptyState(
+      icon: Icons.inventory_2_outlined,
+      title: 'No catalog items',
+      message: 'No catalog items found.',
     );
   }
 }

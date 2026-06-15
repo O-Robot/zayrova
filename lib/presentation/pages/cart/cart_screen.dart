@@ -4,6 +4,10 @@ import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/cart_entity.dart';
 import 'package:zayrova/domain/entities/cart_item_entity.dart';
+import 'package:zayrova/presentation/components/empty_state.dart';
+import 'package:zayrova/presentation/components/error_state.dart';
+import 'package:zayrova/presentation/components/loading_state.dart';
+import 'package:zayrova/presentation/components/summary_card.dart';
 import 'package:zayrova/presentation/components/top_navigation.dart';
 import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
@@ -379,67 +383,28 @@ class _CartSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: ZayColors.cancel,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SummaryRow(label: 'Subtotal', value: cart.total),
-          const SizedBox(height: 8),
-          _SummaryRow(label: 'Discounted Total', value: cart.discountedTotal),
-          const SizedBox(height: 8),
-          Text(
-            'Total Quantity: ${cart.totalQuantity}',
-            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-              color: ZayColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Center(
-            child: ZayButton.primary(
-              action: onCheckout,
-              text: 'Checkout',
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SummaryRow extends StatelessWidget {
-  const _SummaryRow({
-    required this.label,
-    required this.value,
-  });
-
-  final String label;
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(
-          label,
-          style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-            color: ZayColors.textSecondary,
-          ),
+    return ZaySummaryCard(
+      rows: [
+        ZaySummaryRowData(
+          label: 'Subtotal',
+          value: '\$${cart.total.toStringAsFixed(2)}',
         ),
-        Text(
-          '\$${value.toStringAsFixed(2)}',
-          style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-            color: ZayColors.textPrimary,
-            fontWeight: FontWeight.w600,
-          ),
+        ZaySummaryRowData(
+          label: 'Discounted Total',
+          value: '\$${cart.discountedTotal.toStringAsFixed(2)}',
+        ),
+        ZaySummaryRowData(
+          label: 'Total Quantity',
+          value: '${cart.totalQuantity}',
         ),
       ],
+      footer: Center(
+        child: ZayButton.primary(
+          action: onCheckout,
+          text: 'Checkout',
+          fullWidth: true,
+        ),
+      ),
     );
   }
 }
@@ -494,9 +459,7 @@ class _CartLoadingState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: ZayColors.primary),
-    );
+    return const ZayLoadingState(message: 'Loading cart...');
   }
 }
 
@@ -511,36 +474,10 @@ class _CartErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.wifi_off_rounded,
-              color: ZayColors.primary,
-              size: 42,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.displayLarge,
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => onRetry(),
-              child: Text(
-                'Retry',
-                style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                  color: ZayColors.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+    return ZayErrorState(
+      title: 'Cart unavailable',
+      message: message,
+      onRetry: () => onRetry(),
     );
   }
 }
@@ -556,22 +493,10 @@ class _CartMessageState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: ZayColors.primary, size: 42),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.displayLarge,
-            ),
-          ],
-        ),
-      ),
+    return ZayEmptyState(
+      icon: icon,
+      title: 'Cart is empty',
+      message: message,
     );
   }
 }
