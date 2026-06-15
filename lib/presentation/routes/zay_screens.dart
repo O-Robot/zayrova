@@ -19,8 +19,15 @@ import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
 import 'package:zayrova/presentation/pages/placeholder/placeholder_screen.dart';
+import 'package:zayrova/presentation/pages/profile/edit_profile_screen.dart';
+import 'package:zayrova/presentation/pages/profile/profile_screen.dart';
 import 'package:zayrova/presentation/pages/search/filter_screen.dart';
 import 'package:zayrova/presentation/pages/search/search_screen.dart';
+import 'package:zayrova/presentation/pages/settings/change_password_screen.dart';
+import 'package:zayrova/presentation/pages/settings/help_support_screen.dart';
+import 'package:zayrova/presentation/pages/settings/legal_policies_screen.dart';
+import 'package:zayrova/presentation/pages/settings/security_screen.dart';
+import 'package:zayrova/presentation/pages/settings/settings_screen.dart';
 import 'package:zayrova/presentation/pages/error/error_screen.dart';
 import 'package:zayrova/presentation/pages/auth/sign_in.dart';
 import 'package:zayrova/presentation/pages/product/product_details.dart';
@@ -123,9 +130,15 @@ class ZayScreens {
       case ZayRoutes.orderRating:
         return _placeholder(ZayRoutes.orderRating, 'Order Rating');
       case ZayRoutes.profile:
-        return _placeholder(ZayRoutes.profile, 'My Profile');
+        return _page(ZayRoutes.profile, const ProfileScreen());
       case ZayRoutes.settings:
-        return _placeholder(ZayRoutes.settings, 'Settings');
+        return _page(ZayRoutes.settings, const SettingsScreen());
+      case ZayRoutes.editProfile:
+        return _page(ZayRoutes.editProfile, const EditProfileScreen());
+      case ZayRoutes.security:
+        return _page(ZayRoutes.security, const SecurityScreen());
+      case ZayRoutes.changePassword:
+        return _page(ZayRoutes.changePassword, const ChangePasswordScreen());
       case ZayRoutes.notifications:
         return _placeholder(ZayRoutes.notifications, 'Notifications');
       case ZayRoutes.chat:
@@ -134,9 +147,9 @@ class ZayScreens {
       case ZayRoutes.messageDetail:
         return _placeholder(ZayRoutes.messageDetail, 'Message Detail');
       case ZayRoutes.helpSupport:
-        return _placeholder(ZayRoutes.helpSupport, 'Help and Support');
+        return _page(ZayRoutes.helpSupport, const HelpSupportScreen());
       case ZayRoutes.legalAndPolicies:
-        return _placeholder(ZayRoutes.legalAndPolicies, 'Legal and Policies');
+        return _page(ZayRoutes.legalAndPolicies, const LegalPoliciesScreen());
       default:
         return _page('404', const ErrorScreen(code: 404));
     }

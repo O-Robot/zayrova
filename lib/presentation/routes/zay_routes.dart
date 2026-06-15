@@ -22,6 +22,9 @@ class ZayRoutes {
   static const String orderRating = '/order-rating';
 
   static const String settings = '/settings';
+  static const String editProfile = '/edit-profile';
+  static const String security = '/security';
+  static const String changePassword = '/change-password';
   static const String notifications = '/notifications';
   static const String search = '/search';
   static const String messages = '/messages';

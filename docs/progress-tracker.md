@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Auth UI Implementation
-- Current Feature: Authentication Experience Redesign
+- Current Phase: Account UI Implementation
+- Current Feature: Profile and Settings Experience
 - Status: In Progress
 
 ## Completed Work
@@ -159,6 +159,19 @@
 - Kept onboarding unchanged and did not modify auth repositories, datasources, use cases, providers, or controllers.
 - Attempted `dart format` after the Authentication screen redesign, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after the Authentication screen redesign, but the local Dart VM crashed before analysis could run.
+- Added shared profile/settings UI components for headers, action rows, avatars, sections, and form fields.
+- Built a real ProfileScreen destination for the bottom navigation profile tab using AuthController state.
+- Added Profile loading, error, signed-out empty, and authenticated profile states without fake user data.
+- Added EditProfileScreen using existing UserProfile fields where available and a deferred save notice until profile APIs exist.
+- Added SettingsScreen with General and Preferences sections, including edit profile, change password, notifications, security, language, legal, help, and logout actions.
+- Added SecurityScreen with local-only Face ID, Remember Password, and Touch ID switches.
+- Added ChangePasswordScreen with password fields, visibility toggles, and deferred backend update notice.
+- Added HelpSupportScreen with search styling and expandable static support content.
+- Added LegalPoliciesScreen with static legal/privacy copy.
+- Added missing route constants and route mappings for edit profile, security, and change password, and replaced profile/settings/help/legal placeholders with real screens.
+- Kept onboarding unchanged and did not modify repositories, datasources, entities, models, use cases, providers, or controllers.
+- Attempted `dart format` after the Profile and Settings work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after the Profile and Settings work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
@@ -179,6 +192,9 @@
 - Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
 - Auth screens still preserve several pre-existing placeholder submit actions until full auth signup/reset/profile flows are wired.
 - Sign In still preserves the existing route-only login behavior instead of calling AuthController.
+- Profile edit save and password change are UI-only until profile/auth mutation APIs are connected.
+- Security toggles are local UI state only and do not persist yet.
+- Help and legal content is static until CMS/support/legal content sources are added.
 
 ## Blockers
 
@@ -186,4 +202,4 @@
 
 ## Suggested Commit Message
 
-feat: redesign authentication screens
+feat: build profile and settings screens
