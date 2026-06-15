@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Catalog UI Implementation
-- Current Feature: Search and Search Results Design
+- Current Feature: Product Details Design
 - Status: In Progress
 
 ## Completed Work
@@ -132,10 +132,16 @@
 - Avoided fake last-search and popular-search content because no stored/local-backed search history exists yet.
 - Preserved Product Details navigation through productId.
 - Attempted `flutter analyze` after the Search screen design work, but the local Dart VM crashed before analysis could run.
+- Redesigned ProductDetails using docs/new Detail and Detail v2 as the primary references.
+- Preserved productId loading, CatalogController product detail state, thumbnail selection, variant selection, quantity selection, cart navigation, and add-to-cart behavior.
+- Rebuilt the gallery hero, rounded details sheet, rating row, description, brand/category/stock metadata, variant sections, quantity area, and bottom price/add-to-cart action.
+- Used real Product entity data only and hid unsupported variant sections when product data is unavailable.
+- Replaced ProductDetails loading/error/invalid states with reusable state components.
+- Attempted `flutter analyze` after Product Details design work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Align Wishlist with the shared catalog listing pattern.
+- Align Cart screen visuals with docs/new cart references.
 
 ## Known Risks
 
@@ -143,6 +149,7 @@
 - The all-products screen currently requests up to 100 products through the existing catalog controller.
 - Category sorting is local UI sorting over the loaded category product list.
 - Search result sorting is local UI sorting over the loaded search results.
+- Product color circles only render for parseable color names/hex values; unparseable color values render as text chips.
 
 ## Blockers
 
@@ -150,4 +157,4 @@
 
 ## Suggested Commit Message
 
-feat: redesign search results screen
+feat: redesign product details screen

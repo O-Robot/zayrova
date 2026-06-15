@@ -3,9 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
+import 'package:zayrova/presentation/components/empty_state.dart';
+import 'package:zayrova/presentation/components/error_state.dart';
+import 'package:zayrova/presentation/components/loading_state.dart';
+import 'package:zayrova/presentation/components/zay_network_image.dart';
 import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
+import 'package:zayrova/presentation/routes/zay_routes.dart';
 
 class ProductDetails extends ConsumerStatefulWidget {
   const ProductDetails({super.key, this.productId});
@@ -112,7 +117,8 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
 
     if (shouldShowError) {
       return _ProductDetailsStateScaffold(
-        child: _ProductDetailsErrorState(
+        child: ErrorStateWidget(
+          title: 'Product unavailable',
           message: catalogState.errorMessage ?? 'Unable to load product.',
           onRetry: _loadProduct,
         ),
@@ -121,7 +127,7 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
 
     if (shouldShowLoading || product == null) {
       return const _ProductDetailsStateScaffold(
-        child: _ProductDetailsLoadingState(),
+        child: LoadingStateWidget(message: 'Loading product...'),
       );
     }
 
@@ -182,89 +188,41 @@ class _ProductDetailsContent extends StatelessWidget {
     final activeImage = images.isNotEmpty ? images[activeImageIndex] : null;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7F7),
-      bottomNavigationBar: _AddToCart(
+      backgroundColor: const Color(0xFFF4F4F4),
+      bottomNavigationBar: _BottomActionBar(
         product: product,
         quantity: quantity,
         isAddingToCart: isAddingToCart,
-        onQuantityChanged: onQuantityChanged,
         onAddToCart: onAddToCart,
       ),
       body: Stack(
         children: [
-          SizedBox(
-            width: MediaQuery.of(context).size.width,
-            height: MediaQuery.of(context).size.height,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                _MainProductImage(imageUrl: activeImage),
-              ],
-            ),
-          ),
-          const _ProductTopBar(),
-          Positioned(
-            top: 350,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-              decoration: const BoxDecoration(
-                color: ZayColors.white,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 10,
-                    offset: Offset(0, -4),
-                  ),
-                ],
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (images.isNotEmpty)
-                      _ProductThumbnailList(
-                        images: images,
-                        selectedImageIndex: activeImageIndex,
-                        onImageSelected: onImageSelected,
-                      ),
-                    const SizedBox(height: 16),
-                    _ProductTitleAndRating(product: product),
-                    const SizedBox(height: 8),
-                    _ProductMeta(product: product),
-                    const SizedBox(height: 12),
-                    _ProductDescription(
-                      description: product.description,
-                      isExpanded: isExpanded,
-                      onToggleExpanded: onToggleExpanded,
-                    ),
-                    if (product.availableSizes.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      _OptionChips(
-                        title: 'Variation',
-                        options: product.availableSizes,
-                        selectedIndex: selectedSizeIndex,
-                        onSelected: onSizeSelected,
-                      ),
-                    ],
-                    if (product.availableColors.isNotEmpty) ...[
-                      const SizedBox(height: 16),
-                      _OptionChips(
-                        title: 'Select Colour',
-                        options: product.availableColors,
-                        selectedIndex: selectedColorIndex,
-                        onSelected: onColorSelected,
-                      ),
-                    ],
-                    const SizedBox(height: 24),
-                  ],
+          CustomScrollView(
+            slivers: [
+              SliverToBoxAdapter(
+                child: _ProductHero(
+                  imageUrl: activeImage,
+                  images: images,
+                  selectedImageIndex: activeImageIndex,
+                  onImageSelected: onImageSelected,
                 ),
               ),
-            ),
+              SliverToBoxAdapter(
+                child: _ProductInfoSheet(
+                  product: product,
+                  quantity: quantity,
+                  isExpanded: isExpanded,
+                  selectedSizeIndex: selectedSizeIndex,
+                  selectedColorIndex: selectedColorIndex,
+                  onToggleExpanded: onToggleExpanded,
+                  onSizeSelected: onSizeSelected,
+                  onColorSelected: onColorSelected,
+                  onQuantityChanged: onQuantityChanged,
+                ),
+              ),
+            ],
           ),
+          const _ProductTopBar(),
         ],
       ),
     );
@@ -288,37 +246,45 @@ class _ProductDetailsContent extends StatelessWidget {
   }
 }
 
-class _MainProductImage extends StatelessWidget {
-  const _MainProductImage({this.imageUrl});
+class _ProductHero extends StatelessWidget {
+  const _ProductHero({
+    required this.imageUrl,
+    required this.images,
+    required this.selectedImageIndex,
+    required this.onImageSelected,
+  });
 
   final String? imageUrl;
+  final List<String> images;
+  final int selectedImageIndex;
+  final ValueChanged<int> onImageSelected;
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = this.imageUrl;
-
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return const SizedBox(
-        height: 400,
-        child: Center(child: Icon(Icons.broken_image)),
-      );
-    }
-
-    return Image.network(
-      imageUrl,
-      fit: BoxFit.cover,
-      height: 400,
-      width: double.infinity,
-      errorBuilder: (_, __, ___) {
-        return const Center(child: Icon(Icons.broken_image));
-      },
-      loadingBuilder: (context, child, progress) {
-        return progress == null
-            ? child
-            : const Center(
-                child: CircularProgressIndicator(color: ZayColors.primary),
-              );
-      },
+    return SizedBox(
+      height: 520,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: ZayNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              placeholderIcon: Icons.shopping_bag_outlined,
+            ),
+          ),
+          if (images.length > 1)
+            Positioned(
+              left: 24,
+              right: 24,
+              bottom: 36,
+              child: _ProductThumbnailList(
+                images: images,
+                selectedImageIndex: selectedImageIndex,
+                onImageSelected: onImageSelected,
+              ),
+            ),
+        ],
+      ),
     );
   }
 }
@@ -330,39 +296,49 @@ class _ProductTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        padding: const EdgeInsets.fromLTRB(24, 18, 24, 0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             GestureDetector(
               onTap: () => ZayRouter.goBack(),
-              child: Container(
-                padding: const EdgeInsets.all(12),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: ZayColors.white,
-                ),
-                child: const Icon(
-                  Icons.chevron_left,
-                  color: ZayColors.primary,
+              behavior: HitTestBehavior.opaque,
+              child: const SizedBox(
+                width: 42,
+                height: 42,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Icon(
+                    Icons.chevron_left,
+                    color: ZayColors.textPrimary,
+                    size: 36,
+                  ),
                 ),
               ),
             ),
-            Text(
-              'Product Details',
-              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                color: ZayColors.white,
+            Expanded(
+              child: Text(
+                'Detail Product',
+                textAlign: TextAlign.center,
+                style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+                  color: ZayColors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
               ),
             ),
-            Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: ZayColors.white,
-              ),
-              child: const Icon(
-                Icons.favorite_border,
-                color: ZayColors.secondary,
+            GestureDetector(
+              onTap: () => ZayRouter.goto(ZayRoutes.cart),
+              behavior: HitTestBehavior.opaque,
+              child: const SizedBox(
+                width: 42,
+                height: 42,
+                child: Align(
+                  alignment: Alignment.centerRight,
+                  child: Icon(
+                    Icons.shopping_bag_outlined,
+                    color: ZayColors.textPrimary,
+                    size: 28,
+                  ),
+                ),
               ),
             ),
           ],
@@ -372,60 +348,86 @@ class _ProductTopBar extends StatelessWidget {
   }
 }
 
-class _ProductThumbnailList extends StatelessWidget {
-  const _ProductThumbnailList({
-    required this.images,
-    required this.selectedImageIndex,
-    required this.onImageSelected,
+class _ProductInfoSheet extends StatelessWidget {
+  const _ProductInfoSheet({
+    required this.product,
+    required this.quantity,
+    required this.isExpanded,
+    required this.selectedSizeIndex,
+    required this.selectedColorIndex,
+    required this.onToggleExpanded,
+    required this.onSizeSelected,
+    required this.onColorSelected,
+    required this.onQuantityChanged,
   });
 
-  final List<String> images;
-  final int selectedImageIndex;
-  final ValueChanged<int> onImageSelected;
+  final Product product;
+  final int quantity;
+  final bool isExpanded;
+  final int selectedSizeIndex;
+  final int selectedColorIndex;
+  final VoidCallback onToggleExpanded;
+  final ValueChanged<int> onSizeSelected;
+  final ValueChanged<int> onColorSelected;
+  final ValueChanged<int> onQuantityChanged;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 60,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: images.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () => onImageSelected(index),
-            child: Container(
-              padding: const EdgeInsets.all(4),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: selectedImageIndex == index
-                      ? ZayColors.secondary
-                      : ZayColors.inputBorder,
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(6),
-                child: Image.network(
-                  images[index],
-                  width: 50,
-                  height: 50,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) {
-                    return const Icon(Icons.broken_image, size: 24);
-                  },
-                ),
-              ),
+    return Transform.translate(
+      offset: const Offset(0, -34),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.fromLTRB(24, 30, 24, 120),
+        decoration: const BoxDecoration(
+          color: ZayColors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(36)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _ProductTitleRow(product: product),
+            const SizedBox(height: 14),
+            _RatingRow(product: product),
+            const SizedBox(height: 24),
+            _ProductDescription(
+              description: product.description,
+              isExpanded: isExpanded,
+              onToggleExpanded: onToggleExpanded,
             ),
-          );
-        },
+            _StoreMeta(product: product),
+            const SizedBox(height: 24),
+            const Divider(height: 1, color: ZayColors.cancel),
+            const SizedBox(height: 24),
+            if (product.availableColors.isNotEmpty) ...[
+              _ColorSelector(
+                colors: product.availableColors,
+                selectedIndex: selectedColorIndex,
+                onSelected: onColorSelected,
+              ),
+              const SizedBox(height: 24),
+            ],
+            if (product.availableSizes.isNotEmpty) ...[
+              _SizeSelector(
+                sizes: product.availableSizes,
+                selectedIndex: selectedSizeIndex,
+                onSelected: onSizeSelected,
+              ),
+              const SizedBox(height: 24),
+            ],
+            _QuantitySection(
+              product: product,
+              quantity: quantity,
+              onChanged: onQuantityChanged,
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-class _ProductTitleAndRating extends StatelessWidget {
-  const _ProductTitleAndRating({required this.product});
+class _ProductTitleRow extends StatelessWidget {
+  const _ProductTitleRow({required this.product});
 
   final Product product;
 
@@ -437,52 +439,58 @@ class _ProductTitleAndRating extends StatelessWidget {
         Expanded(
           child: Text(
             product.title,
-            style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+            style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
               color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w900,
+              height: 1.18,
             ),
           ),
         ),
-        const SizedBox(width: 12),
-        Row(
-          children: [
-            const Icon(Icons.star, color: ZayColors.secondary, size: 20),
-            const SizedBox(width: 4),
-            Text((product.rating ?? 0).toStringAsFixed(1)),
-          ],
+        const SizedBox(width: 16),
+        Container(
+          width: 58,
+          height: 58,
+          decoration: const BoxDecoration(
+            color: ZayColors.cancel,
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.favorite_border,
+            color: ZayColors.textPrimary,
+            size: 30,
+          ),
         ),
       ],
     );
   }
 }
 
-class _ProductMeta extends StatelessWidget {
-  const _ProductMeta({required this.product});
+class _RatingRow extends StatelessWidget {
+  const _RatingRow({required this.product});
 
   final Product product;
 
   @override
   Widget build(BuildContext context) {
-    final meta = <String>[
-      if (product.brand != null && product.brand!.isNotEmpty) product.brand!,
-      if (product.categoryName != null && product.categoryName!.isNotEmpty)
-        product.categoryName!,
-      if (product.stockQuantity != null) '${product.stockQuantity} in stock',
-    ];
+    final rating = product.rating;
+    final reviewCount = product.reviewCount;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Row(
       children: [
+        const Icon(Icons.star, color: ZayColors.secondary, size: 20),
+        const SizedBox(width: 8),
         Text(
-          '\$${product.price.toStringAsFixed(2)}',
-          style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-            color: ZayColors.primary,
+          rating == null ? 'No rating' : rating.toStringAsFixed(1),
+          style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+            color: ZayColors.textPrimary,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        if (meta.isNotEmpty) ...[
-          const SizedBox(height: 6),
+        if (reviewCount != null) ...[
+          const SizedBox(width: 4),
           Text(
-            meta.join(' • '),
-            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+            '($reviewCount Review)',
+            style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
               color: ZayColors.textSecondary,
             ),
           ),
@@ -511,53 +519,144 @@ class _ProductDescription extends StatelessWidget {
       return const SizedBox.shrink();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Product Details',
-          style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-            color: ZayColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 4),
-        AnimatedCrossFade(
-          crossFadeState:
-              isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          duration: const Duration(milliseconds: 200),
-          firstChild: Text(
-            description,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          secondChild: Text(description),
-        ),
-        GestureDetector(
-          onTap: onToggleExpanded,
-          child: Text(
-            isExpanded ? 'Read less' : 'Read more',
-            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-              color: ZayColors.primary,
-              fontWeight: FontWeight.w600,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Description',
+            style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+              color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w900,
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 14),
+          AnimatedCrossFade(
+            crossFadeState: isExpanded
+                ? CrossFadeState.showSecond
+                : CrossFadeState.showFirst,
+            duration: const Duration(milliseconds: 200),
+            firstChild: Text(
+              description,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                color: ZayColors.textSecondary,
+                height: 1.65,
+              ),
+            ),
+            secondChild: Text(
+              description,
+              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                color: ZayColors.textSecondary,
+                height: 1.65,
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: onToggleExpanded,
+            child: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Text(
+                isExpanded ? 'Read Less' : 'Read More',
+                style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                  color: ZayColors.primary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-class _OptionChips extends StatelessWidget {
-  const _OptionChips({
-    required this.title,
-    required this.options,
+class _StoreMeta extends StatelessWidget {
+  const _StoreMeta({required this.product});
+
+  final Product product;
+
+  @override
+  Widget build(BuildContext context) {
+    final title = product.brand?.isNotEmpty == true
+        ? product.brand!
+        : product.categoryName ?? '';
+    final category = product.categoryName;
+
+    if (title.isEmpty && category == null && product.stockQuantity == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24),
+      child: Row(
+        children: [
+          Container(
+            width: 42,
+            height: 42,
+            decoration: BoxDecoration(
+              color: ZayColors.cancel,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.storefront_outlined,
+              color: ZayColors.primary,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (title.isNotEmpty)
+                  Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                      color: ZayColors.textPrimary,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                const SizedBox(height: 4),
+                Text(
+                  _metaText(product),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                    color: ZayColors.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _metaText(Product product) {
+    final meta = <String>[
+      if (product.categoryName != null && product.categoryName!.isNotEmpty)
+        product.categoryName!,
+      if (product.stockQuantity != null) '${product.stockQuantity} in stock',
+    ];
+
+    return meta.isEmpty ? 'Product details' : meta.join('  ');
+  }
+}
+
+class _ColorSelector extends StatelessWidget {
+  const _ColorSelector({
+    required this.colors,
     required this.selectedIndex,
     required this.onSelected,
   });
 
-  final String title;
-  final List<String> options;
+  final List<String> colors;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
@@ -567,40 +666,416 @@ class _OptionChips extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          title,
-          style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+          'Color',
+          style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
             color: ZayColors.textPrimary,
+            fontWeight: FontWeight.w800,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 14),
         Wrap(
-          spacing: 8,
-          runSpacing: 8,
-          children: List.generate(options.length, (index) {
+          spacing: 18,
+          runSpacing: 12,
+          children: List.generate(colors.length, (index) {
+            final color = _parseColor(colors[index]);
             final isSelected = index == selectedIndex;
+
+            if (color == null) {
+              return _TextOptionChip(
+                label: colors[index],
+                isSelected: isSelected,
+                onTap: () => onSelected(index),
+              );
+            }
 
             return GestureDetector(
               onTap: () => onSelected(index),
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8,
-                  horizontal: 16,
-                ),
+                width: 52,
+                height: 52,
                 decoration: BoxDecoration(
-                  color: isSelected ? ZayColors.primary : ZayColors.cancel,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Text(
-                  options[index],
-                  style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                    color: isSelected ? ZayColors.white : ZayColors.textPrimary,
+                  color: color,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: isSelected ? ZayColors.primary : ZayColors.cancel,
+                    width: isSelected ? 3 : 1,
                   ),
                 ),
+                child: isSelected
+                    ? const Icon(Icons.check, color: ZayColors.white, size: 26)
+                    : null,
               ),
             );
           }),
         ),
       ],
+    );
+  }
+}
+
+class _SizeSelector extends StatelessWidget {
+  const _SizeSelector({
+    required this.sizes,
+    required this.selectedIndex,
+    required this.onSelected,
+  });
+
+  final List<String> sizes;
+  final int selectedIndex;
+  final ValueChanged<int> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Size',
+          style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+            color: ZayColors.textPrimary,
+            fontWeight: FontWeight.w800,
+          ),
+        ),
+        const SizedBox(height: 14),
+        Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: List.generate(sizes.length, (index) {
+            return _TextOptionChip(
+              label: sizes[index],
+              isSelected: index == selectedIndex,
+              onTap: () => onSelected(index),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+}
+
+class _TextOptionChip extends StatelessWidget {
+  const _TextOptionChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+        decoration: BoxDecoration(
+          color: isSelected ? ZayColors.primary : ZayColors.white,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? ZayColors.primary : ZayColors.inputBorder,
+          ),
+        ),
+        child: Text(
+          label,
+          style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+            color: isSelected ? ZayColors.white : ZayColors.textPrimary,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _QuantitySection extends StatelessWidget {
+  const _QuantitySection({
+    required this.product,
+    required this.quantity,
+    required this.onChanged,
+  });
+
+  final Product product;
+  final int quantity;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final stockQuantity = product.stockQuantity;
+
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Choose amount :',
+                style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+                  color: ZayColors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              if (stockQuantity != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  stockQuantity > 0 ? 'Available in stock' : 'Out of stock',
+                  style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                    color: ZayColors.textSecondary,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        _QuantitySelector(
+          quantity: quantity,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+}
+
+class _ProductThumbnailList extends StatelessWidget {
+  const _ProductThumbnailList({
+    required this.images,
+    required this.selectedImageIndex,
+    required this.onImageSelected,
+  });
+
+  final List<String> images;
+  final int selectedImageIndex;
+  final ValueChanged<int> onImageSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 72,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: images.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 10),
+        itemBuilder: (context, index) {
+          final isSelected = selectedImageIndex == index;
+
+          return GestureDetector(
+            onTap: () => onImageSelected(index),
+            child: Container(
+              width: 72,
+              height: 72,
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: ZayColors.white,
+                border: Border.all(
+                  color: isSelected ? ZayColors.primary : ZayColors.white,
+                  width: isSelected ? 2 : 1,
+                ),
+                borderRadius: BorderRadius.circular(18),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withAlpha(20),
+                    blurRadius: 12,
+                    offset: const Offset(0, 6),
+                  ),
+                ],
+              ),
+              child: ZayNetworkImage(
+                imageUrl: images[index],
+                borderRadius: BorderRadius.circular(14),
+                placeholderIcon: Icons.shopping_bag_outlined,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _BottomActionBar extends StatelessWidget {
+  const _BottomActionBar({
+    required this.product,
+    required this.quantity,
+    required this.isAddingToCart,
+    required this.onAddToCart,
+  });
+
+  final Product product;
+  final int quantity;
+  final bool isAddingToCart;
+  final VoidCallback onAddToCart;
+
+  @override
+  Widget build(BuildContext context) {
+    final total = product.price * quantity;
+
+    return SafeArea(
+      top: false,
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(24, 14, 24, 18),
+        decoration: BoxDecoration(
+          color: ZayColors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withAlpha(18),
+              blurRadius: 18,
+              offset: const Offset(0, -8),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Price',
+                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                      color: ZayColors.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '${_currencySymbol(product.currencyCode)}${total.toStringAsFixed(2)}',
+                    style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
+                      color: ZayColors.textPrimary,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 18),
+            Flexible(
+              child: SizedBox(
+                height: 58,
+                child: ElevatedButton.icon(
+                  onPressed: isAddingToCart ? null : onAddToCart,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: isAddingToCart
+                        ? ZayColors.primary.withAlpha(80)
+                        : ZayColors.primary,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(28),
+                    ),
+                    elevation: 0,
+                  ),
+                  icon: isAddingToCart
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: ZayColors.white,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.shopping_bag_outlined,
+                          color: ZayColors.white,
+                          size: 24,
+                        ),
+                  label: Text(
+                    isAddingToCart ? 'Adding...' : 'Add to Cart',
+                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                      color: ZayColors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _QuantitySelector extends StatelessWidget {
+  const _QuantitySelector({
+    required this.quantity,
+    required this.onChanged,
+  });
+
+  final int quantity;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 48,
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      decoration: BoxDecoration(
+        color: ZayColors.cancel,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _QuantityButton(
+            icon: Icons.remove,
+            onTap: quantity > 1 ? () => onChanged(quantity - 1) : null,
+          ),
+          SizedBox(
+            width: 38,
+            child: Text(
+              '$quantity',
+              textAlign: TextAlign.center,
+              style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+                color: ZayColors.textPrimary,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          _QuantityButton(
+            icon: Icons.add,
+            onTap: () => onChanged(quantity + 1),
+            isPrimary: true,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _QuantityButton extends StatelessWidget {
+  const _QuantityButton({
+    required this.icon,
+    this.onTap,
+    this.isPrimary = false,
+  });
+
+  final IconData icon;
+  final VoidCallback? onTap;
+  final bool isPrimary;
+
+  @override
+  Widget build(BuildContext context) {
+    final enabled = onTap != null;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: 38,
+        height: 38,
+        decoration: BoxDecoration(
+          color: isPrimary && enabled ? ZayColors.primary : ZayColors.white,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          icon,
+          size: 20,
+          color: !enabled
+              ? ZayColors.textSecondary
+              : isPrimary
+                  ? ZayColors.white
+                  : ZayColors.textPrimary,
+        ),
+      ),
     );
   }
 }
@@ -618,7 +1093,7 @@ class _ProductDetailsStateScaffold extends StatelessWidget {
         child: Column(
           children: [
             const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+              padding: EdgeInsets.fromLTRB(24, 18, 24, 0),
               child: _PlainTopBar(),
             ),
             Expanded(child: child),
@@ -638,86 +1113,33 @@ class _PlainTopBar extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () => ZayRouter.goBack(),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: ZayColors.textSecondary),
-            ),
-            child: const Icon(
-              Icons.chevron_left,
-              color: ZayColors.textSecondary,
+          behavior: HitTestBehavior.opaque,
+          child: const SizedBox(
+            width: 42,
+            height: 42,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Icon(
+                Icons.chevron_left,
+                color: ZayColors.textPrimary,
+                size: 36,
+              ),
             ),
           ),
         ),
         Expanded(
           child: Center(
             child: Text(
-              'Product Details',
-              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+              'Detail Product',
+              style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
                 color: ZayColors.textPrimary,
+                fontWeight: FontWeight.w800,
               ),
             ),
           ),
         ),
-        const SizedBox(width: 48),
+        const SizedBox(width: 42),
       ],
-    );
-  }
-}
-
-class _ProductDetailsLoadingState extends StatelessWidget {
-  const _ProductDetailsLoadingState();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: ZayColors.primary),
-    );
-  }
-}
-
-class _ProductDetailsErrorState extends StatelessWidget {
-  const _ProductDetailsErrorState({
-    required this.message,
-    required this.onRetry,
-  });
-
-  final String message;
-  final Future<void> Function() onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.wifi_off_rounded,
-              color: ZayColors.primary,
-              size: 42,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.displayLarge,
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => onRetry(),
-              child: Text(
-                'Retry',
-                style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                  color: ZayColors.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
@@ -727,185 +1149,55 @@ class _MissingProductIdState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Text(
+    return const EmptyStateWidget(
+      icon: Icons.inventory_2_outlined,
+      title: 'Product unavailable',
+      message:
           'Product details are unavailable because the product id is missing or invalid.',
-          textAlign: TextAlign.center,
-          style: ZayTheme.lightTheme.textTheme.displayLarge,
-        ),
-      ),
     );
   }
 }
 
-class _AddToCart extends StatelessWidget {
-  const _AddToCart({
-    required this.product,
-    required this.quantity,
-    required this.isAddingToCart,
-    required this.onQuantityChanged,
-    required this.onAddToCart,
-  });
+Color? _parseColor(String value) {
+  final normalized = value.trim().toLowerCase();
+  const namedColors = {
+    'black': Colors.black,
+    'white': Colors.white,
+    'red': Colors.red,
+    'green': Colors.green,
+    'blue': Colors.blue,
+    'yellow': Colors.yellow,
+    'orange': Colors.orange,
+    'purple': Colors.purple,
+    'pink': Colors.pink,
+    'brown': Colors.brown,
+    'grey': Colors.grey,
+    'gray': Colors.grey,
+  };
 
-  final Product product;
-  final int quantity;
-  final bool isAddingToCart;
-  final ValueChanged<int> onQuantityChanged;
-  final VoidCallback onAddToCart;
-
-  @override
-  Widget build(BuildContext context) {
-    final total = product.price * quantity;
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: BoxDecoration(
-        color: ZayColors.white,
-        boxShadow: [
-          BoxShadow(color: Colors.black.withAlpha(80), blurRadius: 10),
-        ],
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Total Price',
-                style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                  color: ZayColors.textSecondary,
-                ),
-              ),
-              Text(
-                '\$${total.toStringAsFixed(2)}',
-                style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                  color: ZayColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _QuantitySelector(
-                quantity: quantity,
-                onChanged: onQuantityChanged,
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton.icon(
-                onPressed: isAddingToCart ? null : onAddToCart,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: isAddingToCart
-                      ? ZayColors.primary.withAlpha(80)
-                      : ZayColors.primary,
-                  fixedSize: const Size(190, 48),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                icon: isAddingToCart
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: ZayColors.white,
-                        ),
-                      )
-                    : const Icon(
-                        Icons.shopping_bag_outlined,
-                        color: ZayColors.white,
-                        size: 20,
-                      ),
-                label: Text(
-                  isAddingToCart ? 'Adding...' : 'Add to Cart',
-                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                    color: isAddingToCart
-                        ? ZayColors.textSecondary
-                        : ZayColors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+  if (namedColors.containsKey(normalized)) {
+    return namedColors[normalized];
   }
+
+  final hex = normalized.replaceAll('#', '');
+  if (hex.length == 6) {
+    final parsedColor = int.tryParse('ff$hex', radix: 16);
+    return parsedColor == null ? null : Color(parsedColor);
+  }
+
+  if (hex.length == 8) {
+    final parsedColor = int.tryParse(hex, radix: 16);
+    return parsedColor == null ? null : Color(parsedColor);
+  }
+
+  return null;
 }
 
-class _QuantitySelector extends StatelessWidget {
-  const _QuantitySelector({
-    required this.quantity,
-    required this.onChanged,
-  });
-
-  final int quantity;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: ZayColors.cancel,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _QuantityButton(
-            icon: Icons.remove,
-            onTap: quantity > 1 ? () => onChanged(quantity - 1) : null,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              '$quantity',
-              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                color: ZayColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          _QuantityButton(
-            icon: Icons.add,
-            onTap: () => onChanged(quantity + 1),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuantityButton extends StatelessWidget {
-  const _QuantityButton({
-    required this.icon,
-    this.onTap,
-  });
-
-  final IconData icon;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.all(6),
-        child: Icon(
-          icon,
-          size: 18,
-          color: onTap == null ? ZayColors.textSecondary : ZayColors.primary,
-        ),
-      ),
-    );
+String _currencySymbol(String currencyCode) {
+  switch (currencyCode.toUpperCase()) {
+    case 'USD':
+      return r'$';
+    default:
+      return '$currencyCode ';
   }
 }
