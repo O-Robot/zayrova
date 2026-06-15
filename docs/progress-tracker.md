@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Catalog UI Implementation
-- Current Feature: Category Product Listing Design
+- Current Feature: Search and Search Results Design
 - Status: In Progress
 
 ## Completed Work
@@ -126,16 +126,23 @@
 - Added horizontal sort chips, category summary row, responsive ProductCard grid, reusable loading/error/empty states, retry, and pull-to-refresh.
 - Kept product taps routed to Product Details with productId.
 - Attempted `flutter analyze` after the Category screen design work, but the local Dart VM crashed before analysis could run.
+- Migrated SearchScreen to the docs/new search and search-results visual direction.
+- Kept the existing submit-based CatalogController.searchProducts flow.
+- Added focused search input styling, back navigation, result filter action, sort chips, result summary row, compact ProductCard grid, and reusable loading/error/empty states.
+- Avoided fake last-search and popular-search content because no stored/local-backed search history exists yet.
+- Preserved Product Details navigation through productId.
+- Attempted `flutter analyze` after the Search screen design work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Align Search Results and Wishlist with the shared catalog listing pattern.
+- Align Wishlist with the shared catalog listing pattern.
 
 ## Known Risks
 
 - Product sorting is local UI sorting over currently loaded catalog results; backend pagination and server-side sorting are not connected yet.
 - The all-products screen currently requests up to 100 products through the existing catalog controller.
 - Category sorting is local UI sorting over the loaded category product list.
+- Search result sorting is local UI sorting over the loaded search results.
 
 ## Blockers
 
@@ -143,4 +150,4 @@
 
 ## Suggested Commit Message
 
-feat: redesign category product listing
+feat: redesign search results screen

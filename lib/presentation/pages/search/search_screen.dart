@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
+import 'package:zayrova/presentation/components/empty_state.dart';
+import 'package:zayrova/presentation/components/error_state.dart';
+import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
-import 'package:zayrova/presentation/components/top_navigation.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
@@ -18,13 +22,26 @@ class SearchScreen extends ConsumerStatefulWidget {
 
 class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode _searchFocusNode = FocusNode();
   String _submittedQuery = '';
+  _SearchSortOption _selectedSort = _SearchSortOption.all;
 
   bool get _hasSearched => _submittedQuery.isNotEmpty;
 
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _searchFocusNode.requestFocus();
+      }
+    });
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    _searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -35,13 +52,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       return;
     }
 
-    setState(() => _submittedQuery = query);
+    setState(() {
+      _submittedQuery = query;
+      _selectedSort = _SearchSortOption.all;
+    });
     await ref.read(catalogControllerProvider.notifier).searchProducts(query);
   }
 
   @override
   Widget build(BuildContext context) {
     final catalogState = ref.watch(catalogControllerProvider);
+    final results = _sortedProducts(
+      catalogState.searchResults,
+      _selectedSort,
+    );
 
     return Scaffold(
       appBar: null,
@@ -50,26 +74,21 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16),
-              child: TopNavigation(text: 'Search'),
+            _SearchHeader(
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              hasSearched: _hasSearched,
+              onSubmitted: _submitSearch,
+              onFilterTap: () => ZayRouter.goto(ZayRoutes.filter),
             ),
-            const SizedBox(height: 16),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _SearchInput(
-                controller: _searchController,
-                onSubmitted: _submitSearch,
-                onFilterTap: () => ZayRouter.goto(ZayRoutes.filter),
-              ),
-            ),
-            const SizedBox(height: 16),
             Expanded(
               child: _SearchBody(
                 state: catalogState,
                 query: _submittedQuery,
                 hasSearched: _hasSearched,
+                products: results,
+                selectedSort: _selectedSort,
+                onSortChanged: (sort) => setState(() => _selectedSort = sort),
                 onRetry: _submitSearch,
               ),
             ),
@@ -80,65 +99,135 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 }
 
-class _SearchInput extends StatelessWidget {
-  const _SearchInput({
+class _SearchHeader extends StatelessWidget {
+  const _SearchHeader({
     required this.controller,
+    required this.focusNode,
+    required this.hasSearched,
     required this.onSubmitted,
     required this.onFilterTap,
   });
 
   final TextEditingController controller;
+  final FocusNode focusNode;
+  final bool hasSearched;
   final ValueChanged<String> onSubmitted;
   final VoidCallback onFilterTap;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 48,
-            decoration: BoxDecoration(
-              color: ZayColors.white,
-              border: Border.all(color: ZayColors.inputBorder),
-              borderRadius: BorderRadius.circular(8),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+      child: Row(
+        children: [
+          GestureDetector(
+            onTap: () => ZayRouter.goBack(),
+            behavior: HitTestBehavior.opaque,
+            child: const SizedBox(
+              width: 42,
+              height: 56,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Icon(
+                  Icons.chevron_left,
+                  color: ZayColors.textPrimary,
+                  size: 36,
+                ),
+              ),
             ),
-            child: TextField(
+          ),
+          Expanded(
+            child: _SearchField(
               controller: controller,
-              textInputAction: TextInputAction.search,
+              focusNode: focusNode,
+              showFilter: hasSearched,
               onSubmitted: onSubmitted,
-              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                color: ZayColors.textPrimary,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Search products',
-                hintStyle: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                  color: ZayColors.textSecondary,
-                ),
-                prefixIcon: const Icon(
-                  Icons.search,
-                  color: ZayColors.textSecondary,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 13),
-              ),
+              onFilterTap: onFilterTap,
             ),
           ),
-        ),
-        const SizedBox(width: 8),
-        GestureDetector(
-          onTap: onFilterTap,
-          child: Container(
-            height: 48,
-            width: 48,
-            decoration: BoxDecoration(
-              color: ZayColors.primary,
-              borderRadius: BorderRadius.circular(50),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchField extends StatelessWidget {
+  const _SearchField({
+    required this.controller,
+    required this.focusNode,
+    required this.showFilter,
+    required this.onSubmitted,
+    required this.onFilterTap,
+  });
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final bool showFilter;
+  final ValueChanged<String> onSubmitted;
+  final VoidCallback onFilterTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: focusNode,
+      builder: (context, _) {
+        final isFocused = focusNode.hasFocus;
+
+        return Container(
+          height: 56,
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          decoration: BoxDecoration(
+            color: ZayColors.white,
+            border: Border.all(
+              color: isFocused ? ZayColors.primary : ZayColors.inputBorder,
+              width: isFocused ? 1.6 : 1,
             ),
-            child: const Icon(Icons.tune, color: ZayColors.white),
+            borderRadius: BorderRadius.circular(18),
           ),
-        ),
-      ],
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                ZayIcons.searchIcon,
+                width: 28,
+                height: 28,
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: onSubmitted,
+                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                    color: ZayColors.textPrimary,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  decoration: InputDecoration(
+                    hintText: '',
+                    border: InputBorder.none,
+                    isCollapsed: true,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 2),
+                    hintStyle: ZayTheme.lightTheme.textTheme.displayLarge
+                        ?.copyWith(color: ZayColors.textSecondary),
+                  ),
+                ),
+              ),
+              if (showFilter)
+                GestureDetector(
+                  onTap: onFilterTap,
+                  child: const Padding(
+                    padding: EdgeInsets.only(left: 12),
+                    child: Icon(
+                      Icons.tune,
+                      color: ZayColors.textPrimary,
+                      size: 28,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
@@ -148,38 +237,45 @@ class _SearchBody extends StatelessWidget {
     required this.state,
     required this.query,
     required this.hasSearched,
+    required this.products,
+    required this.selectedSort,
+    required this.onSortChanged,
     required this.onRetry,
   });
 
   final CatalogState state;
   final String query;
   final bool hasSearched;
+  final List<Product> products;
+  final _SearchSortOption selectedSort;
+  final ValueChanged<_SearchSortOption> onSortChanged;
   final Future<void> Function([String? value]) onRetry;
 
   @override
   Widget build(BuildContext context) {
     if (!hasSearched) {
-      return const _SearchMessageState(
-        icon: Icons.search,
-        message: 'Search for products by name, brand, or category.',
-      );
+      return const _SearchLandingState();
     }
 
     if (state.isLoading && !state.hasLoadedSearchResults) {
-      return const _SearchLoadingState();
+      return const LoadingStateWidget(message: 'Searching products...');
     }
 
     if (state.hasError && !state.hasLoadedSearchResults) {
-      return _SearchErrorState(
+      return ErrorStateWidget(
+        title: 'Search unavailable',
         message: state.errorMessage ?? 'Unable to search products.',
-        onRetry: onRetry,
+        onRetry: () => onRetry(),
       );
     }
 
-    if (state.isSearchEmpty) {
-      return _SearchMessageState(
-        icon: Icons.inventory_2_outlined,
+    if (state.isSearchEmpty || products.isEmpty) {
+      return EmptyStateWidget(
+        icon: Icons.search_off_rounded,
+        title: 'No results found',
         message: 'No products found for "$query".',
+        actionText: 'Retry',
+        onAction: () => onRetry(),
       );
     }
 
@@ -188,29 +284,172 @@ class _SearchBody extends StatelessWidget {
       onRefresh: () => onRetry(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 120),
+        padding: const EdgeInsets.fromLTRB(24, 24, 24, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            _SearchSortChips(
+              selectedSort: selectedSort,
+              onChanged: onSortChanged,
+            ),
+            const SizedBox(height: 28),
             if (state.hasError)
               _InlineSearchError(
                 message: state.errorMessage ?? 'Unable to refresh search.',
                 onRetry: onRetry,
               ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12),
-              child: Text(
-                'Results for "$query"',
-                style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                  color: ZayColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-            _SearchResultGrid(products: state.searchResults),
+            _SearchSummary(query: query, products: products),
+            const SizedBox(height: 28),
+            _SearchResultGrid(products: products),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _SearchLandingState extends StatelessWidget {
+  const _SearchLandingState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 48, 24, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Search',
+            style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
+              color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            'Enter a product name, brand, or category to start browsing.',
+            style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+              color: ZayColors.textSecondary,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SearchSortChips extends StatelessWidget {
+  const _SearchSortChips({
+    required this.selectedSort,
+    required this.onChanged,
+  });
+
+  final _SearchSortOption selectedSort;
+  final ValueChanged<_SearchSortOption> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      clipBehavior: Clip.none,
+      child: Row(
+        children: _SearchSortOption.values.map((sort) {
+          final selected = sort == selectedSort;
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 12),
+            child: GestureDetector(
+              onTap: () => onChanged(sort),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 160),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 22,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: selected ? ZayColors.primary : ZayColors.white,
+                  border: Border.all(
+                    color:
+                        selected ? ZayColors.primary : ZayColors.inputBorder,
+                  ),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  sort.label,
+                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                    color:
+                        selected ? ZayColors.white : ZayColors.textSecondary,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+}
+
+class _SearchSummary extends StatelessWidget {
+  const _SearchSummary({
+    required this.query,
+    required this.products,
+  });
+
+  final String query;
+  final List<Product> products;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          width: 76,
+          height: 76,
+          decoration: BoxDecoration(
+            color: ZayColors.cancel,
+            shape: BoxShape.circle,
+            border: Border.all(color: ZayColors.inputBorder.withAlpha(80)),
+          ),
+          child: const Icon(
+            Icons.search_rounded,
+            color: ZayColors.primary,
+            size: 34,
+          ),
+        ),
+        const SizedBox(width: 18),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                query,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+                  color: ZayColors.textPrimary,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '${products.length} Products',
+                style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                  color: ZayColors.textSecondary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const Icon(
+          Icons.chevron_right,
+          color: ZayColors.textSecondary,
+          size: 32,
+        ),
+      ],
     );
   }
 }
@@ -222,25 +461,19 @@ class _SearchResultGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (products.isEmpty) {
-      return const _SearchMessageState(
-        icon: Icons.inventory_2_outlined,
-        message: 'No products found.',
-      );
-    }
-
     return LayoutBuilder(
       builder: (context, constraints) {
-        const spacing = 12.0;
+        const spacing = 18.0;
         final cardWidth = (constraints.maxWidth - spacing) / 2;
 
         return Wrap(
           spacing: spacing,
-          runSpacing: 16,
+          runSpacing: 28,
           children: products.map((product) {
             return ProductCard.fromProduct(
               product: product,
               width: cardWidth,
+              variant: ProductCardVariant.compact,
               action: () => ZayRouter.goto(ZayRoutes.productDetails, {
                 'productId': product.id,
               }),
@@ -265,7 +498,7 @@ class _InlineSearchError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 18),
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(12),
@@ -298,89 +531,32 @@ class _InlineSearchError extends StatelessWidget {
   }
 }
 
-class _SearchLoadingState extends StatelessWidget {
-  const _SearchLoadingState();
+enum _SearchSortOption {
+  all('All'),
+  latest('Latest'),
+  mostPopular('Most Popular'),
+  cheapest('Cheapest');
 
-  @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: ZayColors.primary),
-    );
-  }
+  const _SearchSortOption(this.label);
+
+  final String label;
 }
 
-class _SearchErrorState extends StatelessWidget {
-  const _SearchErrorState({
-    required this.message,
-    required this.onRetry,
-  });
+List<Product> _sortedProducts(
+  List<Product> products,
+  _SearchSortOption sort,
+) {
+  final sortedProducts = [...products];
 
-  final String message;
-  final Future<void> Function([String? value]) onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.wifi_off_rounded,
-              color: ZayColors.primary,
-              size: 42,
-            ),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.displayLarge,
-            ),
-            const SizedBox(height: 16),
-            TextButton(
-              onPressed: () => onRetry(),
-              child: Text(
-                'Retry',
-                style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                  color: ZayColors.primary,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _SearchMessageState extends StatelessWidget {
-  const _SearchMessageState({
-    required this.icon,
-    required this.message,
-  });
-
-  final IconData icon;
-  final String message;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: ZayColors.primary, size: 42),
-            const SizedBox(height: 12),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.displayLarge,
-            ),
-          ],
-        ),
-      ),
-    );
+  switch (sort) {
+    case _SearchSortOption.all:
+    case _SearchSortOption.latest:
+      return sortedProducts;
+    case _SearchSortOption.mostPopular:
+      sortedProducts.sort((a, b) => (b.rating ?? 0).compareTo(a.rating ?? 0));
+      return sortedProducts;
+    case _SearchSortOption.cheapest:
+      sortedProducts.sort((a, b) => a.price.compareTo(b.price));
+      return sortedProducts;
   }
 }
