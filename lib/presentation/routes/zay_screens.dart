@@ -18,6 +18,9 @@ import 'package:zayrova/presentation/pages/location/location_page.dart';
 import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
+import 'package:zayrova/presentation/pages/orders/order_details_screen.dart';
+import 'package:zayrova/presentation/pages/orders/order_tracking_screen.dart';
+import 'package:zayrova/presentation/pages/orders/orders_screen.dart';
 import 'package:zayrova/presentation/pages/placeholder/placeholder_screen.dart';
 import 'package:zayrova/presentation/pages/profile/edit_profile_screen.dart';
 import 'package:zayrova/presentation/pages/profile/profile_screen.dart';
@@ -118,13 +121,22 @@ class ZayScreens {
       case ZayRoutes.paymentFailed:
         return _placeholder(ZayRoutes.paymentFailed, 'Payment Failed');
       case ZayRoutes.orders:
-        return _placeholder(ZayRoutes.orders, 'My Order');
+        return _page(ZayRoutes.orders, const OrdersScreen());
       case ZayRoutes.orderHistory:
-        return _placeholder(ZayRoutes.orderHistory, 'Order History');
+        return _page(
+          ZayRoutes.orderHistory,
+          const OrdersScreen(initialTab: 1),
+        );
       case ZayRoutes.orderDetails:
-        return _placeholder(ZayRoutes.orderDetails, 'Order Detail');
+        return _page(
+          ZayRoutes.orderDetails,
+          OrderDetailsScreen(orderId: data['orderId']?.toString()),
+        );
       case ZayRoutes.orderTracking:
-        return _placeholder(ZayRoutes.orderTracking, 'Order Tracking');
+        return _page(
+          ZayRoutes.orderTracking,
+          OrderTrackingScreen(orderId: data['orderId']?.toString()),
+        );
       case ZayRoutes.orderReview:
         return _placeholder(ZayRoutes.orderReview, 'Order Review');
       case ZayRoutes.orderRating:

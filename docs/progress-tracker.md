@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Account UI Implementation
-- Current Feature: Profile and Settings Experience
+- Current Phase: Orders UI Implementation
+- Current Feature: Orders Experience
 - Status: In Progress
 
 ## Completed Work
@@ -172,6 +172,15 @@
 - Kept onboarding unchanged and did not modify repositories, datasources, entities, models, use cases, providers, or controllers.
 - Attempted `dart format` after the Profile and Settings work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after the Profile and Settings work, but the local Dart VM crashed before analysis could run.
+- Added a small Riverpod OrderController that consumes existing order use case providers and exposes order list, detail, tracking, loading, error, and empty-ready state.
+- Built shared order UI components for order headers, tabs, order cards, status chips, currency/date formatting, and product image presentation.
+- Built My Orders as the real bottom navigation My Order destination with active/history tabs, loading, error, empty, retry, pull-to-refresh, detail navigation, and tracking navigation.
+- Built Order Details with route-based order loading, product list, status summary, totals, and track-order action.
+- Built Order Tracking with route-based tracking loading, map-style visual panel, courier card, and order progress timeline.
+- Routed order history to the History tab and replaced order details/tracking placeholders with real screens.
+- Kept payment/order submission untouched and kept DummyJSON cart-to-order adaptation isolated in the existing data layer.
+- Attempted `dart format` after the Orders work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after the Orders work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
@@ -195,6 +204,9 @@
 - Profile edit save and password change are UI-only until profile/auth mutation APIs are connected.
 - Security toggles are local UI state only and do not persist yet.
 - Help and legal content is static until CMS/support/legal content sources are added.
+- Orders currently depend on the existing DummyJSON cart-to-order adaptation until a real orders API is available.
+- Order tracking map/courier actions are visual placeholders until live tracking/provider data exists.
+- History tab may be empty with DummyJSON-adapted orders because status data is limited.
 
 ## Blockers
 
@@ -202,4 +214,4 @@
 
 ## Suggested Commit Message
 
-feat: build profile and settings screens
+feat: build orders experience
