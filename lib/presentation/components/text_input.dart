@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zayrova/core/constants/colors.dart';
 
 class TextInput extends StatelessWidget {
   final String label;
@@ -49,7 +50,7 @@ class TextInput extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
-      margin: margin ?? EdgeInsets.only(bottom: 10),
+      margin: margin ?? const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(borderRadius),
@@ -70,7 +71,7 @@ class TextInput extends StatelessWidget {
 
         decoration: InputDecoration(
           counterText: "",
-          contentPadding: padding ?? EdgeInsets.all(15),
+          contentPadding: padding ?? const EdgeInsets.all(15),
           prefixIcon:
               icon != null
                   ? SizedBox(
@@ -81,8 +82,8 @@ class TextInput extends StatelessWidget {
                           top: 2,
                           left: 0,
                           child: Padding(
-                            padding: padding ?? EdgeInsets.all(15),
-                            child: icon ?? SizedBox(),
+                            padding: padding ?? const EdgeInsets.all(15),
+                            child: icon ?? const SizedBox(),
                           ),
                         ),
                       ],
@@ -91,7 +92,10 @@ class TextInput extends StatelessWidget {
                   : null,
           suffixIcon: trailingIcon,
           hintText: label,
-          hintStyle: TextStyle(fontSize: fontSize, color: Colors.white30),
+          hintStyle: TextStyle(
+            fontSize: fontSize,
+            color: ZayColors.textSecondary,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(50),
             borderSide: BorderSide.none,

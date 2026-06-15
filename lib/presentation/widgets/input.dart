@@ -12,10 +12,14 @@ class ZayTextInput {
     String label, {
     TextEditingController? controller,
     IconData? leadingIcon,
+    IconData? prefixIcon,
     dynamic leadingIconS,
     IconData? trailingIcon,
+    IconData? suffixIcon,
     dynamic trailingIconS,
     VoidCallback? onTrailingIconTap,
+    String? helperText,
+    String? validationText,
     int maxLines = 1,
     int maxLength = 255,
     double height = 50,
@@ -27,11 +31,16 @@ class ZayTextInput {
     EdgeInsets? margin,
     Color? border,
   }) {
+    final effectiveLeadingIcon = leadingIcon ?? prefixIcon;
+    final effectiveTrailingIcon = trailingIcon ?? suffixIcon;
+    final hasValidationText =
+        validationText != null && validationText.isNotEmpty;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: ZayTheme.lightTheme.textTheme.displayMedium),
-        SizedBox(height: 6),
+        const SizedBox(height: 6),
         TextInput(
           label: label,
           controller: controller,
@@ -39,20 +48,23 @@ class ZayTextInput {
           height: height,
           backgroundColor: ZayColors.transparent,
           borderRadius: 8,
-          border: border ?? ZayColors.inputBorder,
+          border: border ??
+              (!hasValidationText
+                  ? ZayColors.inputBorder
+                  : ZayColors.secondary),
           // Removed invalid parameter 'borderColor'
           maxLength: maxLength,
           type: type,
           icon:
-              leadingIcon != null
-                  ? Icon(leadingIcon, size: iconSize)
+              effectiveLeadingIcon != null
+                  ? Icon(effectiveLeadingIcon, size: iconSize)
                   : leadingIconS,
           trailingIcon:
-              trailingIcon != null
+              effectiveTrailingIcon != null
                   ? GestureDetector(
                     onTap: onTrailingIconTap,
                     child: Icon(
-                      trailingIcon,
+                      effectiveTrailingIcon,
                       color: ZayColors.inputBorder,
                       size: ZayTextInput.iconSize,
                     ),
@@ -70,6 +82,23 @@ class ZayTextInput {
           onSubmitted: onSubmit,
           margin: margin,
         ),
+        if (hasValidationText) ...[
+          const SizedBox(height: 4),
+          Text(
+            validationText,
+            style: ZayTheme.lightTheme.textTheme.displaySmall?.copyWith(
+              color: ZayColors.secondary,
+            ),
+          ),
+        ] else if (helperText != null && helperText.isNotEmpty) ...[
+          const SizedBox(height: 4),
+          Text(
+            helperText,
+            style: ZayTheme.lightTheme.textTheme.displaySmall?.copyWith(
+              color: ZayColors.textSecondary,
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -233,5 +262,48 @@ class ZayTextInput {
         ],
       );
     }
+  }
+}
+
+class ZayPasswordInput extends StatefulWidget {
+  const ZayPasswordInput({
+    super.key,
+    required this.label,
+    this.controller,
+    this.helperText,
+    this.validationText,
+    this.onChanged,
+    this.onSubmit,
+  });
+
+  final String label;
+  final TextEditingController? controller;
+  final String? helperText;
+  final String? validationText;
+  final Function(String value)? onChanged;
+  final Function(String value)? onSubmit;
+
+  @override
+  State<ZayPasswordInput> createState() => _ZayPasswordInputState();
+}
+
+class _ZayPasswordInputState extends State<ZayPasswordInput> {
+  bool _isObscured = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return ZayTextInput.primary(
+      widget.label,
+      controller: widget.controller,
+      password: _isObscured,
+      suffixIcon: _isObscured ? Icons.visibility_off : Icons.visibility,
+      onTrailingIconTap: () {
+        setState(() => _isObscured = !_isObscured);
+      },
+      helperText: widget.helperText,
+      validationText: widget.validationText,
+      onChanged: widget.onChanged,
+      onSubmit: widget.onSubmit,
+    );
   }
 }

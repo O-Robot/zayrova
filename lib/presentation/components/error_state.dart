@@ -71,3 +71,14 @@ class ZayErrorState extends StatelessWidget {
     );
   }
 }
+
+class ErrorStateWidget extends ZayErrorState {
+  const ErrorStateWidget({
+    super.key,
+    super.title,
+    required super.message,
+    super.retryText,
+    super.onRetry,
+    super.padding,
+  });
+}

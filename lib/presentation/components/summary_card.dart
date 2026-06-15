@@ -56,6 +56,46 @@ class ZaySummaryCard extends StatelessWidget {
   }
 }
 
+class CheckoutSummaryCard extends ZaySummaryCard {
+  const CheckoutSummaryCard({
+    super.key,
+    required super.rows,
+    super.title,
+    super.footer,
+    super.backgroundColor,
+  });
+}
+
+class PriceRow extends ZaySummaryRow {
+  PriceRow({
+    super.key,
+    required String label,
+    required String value,
+    bool isEmphasized = false,
+  }) : super(
+          data: ZaySummaryRowData(
+            label: label,
+            value: value,
+            isEmphasized: isEmphasized,
+          ),
+        );
+}
+
+class OrderSummaryRow extends ZaySummaryRow {
+  OrderSummaryRow({
+    super.key,
+    required String label,
+    required String value,
+    bool isEmphasized = false,
+  }) : super(
+          data: ZaySummaryRowData(
+            label: label,
+            value: value,
+            isEmphasized: isEmphasized,
+          ),
+        );
+}
+
 class ZaySummaryRow extends StatelessWidget {
   const ZaySummaryRow({super.key, required this.data});
 

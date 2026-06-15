@@ -72,3 +72,15 @@ class ZayEmptyState extends StatelessWidget {
     );
   }
 }
+
+class EmptyStateWidget extends ZayEmptyState {
+  const EmptyStateWidget({
+    super.key,
+    required super.icon,
+    required super.title,
+    required super.message,
+    super.actionText,
+    super.onAction,
+    super.padding,
+  });
+}

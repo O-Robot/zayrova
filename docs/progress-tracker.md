@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Shared UI Component Upgrades
+- Current Feature: Component System Preparation
 - Status: In Progress
 
 ## Completed Work
@@ -107,6 +107,13 @@
 - Reused shared state components in Home and Cart where safe without redesigning the full screens.
 - Replaced Cart summary totals with the reusable summary card pattern.
 - Attempted `flutter analyze` after shared UI component upgrades, but the local Dart VM crashed before analysis could run.
+- Audited reusable UI patterns across Home, Category, Search, Product Details, Cart, Checkout, and Auth screens.
+- Extended the product card system with compact, standard, and horizontal variants, favorite placeholder support, ratings, old price display, discount badges, and shared image loading/error handling.
+- Extended the button system with primary, secondary, outline, danger, disabled, loading, full-width, and compact support while preserving existing constructor usage.
+- Extended the input system with helper text, validation text, prefix/suffix icon aliases, and a reusable password visibility toggle wrapper.
+- Added reusable image, list item, state, price row, order summary row, and checkout summary components for later screen redesigns.
+- Cleaned up the low-level text input hint styling to use the app text color system.
+- Attempted `flutter analyze` after the component-system preparation pass, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
@@ -114,4 +121,4 @@
 
 ## Suggested Commit Message
 
-feat: upgrade shared ui components
+feat: prepare component system

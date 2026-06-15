@@ -107,6 +107,28 @@ class ZayButton {
     );
   }
 
+  static Widget secondary({
+    required VoidCallback action,
+    required String text,
+    bool? isDisabled,
+    bool isLoading = false,
+    bool fullWidth = false,
+    bool compact = false,
+  }) {
+    return _base(
+      action: action,
+      text: text,
+      backgroundColor: ZayColors.secondary,
+      foregroundColor: ZayColors.textPrimary,
+      disabledBackgroundColor: ZayColors.secondary.withAlpha(80),
+      disabledForegroundColor: ZayColors.textSecondary,
+      isDisabled: isDisabled,
+      isLoading: isLoading,
+      fullWidth: fullWidth,
+      compact: compact,
+    );
+  }
+
   static Widget outline({
     required VoidCallback action,
     required String text,

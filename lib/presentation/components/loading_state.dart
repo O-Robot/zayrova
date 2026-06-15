@@ -39,3 +39,11 @@ class ZayLoadingState extends StatelessWidget {
     );
   }
 }
+
+class LoadingStateWidget extends ZayLoadingState {
+  const LoadingStateWidget({
+    super.key,
+    super.message,
+    super.padding,
+  });
+}
