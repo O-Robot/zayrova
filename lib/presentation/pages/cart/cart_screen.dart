@@ -6,6 +6,9 @@ import 'package:zayrova/domain/entities/cart_entity.dart';
 import 'package:zayrova/domain/entities/cart_item_entity.dart';
 import 'package:zayrova/presentation/components/top_navigation.dart';
 import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
+import 'package:zayrova/presentation/routes/zay_router.dart';
+import 'package:zayrova/presentation/routes/zay_routes.dart';
+import 'package:zayrova/presentation/widgets/button.dart';
 
 class CartScreen extends ConsumerStatefulWidget {
   const CartScreen({super.key});
@@ -145,6 +148,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     _removeItem(cart, item);
                   }
                 },
+                onCheckout: () => ZayRouter.goto(ZayRoutes.checkout),
               ),
             ),
           ],
@@ -162,6 +166,7 @@ class _CartBody extends StatelessWidget {
     required this.onIncrease,
     required this.onDecrease,
     required this.onRemove,
+    required this.onCheckout,
   });
 
   final CartState state;
@@ -170,6 +175,7 @@ class _CartBody extends StatelessWidget {
   final ValueChanged<CartItem> onIncrease;
   final ValueChanged<CartItem> onDecrease;
   final ValueChanged<CartItem> onRemove;
+  final VoidCallback onCheckout;
 
   @override
   Widget build(BuildContext context) {
@@ -184,7 +190,9 @@ class _CartBody extends StatelessWidget {
       );
     }
 
-    if (cart == null || cart.isEmpty) {
+    final currentCart = cart;
+
+    if (currentCart == null || currentCart.isEmpty) {
       return const _CartMessageState(
         icon: Icons.shopping_cart_outlined,
         message: 'Your cart is empty.',
@@ -204,7 +212,7 @@ class _CartBody extends StatelessWidget {
                 message: state.errorMessage ?? 'Unable to update cart.',
                 onRetry: onRetry,
               ),
-            ...cart.items.map((item) {
+            ...currentCart.items.map((item) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12),
                 child: _CartItemTile(
@@ -217,7 +225,7 @@ class _CartBody extends StatelessWidget {
               );
             }),
             const SizedBox(height: 8),
-            _CartSummary(cart: cart),
+            _CartSummary(cart: currentCart, onCheckout: onCheckout),
           ],
         ),
       ),
@@ -361,9 +369,13 @@ class _CartQuantityButton extends StatelessWidget {
 }
 
 class _CartSummary extends StatelessWidget {
-  const _CartSummary({required this.cart});
+  const _CartSummary({
+    required this.cart,
+    required this.onCheckout,
+  });
 
   final Cart cart;
+  final VoidCallback onCheckout;
 
   @override
   Widget build(BuildContext context) {
@@ -385,6 +397,13 @@ class _CartSummary extends StatelessWidget {
             'Total Quantity: ${cart.totalQuantity}',
             style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
               color: ZayColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Center(
+            child: ZayButton.primary(
+              action: onCheckout,
+              text: 'Checkout',
             ),
           ),
         ],

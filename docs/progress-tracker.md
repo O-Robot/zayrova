@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Basic Cart Integration
+- Current Feature: Checkout Foundation
 - Status: In Progress
 
 ## Completed Work
@@ -82,11 +82,17 @@
 - Connected CartScreen to CartController and loaded the temporary DummyJSON user cart.
 - Rendered Cart and CartItem domain entities in CartScreen with loading, error, empty, retry, refresh, quantity update, remove, and summary states.
 - Attempted `flutter analyze` after basic cart integration, but the local Dart VM crashed before analysis could run.
+- Added a real CheckoutScreen foundation that consumes CartController and displays current Cart and CartItem domain data.
+- Added checkout cart summary, subtotal, discount, delivery fee placeholder, total, selected address placeholder, selected payment method placeholder, and Pay Now action.
+- Routed Checkout and Payment to the checkout foundation screen while keeping address, change payment method, payment success, and payment failed as navigable placeholder flows.
+- Added a CartScreen checkout button that routes to the checkout foundation.
+- Attempted `dart format`, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after checkout foundation work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Build the checkout screen foundation from the cart route without connecting payment/order submission yet.
+- Build address selection and payment method placeholder screens without connecting real payment or order submission yet.
 
 ## Suggested Commit Message
 
-feat: connect basic cart flow
+feat: add checkout foundation

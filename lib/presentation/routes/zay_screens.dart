@@ -5,6 +5,7 @@ import 'package:zayrova/presentation/pages/auth/forgot_password.dart';
 import 'package:zayrova/presentation/pages/auth/set_password.dart';
 import 'package:zayrova/presentation/pages/auth/verify_email.dart';
 import 'package:zayrova/presentation/pages/cart/cart_screen.dart';
+import 'package:zayrova/presentation/pages/checkout/checkout_screen.dart';
 import 'package:zayrova/presentation/pages/home/home_screen.dart';
 import 'package:zayrova/presentation/pages/home/category_screen.dart';
 import 'package:zayrova/presentation/pages/location/location_access.dart';
@@ -82,11 +83,15 @@ class ZayScreens {
       case ZayRoutes.cart:
         return _page(ZayRoutes.cart, const CartScreen());
       case ZayRoutes.checkout:
-        return _placeholder(ZayRoutes.checkout, 'Checkout');
+      case ZayRoutes.payment:
+        return _page(route ?? ZayRoutes.checkout, const CheckoutScreen());
       case ZayRoutes.orderSummary:
         return _placeholder(ZayRoutes.orderSummary, 'Order Summary');
-      case ZayRoutes.payment:
-        return _placeholder(ZayRoutes.payment, 'Payment');
+      case ZayRoutes.changePaymentMethod:
+        return _placeholder(
+          ZayRoutes.changePaymentMethod,
+          'Change Payment Method',
+        );
       case ZayRoutes.address:
         return _placeholder(ZayRoutes.address, 'Address');
       case ZayRoutes.paymentSuccess:
