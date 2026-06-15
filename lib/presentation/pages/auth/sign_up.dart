@@ -1,13 +1,10 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/presentation/pages/auth/auth_components.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
-import 'package:zayrova/presentation/widgets/button.dart';
-import 'package:zayrova/presentation/widgets/input.dart';
-import 'package:zayrova/presentation/widgets/social_buttons.dart';
 
 class SignUp extends StatefulWidget {
   const SignUp({super.key});
@@ -17,180 +14,134 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  final TextEditingController firstName = TextEditingController();
+  final TextEditingController lastName = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool showPassword = false;
+  bool acceptsTerms = true;
+
+  @override
+  void dispose() {
+    firstName.dispose();
+    lastName.dispose();
+    email.dispose();
+    password.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: null,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 60),
-                Center(
-                  child: Text(
-                    'Create Account',
-                    style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                      color: ZayColors.textPrimary,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Center(
-                  child: Text(
-                    'Fill your information below or register with your social account',
-                    textAlign: TextAlign.center,
-                    style: ZayTheme.lightTheme.textTheme.displayMedium
-                        ?.copyWith(color: ZayColors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 40),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(child: ZayTextInput.primary("First Name")),
-                    const SizedBox(width: 10),
-                    Expanded(child: ZayTextInput.primary("Last Name")),
-                  ],
-                ),
-                // Email Input
-                ZayTextInput.primary("Email", controller: email),
-                const SizedBox(height: 5),
-
-                // Password Input
-                ZayTextInput.primary(
-                  "Password",
-                  controller: password,
-                  password: !showPassword,
-                  margin: EdgeInsets.only(bottom: 2),
-                  trailingIcon:
-                      showPassword ? Icons.visibility : Icons.visibility_off,
-                  onTrailingIconTap: () {
-                    setState(() {
-                      showPassword = !showPassword;
-                    });
-                  },
-                ),
-
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Checkbox(
-                      fillColor: WidgetStatePropertyAll(ZayColors.primary),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      value: true,
-                      onChanged: (bool? value) {
-                        // Handle checkbox state change
-                      },
-                    ),
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Agree with ",
-                              style: TextStyle(color: ZayColors.textPrimary),
-                            ),
-                            TextSpan(
-                              text: "Terms & Conditions",
-                              style: TextStyle(color: ZayColors.primary),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-
-                // Register Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ZayButton.primary(action: () {}, text: 'Sign Up'),
-                ),
-                const SizedBox(height: 30),
-
-                // Divider with OR
-                Row(
-                  children: [
-                    Padding(padding: const EdgeInsets.only(left: 30)),
-                    const Expanded(
-                      child: Divider(color: ZayColors.textSecondary),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text(
-                        'Or sign up with',
-                        style: ZayTheme.lightTheme.textTheme.displayMedium
-                            ?.copyWith(color: ZayColors.textSecondary),
-                      ),
-                    ),
-                    const Expanded(
-                      child: Divider(color: ZayColors.textSecondary),
-                    ),
-                    Padding(padding: const EdgeInsets.only(right: 30)),
-                  ],
-                ),
-                const SizedBox(height: 30),
-
-                // Social Login Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SocialButtons.primary(
-                      ZayAssets.appleIcon,
-                    ), // Replace with your asset
-                    const SizedBox(width: 20),
-                    SocialButtons.primary(ZayAssets.googleIcon),
-                    const SizedBox(width: 20),
-                    SocialButtons.primary(ZayAssets.facebookIcon),
-                  ],
-                ),
-                const SizedBox(height: 30),
-
-                // Sign In Link
-                Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                              text: "Don’t have an account? ",
-                              style: ZayTheme.lightTheme.textTheme.displayLarge,
-                            ),
-                            TextSpan(
-                              text: "Sign In",
-                              style: ZayTheme.lightTheme.textTheme.displayLarge
-                                  ?.copyWith(color: ZayColors.primary),
-                              recognizer:
-                                  TapGestureRecognizer()
-                                    ..onTap = () {
-                                      ZayRouter.goto(ZayRoutes.login);
-                                    },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
+    return AuthScaffold(
+      children: [
+        const AuthHeader(
+          title: 'Create Account',
+          subtitle: 'Start learning with create your account',
         ),
-      ),
+        const SizedBox(height: 38),
+        Row(
+          children: [
+            Expanded(
+              child: AuthField(
+                label: 'First Name',
+                hint: 'First name',
+                controller: firstName,
+                icon: Icons.person_outline,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: AuthField(
+                label: 'Last Name',
+                hint: 'Last name',
+                controller: lastName,
+                icon: Icons.person_outline,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 26),
+        AuthField(
+          label: 'Email or Phone Number',
+          hint: 'Enter your email or phone number',
+          controller: email,
+          icon: Icons.mail_outline,
+          keyboardType: TextInputType.emailAddress,
+        ),
+        const SizedBox(height: 26),
+        AuthField(
+          label: 'Password',
+          hint: 'Create your password',
+          controller: password,
+          icon: Icons.lock_outline,
+          obscureText: !showPassword,
+          trailingIcon: showPassword ? Icons.visibility : Icons.visibility_off,
+          onTrailingTap: () {
+            setState(() => showPassword = !showPassword);
+          },
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Checkbox(
+              value: acceptsTerms,
+              fillColor: const WidgetStatePropertyAll(ZayColors.primary),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              onChanged: (value) {
+                setState(() => acceptsTerms = value ?? acceptsTerms);
+              },
+            ),
+            Expanded(
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Agree with ',
+                      style:
+                          ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                        color: ZayColors.textSecondary,
+                      ),
+                    ),
+                    TextSpan(
+                      text: 'Terms & Conditions',
+                      style:
+                          ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                        color: ZayColors.primary,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 30),
+        AuthPrimaryButton(
+          action: () {},
+          text: 'Create Account',
+        ),
+        const SizedBox(height: 24),
+        const AuthDividerLabel(text: 'Or using other method'),
+        const SizedBox(height: 22),
+        AuthSocialButton(
+          assetPath: ZayAssets.googleIcon,
+          text: 'Sign Up with Google',
+        ),
+        const SizedBox(height: 16),
+        AuthSocialButton(
+          assetPath: ZayAssets.facebookIcon,
+          text: 'Sign Up with Facebook',
+        ),
+        const SizedBox(height: 34),
+        AuthFooterLink(
+          prefix: 'Already have an account? ',
+          actionText: 'Sign In',
+          onTap: () => ZayRouter.goto(ZayRoutes.login),
+        ),
+      ],
     );
   }
 }

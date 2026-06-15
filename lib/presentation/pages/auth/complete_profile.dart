@@ -3,8 +3,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/components/profile_image_picker.dart';
-import 'package:zayrova/presentation/routes/zay_router.dart';
-import 'package:zayrova/presentation/widgets/button.dart';
+import 'package:zayrova/presentation/pages/auth/auth_components.dart';
 import 'package:zayrova/presentation/widgets/input.dart';
 
 class CompleteProfile extends StatefulWidget {
@@ -19,6 +18,12 @@ class _CompleteProfileState extends State<CompleteProfile> {
   String? selectedGender;
   XFile? pickedImage;
 
+  @override
+  void dispose() {
+    phoneNumber.dispose();
+    super.dispose();
+  }
+
   void _handleImagePicked(XFile? image) {
     setState(() {
       if (image != null) {
@@ -29,88 +34,74 @@ class _CompleteProfileState extends State<CompleteProfile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 30),
+    return AuthScaffold(
+      showBackButton: true,
+      children: [
+        const AuthCenteredHeader(
+          title: 'Complete Your Profile',
+          subtitle:
+              'Only you can see your personal data. Add a few details to continue.',
+        ),
+        const SizedBox(height: 30),
+        Center(
+          child: ProfileImagePicker(onImagePicked: _handleImagePicked),
+        ),
+        const SizedBox(height: 30),
+        AuthField(
+          label: 'Phone Number',
+          hint: 'Enter your phone number',
+          controller: phoneNumber,
+          icon: Icons.phone_outlined,
+          keyboardType: TextInputType.phone,
+        ),
+        const SizedBox(height: 26),
+        _ProfileDropdown(
+          value: selectedGender,
+          onChanged: (value) {
+            setState(() => selectedGender = value);
+          },
+        ),
+        const SizedBox(height: 48),
+        AuthPrimaryButton(
+          action: () {},
+          text: 'Complete Profile',
+        ),
+      ],
+    );
+  }
+}
 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        ZayRouter.goBack();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: ZayColors.textSecondary),
-                        ),
-                        child: const Icon(
-                          Icons.chevron_left,
-                          color: ZayColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
-                Center(
-                  child: Text(
-                    'Complete Your Profile',
-                    style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                      color: ZayColors.textPrimary,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Center(
-                  child: Text(
-                    'Don’t worry, only you can see your personal data. No one else will be able to see it',
-                    textAlign: TextAlign.center,
-                    style: ZayTheme.lightTheme.textTheme.displayMedium
-                        ?.copyWith(color: ZayColors.textSecondary),
-                  ),
-                ),
-                const SizedBox(height: 30),
+class _ProfileDropdown extends StatelessWidget {
+  const _ProfileDropdown({
+    required this.value,
+    required this.onChanged,
+  });
 
-                // Reusable image picker
-                Center(
-                  child: ProfileImagePicker(onImagePicked: _handleImagePicked),
-                ),
+  final String? value;
+  final ValueChanged<String?> onChanged;
 
-                const SizedBox(height: 20),
-                ZayTextInput.primary(
-                  "Phone Number",
-                  controller: phoneNumber,
-                  type: TextInputType.phone,
-                ),
-                const SizedBox(height: 5),
-                ZayTextInput.dropdown(
-                  "Gender",
-                  items: ['Male', 'Female', 'Other'],
-                  onChanged: (value) => selectedGender = value,
-                ),
-                const SizedBox(height: 20),
-
-                SizedBox(
-                  width: double.infinity,
-                  child: ZayButton.primary(
-                    action: () {},
-                    text: 'Complete Profile',
-                  ),
-                ),
-              ],
-            ),
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Gender',
+          style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+            color: ZayColors.textPrimary,
+            fontWeight: FontWeight.w800,
           ),
         ),
-      ),
+        const SizedBox(height: 12),
+        ZayTextInput.dropdown(
+          'Select gender',
+          value: value,
+          items: const ['Male', 'Female', 'Other'],
+          onChanged: onChanged,
+          height: 58,
+          context: context,
+        ),
+      ],
     );
   }
 }

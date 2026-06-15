@@ -1,13 +1,11 @@
 import 'package:flutter/gestures.dart';
-// ignore_for_file: unused_local_variable
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/presentation/pages/auth/auth_components.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
-import 'package:zayrova/presentation/widgets/button.dart';
 
 class VerifyEmail extends StatefulWidget {
   const VerifyEmail({super.key});
@@ -27,12 +25,10 @@ class _VerifyEmailState extends State<VerifyEmail> {
   @override
   void initState() {
     super.initState();
-    // Add listeners to all controllers to check if button should be enabled
-    for (var controller in otpControllers) {
+    for (final controller in otpControllers) {
       controller.addListener(_checkIfComplete);
     }
 
-    // Focus on first field when screen opens
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         FocusScope.of(context).requestFocus(focusNodes[0]);
@@ -42,187 +38,131 @@ class _VerifyEmailState extends State<VerifyEmail> {
 
   @override
   void dispose() {
-    // Dispose all controllers and focus nodes
-    for (var controller in otpControllers) {
+    for (final controller in otpControllers) {
       controller.dispose();
     }
-    for (var node in focusNodes) {
+    for (final node in focusNodes) {
       node.dispose();
     }
     super.dispose();
   }
 
-  // Check if all fields are filled
   void _checkIfComplete() {
     final allFilled = otpControllers.every(
       (controller) => controller.text.isNotEmpty,
     );
     if (allFilled != isButtonEnabled) {
-      setState(() {
-        isButtonEnabled = allFilled;
-      });
+      setState(() => isButtonEnabled = allFilled);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: null,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 30),
-
-              // Back Button
-              GestureDetector(
-                onTap: () => ZayRouter.goBack(),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: ZayColors.textSecondary),
-                  ),
-                  child: const Icon(
-                    Icons.chevron_left,
+    return AuthScaffold(
+      showBackButton: true,
+      children: [
+        const AuthVerificationIcon(icon: Icons.mark_email_unread_outlined),
+        const SizedBox(height: 34),
+        const AuthCenteredHeader(
+          title: 'Verification Code',
+          subtitle: 'We have sent the code verification to\nexample@email.com',
+        ),
+        const SizedBox(height: 36),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(otpControllers.length, (index) {
+            return _OtpField(
+              controller: otpControllers[index],
+              focusNode: focusNodes[index],
+              onChanged: (value) {
+                if (value.isNotEmpty && index < focusNodes.length - 1) {
+                  FocusScope.of(context).requestFocus(focusNodes[index + 1]);
+                }
+                if (value.isEmpty && index > 0) {
+                  FocusScope.of(context).requestFocus(focusNodes[index - 1]);
+                }
+              },
+            );
+          }),
+        ),
+        const SizedBox(height: 50),
+        AuthPrimaryButton(
+          text: 'Submit',
+          isDisabled: !isButtonEnabled,
+          action: () => ZayRouter.goto(ZayRoutes.completeProfile),
+        ),
+        const SizedBox(height: 24),
+        Center(
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: "Didn't receive the code? ",
+                  style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
                     color: ZayColors.textSecondary,
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 30),
-
-              // Title and Subtitle
-              Center(
-                child: Column(
-                  children: [
-                    Text(
-                      'Verify Code',
-                      style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                        color: ZayColors.textPrimary,
-                      ),
-                    ),
-                    const SizedBox(height: 5),
-                    Text(
-                      'Please enter the code we just sent to your email',
-                      textAlign: TextAlign.center,
-                      style: ZayTheme.lightTheme.textTheme.displayMedium
-                          ?.copyWith(color: ZayColors.textSecondary),
-                    ),
-                    Text(
-                      'example@email.com',
-                      style: ZayTheme.lightTheme.textTheme.displayMedium
-                          ?.copyWith(color: ZayColors.primary),
-                    ),
-                  ],
-                ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // OTP Inputs
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: List.generate(6, (index) {
-                  return SizedBox(
-                    width: 40,
-                    child: KeyboardListener(
-                      focusNode: FocusNode(),
-                      onKeyEvent: (KeyEvent event) {
-                        if (event is KeyDownEvent &&
-                            event.logicalKey == LogicalKeyboardKey.backspace &&
-                            otpControllers[index].text.isEmpty &&
-                            index > 0) {
-                          otpControllers[index - 1].clear();
-                          FocusScope.of(
-                            context,
-                          ).requestFocus(focusNodes[index - 1]);
-                        }
-                      },
-                      child: TextField(
-                        controller: otpControllers[index],
-                        focusNode: focusNodes[index],
-                        maxLength: 1,
-                        keyboardType: TextInputType.number,
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 20),
-                        decoration: InputDecoration(
-                          counterText: '',
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.grey.shade400),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: ZayColors.primary,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                        ],
-                        onChanged: (value) {
-                          if (value.isNotEmpty && index < 5) {
-                            FocusScope.of(
-                              context,
-                            ).requestFocus(focusNodes[index + 1]);
-                          }
-                        },
-                        // Enable paste functionality
-                        enableInteractiveSelection: true,
-                      ),
-                    ),
-                  );
-                }),
-              ),
-
-              const SizedBox(height: 20),
-
-              // Resend Code
-              Center(
-                child: RichText(
-                  text: TextSpan(
-                    children: [
-                      TextSpan(
-                        text: "Didn't receive OTP? ",
-                        style: ZayTheme.lightTheme.textTheme.displayLarge,
-                      ),
-                      TextSpan(
-                        text: "Resend code",
-                        style: ZayTheme.lightTheme.textTheme.displayLarge
-                            ?.copyWith(color: ZayColors.primary),
-                        recognizer:
-                            TapGestureRecognizer()
-                              ..onTap = () {
-                                // Handle resend OTP
-                              },
-                      ),
-                    ],
+                TextSpan(
+                  text: 'Resend',
+                  style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                    color: ZayColors.primary,
+                    fontWeight: FontWeight.w800,
                   ),
+                  recognizer: TapGestureRecognizer()..onTap = () {},
                 ),
-              ),
-
-              const SizedBox(height: 40),
-
-              // Verify Button
-              SizedBox(
-                width: double.infinity,
-                child: ZayButton.primary(
-                  text: 'Verify',
-                  isDisabled: !isButtonEnabled,
-                  action: () {
-                    final code = otpControllers.map((e) => e.text).join();
-                    ZayRouter.goto(ZayRoutes.completeProfile);
-                  },
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
+      ],
+    );
+  }
+}
+
+class _OtpField extends StatelessWidget {
+  const _OtpField({
+    required this.controller,
+    required this.focusNode,
+    required this.onChanged,
+  });
+
+  final TextEditingController controller;
+  final FocusNode focusNode;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 48,
+      height: 70,
+      child: TextField(
+        controller: controller,
+        focusNode: focusNode,
+        maxLength: 1,
+        keyboardType: TextInputType.number,
+        textAlign: TextAlign.center,
+        style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
+          color: ZayColors.textPrimary,
+          fontWeight: FontWeight.w900,
+        ),
+        decoration: InputDecoration(
+          counterText: '',
+          filled: true,
+          fillColor: const Color(0xFFFBFBFD),
+          contentPadding: EdgeInsets.zero,
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: Color(0xFFF0F1F6)),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: ZayColors.primary, width: 1.2),
+          ),
+        ),
+        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        onChanged: onChanged,
+        enableInteractiveSelection: true,
       ),
     );
   }

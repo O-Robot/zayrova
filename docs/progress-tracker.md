@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Commerce UI Implementation
-- Current Feature: Checkout Experience Redesign
+- Current Phase: Auth UI Implementation
+- Current Feature: Authentication Experience Redesign
 - Status: In Progress
 
 ## Completed Work
@@ -150,6 +150,15 @@
 - Kept checkout data sourced from real Cart, CartItem, Address, and PaymentMethod state without adding mock data.
 - Attempted `dart format` after the Checkout screen redesign, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after the Checkout screen redesign, but the local Dart VM crashed before analysis could run.
+- Added shared auth UI components for auth layout, headers, auth fields, primary actions, social buttons, footer links, and verification icon treatment.
+- Redesigned Sign In using docs/new Login references while preserving forgot-password and home navigation behavior.
+- Redesigned Sign Up using docs/new Create Account references while preserving the existing local fields, terms toggle, social actions, and empty submit behavior.
+- Redesigned Forgot Password and Set Password using the new auth visual direction while preserving their current route actions.
+- Redesigned Verify Email with the new verification-code layout while preserving OTP input, resend action placeholder, disabled submit state, and Complete Profile navigation.
+- Redesigned Complete Profile with the shared auth shell while preserving profile image selection, phone input, gender selection, and existing submit behavior.
+- Kept onboarding unchanged and did not modify auth repositories, datasources, use cases, providers, or controllers.
+- Attempted `dart format` after the Authentication screen redesign, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after the Authentication screen redesign, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
@@ -168,6 +177,8 @@
 - Checkout payment submission is still a temporary UI flow to Payment Success until order and gateway integration exist.
 - Checkout delivery fee remains a placeholder value until delivery method/rates are connected.
 - Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
+- Auth screens still preserve several pre-existing placeholder submit actions until full auth signup/reset/profile flows are wired.
+- Sign In still preserves the existing route-only login behavior instead of calling AuthController.
 
 ## Blockers
 
@@ -175,4 +186,4 @@
 
 ## Suggested Commit Message
 
-feat: redesign checkout experience
+feat: redesign authentication screens
