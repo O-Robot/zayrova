@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Catalog UI Implementation
-- Current Feature: View All Products Experience
+- Current Feature: Category Product Listing Design
 - Status: In Progress
 
 ## Completed Work
@@ -120,15 +120,22 @@
 - Built the all-products screen with a design-aligned header, search action, filter action, sort chips, catalog summary, responsive ProductCard grid, and reusable loading/error/empty states.
 - Updated Home `See All` to navigate to the all-products screen.
 - Attempted `flutter analyze` after the View All Products work, but the local Dart VM crashed before analysis could run.
+- Redesigned CategoryScreen using the docs/new catalog-results pattern.
+- Preserved categorySlug/categoryName route arguments and existing CatalogController category product loading.
+- Added category header with back navigation, search action, and filter action.
+- Added horizontal sort chips, category summary row, responsive ProductCard grid, reusable loading/error/empty states, retry, and pull-to-refresh.
+- Kept product taps routed to Product Details with productId.
+- Attempted `flutter analyze` after the Category screen design work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Redesign Category product listing to align with the same catalog browsing pattern.
+- Align Search Results and Wishlist with the shared catalog listing pattern.
 
 ## Known Risks
 
 - Product sorting is local UI sorting over currently loaded catalog results; backend pagination and server-side sorting are not connected yet.
 - The all-products screen currently requests up to 100 products through the existing catalog controller.
+- Category sorting is local UI sorting over the loaded category product list.
 
 ## Blockers
 
@@ -136,4 +143,4 @@
 
 ## Suggested Commit Message
 
-feat: add view all products screen
+feat: redesign category product listing
