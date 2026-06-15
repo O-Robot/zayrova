@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Catalog UI Implementation
-- Current Feature: Product Details Design
+- Current Phase: Commerce UI Implementation
+- Current Feature: Cart Experience Redesign
 - Status: In Progress
 
 ## Completed Work
@@ -138,10 +138,16 @@
 - Used real Product entity data only and hid unsupported variant sections when product data is unavailable.
 - Replaced ProductDetails loading/error/invalid states with reusable state components.
 - Attempted `flutter analyze` after Product Details design work, but the local Dart VM crashed before analysis could run.
+- Redesigned CartScreen using docs/new My Cart, My Cart Selected, and My Cart v2 references.
+- Preserved CartController loading, refresh, quantity update, remove item, delete empty cart, checkout navigation, and product navigation behavior.
+- Rebuilt the cart item layout with real CartItem entity data, product image, selected state display, product metadata, quantity controls, remove action, and item subtotal.
+- Rebuilt the bottom order summary sheet with promo-code visual row, subtotal, discount, total quantity, total amount, and checkout CTA.
+- Reused shared loading, error, empty, and network image components in the cart screen.
+- Attempted `flutter analyze` after the Cart screen redesign, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Align Cart screen visuals with docs/new cart references.
+- Align Checkout screen visuals with docs/new checkout, address, and payment references.
 
 ## Known Risks
 
@@ -150,6 +156,9 @@
 - Category sorting is local UI sorting over the loaded category product list.
 - Search result sorting is local UI sorting over the loaded search results.
 - Product color circles only render for parseable color names/hex values; unparseable color values render as text chips.
+- Cart item selection is display-only from `CartItem.isSelected`; no selection toggle/update API exists yet.
+- Cart promo code row is visual-only until discount/promo logic is connected.
+- Cart summary currency defaults to USD because the Cart aggregate does not expose a currency field.
 
 ## Blockers
 
@@ -157,4 +166,4 @@
 
 ## Suggested Commit Message
 
-feat: redesign product details screen
+feat: redesign cart experience
