@@ -12,6 +12,7 @@ class ZayRoutes {
   static const String payment = '/payment';
   static const String changePaymentMethod = '/change-payment-method';
   static const String address = '/address';
+  static const String addAddress = '/add-address';
   static const String paymentSuccess = '/payment-success';
   static const String paymentFailed = '/payment-failed';
   static const String orderHistory = '/order-history';

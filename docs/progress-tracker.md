@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Checkout Foundation
+- Current Feature: Address Management Foundation
 - Status: In Progress
 
 ## Completed Work
@@ -88,11 +88,17 @@
 - Added a CartScreen checkout button that routes to the checkout foundation.
 - Attempted `dart format`, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after checkout foundation work, but the local Dart VM crashed before analysis could run.
+- Added temporary in-memory address state for checkout address selection.
+- Replaced the Address placeholder with a real Address List screen.
+- Added an Add Address screen with full name, phone number, address lines, city, state, country, postal code, default address toggle, and simple required-field validation.
+- Added address cards, selected/default address UI, empty state, and add-new-address navigation.
+- Integrated the selected address into CheckoutScreen while keeping profile/backend address sync deferred.
+- Attempted `flutter analyze` after address management foundation work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Build address selection and payment method placeholder screens without connecting real payment or order submission yet.
+- Build payment method placeholder screens without connecting real payment or order submission yet.
 
 ## Suggested Commit Message
 
-feat: add checkout foundation
+feat: add address management foundation

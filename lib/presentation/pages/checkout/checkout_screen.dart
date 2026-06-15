@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/domain/entities/address_entity.dart';
 import 'package:zayrova/domain/entities/cart_entity.dart';
 import 'package:zayrova/domain/entities/cart_item_entity.dart';
 import 'package:zayrova/presentation/components/top_navigation.dart';
+import 'package:zayrova/presentation/providers/feature/address_controller.dart';
 import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
@@ -47,6 +49,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Widget build(BuildContext context) {
     final cartState = ref.watch(cartControllerProvider);
     final cart = cartState.userCart;
+    final selectedAddress = ref.watch(addressControllerProvider).selectedAddress;
 
     return Scaffold(
       backgroundColor: ZayColors.white,
@@ -64,6 +67,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               child: _CheckoutBody(
                 state: cartState,
                 cart: cart,
+                selectedAddress: selectedAddress,
                 deliveryFee: _deliveryFeePlaceholder,
                 onRetry: _reloadCart,
               ),
@@ -79,12 +83,14 @@ class _CheckoutBody extends StatelessWidget {
   const _CheckoutBody({
     required this.state,
     required this.cart,
+    required this.selectedAddress,
     required this.deliveryFee,
     required this.onRetry,
   });
 
   final CartState state;
   final Cart? cart;
+  final Address? selectedAddress;
   final double deliveryFee;
   final Future<void> Function() onRetry;
 
@@ -132,8 +138,9 @@ class _CheckoutBody extends StatelessWidget {
           const SizedBox(height: 16),
           _CheckoutNavigationTile(
             icon: Icons.location_on_outlined,
-            title: 'Delivery Address',
-            subtitle: 'Select a delivery address',
+            title: selectedAddress?.recipientName ?? 'Delivery Address',
+            subtitle:
+                selectedAddress?.formattedAddress ?? 'Select a delivery address',
             onTap: () => ZayRouter.goto(ZayRoutes.address),
           ),
           const SizedBox(height: 12),
