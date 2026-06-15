@@ -5,9 +5,11 @@ import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/address_entity.dart';
 import 'package:zayrova/domain/entities/cart_entity.dart';
 import 'package:zayrova/domain/entities/cart_item_entity.dart';
+import 'package:zayrova/domain/entities/payment_method_entity.dart';
 import 'package:zayrova/presentation/components/top_navigation.dart';
 import 'package:zayrova/presentation/providers/feature/address_controller.dart';
 import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
+import 'package:zayrova/presentation/providers/feature/payment_method_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
@@ -50,6 +52,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final cartState = ref.watch(cartControllerProvider);
     final cart = cartState.userCart;
     final selectedAddress = ref.watch(addressControllerProvider).selectedAddress;
+    final selectedPaymentMethod =
+        ref.watch(paymentMethodControllerProvider).selectedMethod;
 
     return Scaffold(
       backgroundColor: ZayColors.white,
@@ -68,6 +72,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 state: cartState,
                 cart: cart,
                 selectedAddress: selectedAddress,
+                selectedPaymentMethod: selectedPaymentMethod,
                 deliveryFee: _deliveryFeePlaceholder,
                 onRetry: _reloadCart,
               ),
@@ -84,6 +89,7 @@ class _CheckoutBody extends StatelessWidget {
     required this.state,
     required this.cart,
     required this.selectedAddress,
+    required this.selectedPaymentMethod,
     required this.deliveryFee,
     required this.onRetry,
   });
@@ -91,6 +97,7 @@ class _CheckoutBody extends StatelessWidget {
   final CartState state;
   final Cart? cart;
   final Address? selectedAddress;
+  final PaymentMethod? selectedPaymentMethod;
   final double deliveryFee;
   final Future<void> Function() onRetry;
 
@@ -146,8 +153,8 @@ class _CheckoutBody extends StatelessWidget {
           const SizedBox(height: 12),
           _CheckoutNavigationTile(
             icon: Icons.credit_card_outlined,
-            title: 'Payment Method',
-            subtitle: 'Choose a payment method',
+            title: selectedPaymentMethod?.cardBrand ?? 'Payment Method',
+            subtitle: _paymentMethodSubtitle(selectedPaymentMethod),
             onTap: () => ZayRouter.goto(ZayRoutes.changePaymentMethod),
           ),
           const SizedBox(height: 16),
@@ -177,6 +184,19 @@ class _CheckoutBody extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _paymentMethodSubtitle(PaymentMethod? method) {
+    if (method == null) {
+      return 'Choose a payment method';
+    }
+
+    final lastFour = method.lastFourDigits;
+    if (lastFour == null || lastFour.isEmpty) {
+      return method.subtitle ?? 'Selected payment method';
+    }
+
+    return '•••• •••• •••• $lastFour';
   }
 }
 

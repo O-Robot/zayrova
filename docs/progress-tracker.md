@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: API Integration
-- Current Feature: Address Management Foundation
+- Current Feature: Payment Method Management Foundation
 - Status: In Progress
 
 ## Completed Work
@@ -94,11 +94,18 @@
 - Added address cards, selected/default address UI, empty state, and add-new-address navigation.
 - Integrated the selected address into CheckoutScreen while keeping profile/backend address sync deferred.
 - Attempted `flutter analyze` after address management foundation work, but the local Dart VM crashed before analysis could run.
+- Added temporary in-memory payment method state for checkout payment selection.
+- Replaced the Change Payment Method placeholder with a real Payment Method List screen.
+- Added an Add Payment Method screen with card holder name, card number, expiry month/year, CVV, default method toggle, and simple card validation.
+- Added payment method cards, selected/default method UI, empty state, and add-new-card navigation.
+- Masked card numbers in list and checkout views, and avoided storing full card numbers or CVV after save.
+- Integrated the selected payment method into CheckoutScreen while keeping real payment gateway integration deferred.
+- Attempted `flutter analyze` after payment method foundation work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Build payment method placeholder screens without connecting real payment or order submission yet.
+- Build payment success and payment failed result screens without creating orders or submitting payments yet.
 
 ## Suggested Commit Message
 
-feat: add address management foundation
+feat: add payment method foundation

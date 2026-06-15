@@ -6,8 +6,10 @@ import 'package:zayrova/presentation/pages/auth/set_password.dart';
 import 'package:zayrova/presentation/pages/auth/verify_email.dart';
 import 'package:zayrova/presentation/pages/cart/cart_screen.dart';
 import 'package:zayrova/presentation/pages/checkout/add_address_screen.dart';
+import 'package:zayrova/presentation/pages/checkout/add_payment_method_screen.dart';
 import 'package:zayrova/presentation/pages/checkout/address_list_screen.dart';
 import 'package:zayrova/presentation/pages/checkout/checkout_screen.dart';
+import 'package:zayrova/presentation/pages/checkout/payment_method_list_screen.dart';
 import 'package:zayrova/presentation/pages/home/home_screen.dart';
 import 'package:zayrova/presentation/pages/home/category_screen.dart';
 import 'package:zayrova/presentation/pages/location/location_access.dart';
@@ -90,9 +92,14 @@ class ZayScreens {
       case ZayRoutes.orderSummary:
         return _placeholder(ZayRoutes.orderSummary, 'Order Summary');
       case ZayRoutes.changePaymentMethod:
-        return _placeholder(
+        return _page(
           ZayRoutes.changePaymentMethod,
-          'Change Payment Method',
+          const PaymentMethodListScreen(),
+        );
+      case ZayRoutes.addPaymentMethod:
+        return _page(
+          ZayRoutes.addPaymentMethod,
+          const AddPaymentMethodScreen(),
         );
       case ZayRoutes.address:
         return _page(ZayRoutes.address, const AddressListScreen());
