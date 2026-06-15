@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Checkout UI Implementation
-- Current Feature: Payment Result Screens
+- Current Phase: Notifications UI Implementation
+- Current Feature: Notifications Experience
 - Status: In Progress
 
 ## Completed Work
@@ -188,10 +188,17 @@
 - Kept order creation and payment processing untouched; reference labels remain temporary UI placeholders until checkout creates real orders.
 - Attempted `dart format` after Payment Result screen work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after Payment Result screen work, but the local Dart VM crashed before analysis could run.
+- Added a small Riverpod NotificationController that consumes existing notification use cases and exposes notification list, unread count, loading, update, error, and empty-ready state.
+- Replaced the Notifications placeholder with a real notification list screen using the docs/new Notification reference.
+- Added notification list, unread/read visual state, refresh, empty, loading, error, retry, mark-as-read, and mark-all-as-read interactions.
+- Preserved Home/Profile/Settings notification navigation through the existing `/notifications` route.
+- Kept notification data sourced from existing notification architecture without fake notification rows in the UI.
+- Attempted `dart format` after Notifications work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after Notifications work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Continue project completion with Notifications and Messaging screens using docs/new references.
+- Build Messaging screens using docs/new message references.
 
 ## Known Risks
 
@@ -216,6 +223,8 @@
 - History tab may be empty with DummyJSON-adapted orders because status data is limited.
 - Payment result reference labels are temporary until real order creation and payment transaction references are connected.
 - Payment success currently navigates to My Orders rather than a newly created order detail because checkout does not create persisted orders yet.
+- Notifications depend on the API-ready notification datasource and may show error/empty states until a real backend notification endpoint is available.
+- Mark-as-read and mark-all-as-read actions call the existing notification use cases, but backend endpoint shape still needs confirmation.
 
 ## Blockers
 
@@ -223,4 +232,4 @@
 
 ## Suggested Commit Message
 
-feat: add payment result screens
+feat: build notifications experience

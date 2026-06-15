@@ -19,6 +19,7 @@ import 'package:zayrova/presentation/pages/location/location_page.dart';
 import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
+import 'package:zayrova/presentation/pages/notifications/notifications_screen.dart';
 import 'package:zayrova/presentation/pages/orders/order_details_screen.dart';
 import 'package:zayrova/presentation/pages/orders/order_tracking_screen.dart';
 import 'package:zayrova/presentation/pages/orders/orders_screen.dart';
@@ -153,7 +154,7 @@ class ZayScreens {
       case ZayRoutes.changePassword:
         return _page(ZayRoutes.changePassword, const ChangePasswordScreen());
       case ZayRoutes.notifications:
-        return _placeholder(ZayRoutes.notifications, 'Notifications');
+        return _page(ZayRoutes.notifications, const NotificationsScreen());
       case ZayRoutes.chat:
       case ZayRoutes.messages:
         return _placeholder(ZayRoutes.messages, 'Messages');
