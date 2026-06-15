@@ -3,7 +3,7 @@
 ## Current Status
 
 - Current Phase: Commerce UI Implementation
-- Current Feature: Cart Experience Redesign
+- Current Feature: Checkout Experience Redesign
 - Status: In Progress
 
 ## Completed Work
@@ -144,10 +144,16 @@
 - Rebuilt the bottom order summary sheet with promo-code visual row, subtotal, discount, total quantity, total amount, and checkout CTA.
 - Reused shared loading, error, empty, and network image components in the cart screen.
 - Attempted `flutter analyze` after the Cart screen redesign, but the local Dart VM crashed before analysis could run.
+- Redesigned CheckoutScreen using docs/new Payment as the primary reference.
+- Preserved CartController, address selection, payment method selection, refresh, retry, empty cart, payment success, and payment failed navigation.
+- Rebuilt checkout layout with a payment header, selected address section, map-style address preview, real cart products list, payment method card, order summary rows, and bottom checkout CTA.
+- Kept checkout data sourced from real Cart, CartItem, Address, and PaymentMethod state without adding mock data.
+- Attempted `dart format` after the Checkout screen redesign, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after the Checkout screen redesign, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Align Checkout screen visuals with docs/new checkout, address, and payment references.
+- Redesign Address and Payment Method management screens using docs/new Address, Change Payment Method, and Add New Card references.
 
 ## Known Risks
 
@@ -159,6 +165,9 @@
 - Cart item selection is display-only from `CartItem.isSelected`; no selection toggle/update API exists yet.
 - Cart promo code row is visual-only until discount/promo logic is connected.
 - Cart summary currency defaults to USD because the Cart aggregate does not expose a currency field.
+- Checkout payment submission is still a temporary UI flow to Payment Success until order and gateway integration exist.
+- Checkout delivery fee remains a placeholder value until delivery method/rates are connected.
+- Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
 
 ## Blockers
 
@@ -166,4 +175,4 @@
 
 ## Suggested Commit Message
 
-feat: redesign cart experience
+feat: redesign checkout experience
