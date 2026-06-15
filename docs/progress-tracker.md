@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: API Integration
-- Current Feature: Component System Preparation
+- Current Phase: Catalog UI Implementation
+- Current Feature: View All Products Experience
 - Status: In Progress
 
 ## Completed Work
@@ -114,11 +114,26 @@
 - Added reusable image, list item, state, price row, order summary row, and checkout summary components for later screen redesigns.
 - Cleaned up the low-level text input hint styling to use the app text color system.
 - Attempted `flutter analyze` after the component-system preparation pass, but the local Dart VM crashed before analysis could run.
+- Added a real View All Products screen for the Home `See All` flow.
+- Routed `/categories` to the new all-products catalog browsing screen.
+- Kept `/category` reserved for category-specific product browsing.
+- Built the all-products screen with a design-aligned header, search action, filter action, sort chips, catalog summary, responsive ProductCard grid, and reusable loading/error/empty states.
+- Updated Home `See All` to navigate to the all-products screen.
+- Attempted `flutter analyze` after the View All Products work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Start the Product Details visual redesign using the upgraded shared components.
+- Redesign Category product listing to align with the same catalog browsing pattern.
+
+## Known Risks
+
+- Product sorting is local UI sorting over currently loaded catalog results; backend pagination and server-side sorting are not connected yet.
+- The all-products screen currently requests up to 100 products through the existing catalog controller.
+
+## Blockers
+
+- `flutter analyze` is blocked by a local Dart VM crash: `runtime/vm/cpuinfo_macos.cc: 42: error: unreachable code`.
 
 ## Suggested Commit Message
 
-feat: prepare component system
+feat: add view all products screen

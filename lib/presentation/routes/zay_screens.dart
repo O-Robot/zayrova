@@ -10,6 +10,7 @@ import 'package:zayrova/presentation/pages/checkout/add_payment_method_screen.da
 import 'package:zayrova/presentation/pages/checkout/address_list_screen.dart';
 import 'package:zayrova/presentation/pages/checkout/checkout_screen.dart';
 import 'package:zayrova/presentation/pages/checkout/payment_method_list_screen.dart';
+import 'package:zayrova/presentation/pages/home/all_products_screen.dart';
 import 'package:zayrova/presentation/pages/home/home_screen.dart';
 import 'package:zayrova/presentation/pages/home/category_screen.dart';
 import 'package:zayrova/presentation/pages/location/location_access.dart';
@@ -69,7 +70,7 @@ class ZayScreens {
       case ZayRoutes.wishlist:
         return _page(ZayRoutes.wishlist, const WishlistScreen());
       case ZayRoutes.categories:
-        return _page(ZayRoutes.categories, const CategoryScreen());
+        return _page(ZayRoutes.categories, const AllProductsScreen());
       case ZayRoutes.category:
         return _page(
           ZayRoutes.category,
