@@ -146,6 +146,12 @@ class _ProfileBody extends StatelessWidget {
                 ),
                 const SizedBox(height: 14),
                 ProfileActionRow(
+                  title: 'Messages',
+                  icon: Icons.chat_bubble_outline,
+                  onTap: () => ZayRouter.goto(ZayRoutes.messages),
+                ),
+                const SizedBox(height: 14),
+                ProfileActionRow(
                   title: 'Settings',
                   icon: Icons.settings_outlined,
                   onTap: () => ZayRouter.goto(ZayRoutes.settings),

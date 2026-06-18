@@ -2,12 +2,21 @@
 
 ## Current Status
 
-- Current Phase: Navigation Cleanup
-- Current Feature: Route Rationalisation
+- Current Phase: Demo Stabilisation
+- Current Feature: Must Fix Before Demo
 - Current Status: In Progress
 
 ## Completed Work
 
+- Fixed Splash session routing so onboarding completion is no longer cleared on every launch.
+- Added lightweight auth profile restoration/persistence through the existing auth controller and local storage.
+- Marked onboarding complete when users skip or finish the old onboarding flow.
+- Hardened route argument handling so missing or malformed route arguments fall back to safe empty maps.
+- Removed critical silent no-op actions from Home New Arrivals, Settings Language, Order Tracking completion, and ConfirmationModal actions.
+- Replaced the hardcoded Home greeting with current user display name and a customer fallback.
+- Clarified Sign In copy for the current DummyJSON username/password login flow.
+- Added an intentional Messages entry point from Profile.
+- Cleaned up Payment Success and Help & Support copy that sounded temporary or developer-facing.
 - Read project context, workflow rules, folder structure, design guardrails, API strategy, feature scope, state management plan, manual commands, and project report.
 - Inspected current dependencies during initial foundation setup.
 - Added centralized DummyJSON API constants.
@@ -280,11 +289,13 @@
 
 ## Next Task
 
-- Run analyzer in a healthy local Flutter environment and remove the now-unused placeholder screen file if no future placeholder routes are planned.
+- Run `flutter analyze` in a healthy local Flutter environment and smoke-test the demo-critical flows from Splash through checkout/order result.
 
 ## Known Risks
 
 - Product sorting is local UI sorting over currently loaded catalog results; backend pagination and server-side sorting are not connected yet.
+- Auth session restoration currently persists basic profile data locally; full access/refresh token persistence is still limited by the current auth repository result shape.
+- Sign In copy now references DummyJSON for demo clarity; replace with brand/backend-neutral copy when the final auth backend is connected.
 - The all-products screen currently requests up to 100 products through the existing catalog controller.
 - Catalog filters and sorting are client-side over currently loaded results until backend filtering is available.
 - Product color circles only render for parseable color names/hex values; unparseable color values render as text chips.
@@ -324,4 +335,4 @@
 
 ## Suggested Commit Message
 
-chore: rationalise app routes
+fix: stabilise critical user flows

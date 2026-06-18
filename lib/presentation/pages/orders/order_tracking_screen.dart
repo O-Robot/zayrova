@@ -258,10 +258,19 @@ class _TrackingSheet extends StatelessWidget {
             const SizedBox(height: 24),
             Expanded(child: _TrackingTimeline(order: order)),
             ZayButton.outline(
-              action: () {},
+              action: () {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Order status updates will be available when order fulfillment is connected.',
+                    ),
+                  ),
+                );
+              },
               text: order.status == OrderStatus.delivered
                   ? 'Order Completed'
                   : 'Mark as Done',
+              isDisabled: order.status == OrderStatus.delivered,
               fullWidth: true,
             ),
           ],

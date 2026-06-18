@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/utils/local_storage.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:animate_do/animate_do.dart';
 
-class Splashscreen extends StatefulWidget {
+class Splashscreen extends ConsumerStatefulWidget {
   const Splashscreen({super.key});
 
   @override
-  State<Splashscreen> createState() => _SplashscreenState();
+  ConsumerState<Splashscreen> createState() => _SplashscreenState();
 }
 
-class _SplashscreenState extends State<Splashscreen> {
+class _SplashscreenState extends ConsumerState<Splashscreen> {
   @override
   void initState() {
     super.initState();
@@ -21,18 +23,37 @@ class _SplashscreenState extends State<Splashscreen> {
   }
 
   Future<void> _checkSession() async {
-    LocalStorage.delete('onboard');
+    await Future.delayed(const Duration(seconds: 2));
+    await ref.read(authControllerProvider.notifier).restoreSession();
 
-    await LocalStorage.get('guest', bool).then((guest) async {
-      if (guest == true) {
-        await LocalStorage.set('onboard', false);
-        ZayRouter.exit(ZayRoutes.login);
-        return;
-      }
-    });
+    if (!mounted) {
+      return;
+    }
 
-    await Future.delayed(const Duration(seconds: 3));
-    ZayRouter.exit(ZayRoutes.getStarted);
+    final authState = ref.read(authControllerProvider);
+    if (authState.isAuthenticated) {
+      ZayRouter.exit(ZayRoutes.home);
+      return;
+    }
+
+    final guest = await LocalStorage.get('guest', bool);
+    if (!mounted) {
+      return;
+    }
+
+    if (guest == true) {
+      ZayRouter.exit(ZayRoutes.login);
+      return;
+    }
+
+    final hasCompletedOnboarding = await LocalStorage.get('onboard', bool);
+    if (!mounted) {
+      return;
+    }
+
+    ZayRouter.exit(
+      hasCompletedOnboarding == true ? ZayRoutes.login : ZayRoutes.getStarted,
+    );
   }
 
   @override

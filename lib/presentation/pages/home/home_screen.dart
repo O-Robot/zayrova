@@ -11,6 +11,7 @@ import 'package:zayrova/presentation/components/empty_state.dart';
 import 'package:zayrova/presentation/components/error_state.dart';
 import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/zay_network_image.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
@@ -41,6 +42,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final catalogState = ref.watch(catalogControllerProvider);
+    final user = ref.watch(authControllerProvider).currentUser;
     final isInitialLoading =
         catalogState.isLoading &&
         (!catalogState.hasLoadedProducts || !catalogState.hasLoadedCategories);
@@ -63,6 +65,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           children: [
             _HomeHeader(
               selectedTab: _selectedTab,
+              greetingName: user?.displayName,
+              avatarUrl: user?.avatarUrl,
               onTabChanged: (index) => setState(() => _selectedTab = index),
             ),
             Expanded(
@@ -85,10 +89,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 class _HomeHeader extends StatelessWidget {
   const _HomeHeader({
     required this.selectedTab,
+    required this.greetingName,
+    required this.avatarUrl,
     required this.onTabChanged,
   });
 
   final int selectedTab;
+  final String? greetingName;
+  final String? avatarUrl;
   final ValueChanged<int> onTabChanged;
 
   @override
@@ -99,14 +107,20 @@ class _HomeHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 30,
                 backgroundColor: ZayColors.cancel,
-                child: Icon(
-                  Icons.person,
-                  color: ZayColors.textSecondary,
-                  size: 32,
-                ),
+                backgroundImage:
+                    avatarUrl == null || avatarUrl!.isEmpty
+                        ? null
+                        : NetworkImage(avatarUrl!),
+                child: avatarUrl == null || avatarUrl!.isEmpty
+                    ? const Icon(
+                        Icons.person,
+                        color: ZayColors.textSecondary,
+                        size: 32,
+                      )
+                    : null,
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -114,7 +128,7 @@ class _HomeHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Hi, Jonathan',
+                      'Hi, ${_firstName(greetingName)}',
                       style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
                         color: ZayColors.textPrimary,
                         fontWeight: FontWeight.w800,
@@ -151,6 +165,15 @@ class _HomeHeader extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _firstName(String? name) {
+    final trimmedName = name?.trim();
+    if (trimmedName == null || trimmedName.isEmpty) {
+      return 'Customer';
+    }
+
+    return trimmedName.split(RegExp(r'\s+')).first;
   }
 }
 
@@ -648,7 +671,7 @@ class _HomeCategoryView extends StatelessWidget {
           count: products.length,
           imageUrl: _productImage(products.isNotEmpty ? products.first : null),
           textAlignment: _CategoryCardTextAlignment.left,
-          onTap: () {},
+          onTap: () => ZayRouter.goto(ZayRoutes.categories),
         ),
         const SizedBox(height: 18),
         ...categories.asMap().entries.map((entry) {

@@ -52,7 +52,7 @@ class ZayScreens {
     );
   }
 
-  static MaterialPageRoute route(String? route, data) {
+  static MaterialPageRoute route(String? route, Map<String, dynamic> data) {
     switch (route) {
       case ZayRoutes.splash:
         return _page(ZayRoutes.splash, const Splashscreen());

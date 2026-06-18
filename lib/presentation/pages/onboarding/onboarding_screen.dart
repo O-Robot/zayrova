@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/core/utils/local_storage.dart';
 import 'package:zayrova/presentation/components/navigation_dots.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_page.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
@@ -39,6 +40,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       image: ZayIllustrations.onboardingThree,
     ),
   ];
+
+  Future<void> _finishOnboarding() async {
+    await LocalStorage.set('onboard', true);
+    if (!mounted) {
+      return;
+    }
+
+    ZayRouter.exit(ZayRoutes.login);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,9 +97,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   )
                 else
                   TextButton(
-                    onPressed: () {
-                      ZayRouter.exit(ZayRoutes.login);
-                    },
+                    onPressed: _finishOnboarding,
                     child: Text(
                       'Skip',
                       style: ZayTheme.lightTheme.textTheme.displayMedium,
@@ -111,7 +119,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         curve: Curves.easeIn,
                       );
                     } else {
-                      ZayRouter.exit(ZayRoutes.login);
+                      _finishOnboarding();
                     }
                   },
                   child: Container(

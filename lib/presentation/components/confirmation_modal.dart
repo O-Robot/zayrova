@@ -93,10 +93,13 @@ class ConfirmationModal extends StatelessWidget {
                 // Action Buttons
                 Row(
                   children: [
-                    Expanded(child: ZayButton.cancel(action: () {})),
+                    Expanded(child: ZayButton.cancel(action: onCancel)),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ZayButton.primary(action: () {}, text: 'Remove'),
+                      child: ZayButton.primary(
+                        action: onConfirm,
+                        text: 'Remove',
+                      ),
                     ),
                   ],
                 ),

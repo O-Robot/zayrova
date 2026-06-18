@@ -5,7 +5,7 @@ final GlobalKey<NavigatorState> navigator = GlobalKey<NavigatorState>();
 
 class ZayRouter {
   static Route<dynamic> generateRoute(RouteSettings settings) {
-    final args = (settings.arguments ?? <String, dynamic>{}) as Map;
+    final args = _safeArgs(settings.arguments);
     return ZayScreens.route(settings.name, args);
   }
 
@@ -36,7 +36,7 @@ class ZayRouter {
 
     if (currentSettings != null) {
       final currentRouteName = currentSettings.name;
-      final args = currentSettings.arguments as Map<String, dynamic>? ?? {};
+      final args = _safeArgs(currentSettings.arguments);
 
       // Re-push the current route to refresh the page
       navigator.currentState?.pushReplacementNamed(
@@ -44,5 +44,17 @@ class ZayRouter {
         arguments: args,
       );
     }
+  }
+
+  static Map<String, dynamic> _safeArgs(Object? arguments) {
+    if (arguments is Map<String, dynamic>) {
+      return arguments;
+    }
+
+    if (arguments is Map) {
+      return Map<String, dynamic>.from(arguments);
+    }
+
+    return <String, dynamic>{};
   }
 }

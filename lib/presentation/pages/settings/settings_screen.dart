@@ -122,7 +122,13 @@ class SettingsScreen extends ConsumerWidget {
           title: 'Language',
           icon: Icons.language,
           trailingText: 'English',
-          onTap: () {},
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Language settings are not available yet.'),
+              ),
+            );
+          },
         ),
         const SizedBox(height: 28),
         const ProfileSectionTitle(title: 'Preferences'),

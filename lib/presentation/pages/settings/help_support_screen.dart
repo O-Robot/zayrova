@@ -36,7 +36,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       _FaqItem(
         title: 'How do payments work?',
         body:
-            'Payment processing is not connected yet. Current payment screens are prepared for future gateway integration.',
+            'Choose a saved payment method during checkout, review your order, then confirm from the payment screen.',
       ),
       _FaqItem(
         title: 'How do I update my profile?',
@@ -46,7 +46,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
       _FaqItem(
         title: 'How do I contact support?',
         body:
-            'Support contact channels will be connected when the help center backend is added.',
+            'Use the Messages area from your profile to view support conversations and updates.',
       ),
     ];
 

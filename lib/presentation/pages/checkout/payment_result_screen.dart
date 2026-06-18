@@ -20,17 +20,18 @@ class PaymentSuccessScreen extends StatelessWidget {
     final reference = orderReference ?? orderId;
 
     return _PaymentResultScaffold(
-      title: 'Order Successfully',
+      title: 'Order Successful',
       message:
           'Your order has been created and will be packed for delivery. You can view it from your orders.',
       referenceLabel: reference == null || reference.isEmpty
-          ? 'Order reference unavailable'
+          ? 'Order reference will appear in My Orders'
           : 'Order reference: $reference',
       visual: const _PaymentResultVisual.success(),
       primaryText: 'View Order',
       secondaryText: 'Continue Shopping',
-      primaryRoute:
-          orderId == null || orderId!.isEmpty ? ZayRoutes.orders : ZayRoutes.orderDetails,
+      primaryRoute: orderId == null || orderId!.isEmpty
+          ? ZayRoutes.orders
+          : ZayRoutes.orderDetails,
       primaryParameters: orderId == null || orderId!.isEmpty
           ? null
           : {'orderId': orderId},
