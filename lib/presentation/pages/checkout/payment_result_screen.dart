@@ -6,19 +6,34 @@ import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
-  const PaymentSuccessScreen({super.key});
+  const PaymentSuccessScreen({
+    super.key,
+    this.orderId,
+    this.orderReference,
+  });
+
+  final String? orderId;
+  final String? orderReference;
 
   @override
   Widget build(BuildContext context) {
-    return const _PaymentResultScaffold(
+    final reference = orderReference ?? orderId;
+
+    return _PaymentResultScaffold(
       title: 'Order Successfully',
       message:
-          'Your order will be packed and prepared for delivery. Tracking will become available once order creation is connected.',
-      referenceLabel: 'Temporary reference: pending order creation',
-      visual: _PaymentResultVisual.success(),
+          'Your order has been created and will be packed for delivery. You can view it from your orders.',
+      referenceLabel: reference == null || reference.isEmpty
+          ? 'Order reference unavailable'
+          : 'Order reference: $reference',
+      visual: const _PaymentResultVisual.success(),
       primaryText: 'View Order',
       secondaryText: 'Continue Shopping',
-      primaryRoute: ZayRoutes.orders,
+      primaryRoute:
+          orderId == null || orderId!.isEmpty ? ZayRoutes.orders : ZayRoutes.orderDetails,
+      primaryParameters: orderId == null || orderId!.isEmpty
+          ? null
+          : {'orderId': orderId},
       secondaryRoute: ZayRoutes.home,
     );
   }
@@ -33,7 +48,7 @@ class PaymentFailedScreen extends StatelessWidget {
       title: 'Payment Failed',
       message:
           'We could not complete your payment. Please check your payment method and try again.',
-      referenceLabel: 'Temporary reference: no order created',
+      referenceLabel: null,
       visual: _PaymentResultVisual.failed(),
       primaryText: 'Retry Payment',
       secondaryText: 'Continue Shopping',
@@ -47,22 +62,24 @@ class _PaymentResultScaffold extends StatelessWidget {
   const _PaymentResultScaffold({
     required this.title,
     required this.message,
-    required this.referenceLabel,
     required this.visual,
     required this.primaryText,
     required this.secondaryText,
     required this.primaryRoute,
     required this.secondaryRoute,
+    this.referenceLabel,
+    this.primaryParameters,
   });
 
   final String title;
   final String message;
-  final String referenceLabel;
+  final String? referenceLabel;
   final Widget visual;
   final String primaryText;
   final String secondaryText;
   final String primaryRoute;
   final String secondaryRoute;
+  final Map<String, dynamic>? primaryParameters;
 
   @override
   Widget build(BuildContext context) {
@@ -120,12 +137,16 @@ class _PaymentResultScaffold extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 22),
-                        // Temporary until checkout creates a persisted order
-                        // and backend transaction reference.
-                        _ReferencePill(label: referenceLabel),
-                        const SizedBox(height: 58),
+                        if (referenceLabel != null) ...[
+                          _ReferencePill(label: referenceLabel!),
+                          const SizedBox(height: 58),
+                        ] else
+                          const SizedBox(height: 58),
                         ZayButton.primary(
-                          action: () => ZayRouter.goto(primaryRoute),
+                          action: () => ZayRouter.goto(
+                            primaryRoute,
+                            primaryParameters,
+                          ),
                           text: primaryText,
                           fullWidth: true,
                         ),

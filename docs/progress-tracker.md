@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Auth Behaviour Completion
-- Current Feature: Core Authentication Flow
+- Current Phase: Checkout Flow Completion
+- Current Feature: Checkout To Order Flow
 - Status: In Progress
 
 ## Completed Work
@@ -225,10 +225,19 @@
 - Preserved existing auth visuals, DummyJSON login usage, and the current `getCurrentUser`/refresh token paths.
 - Attempted `dart format` after auth behaviour work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after auth behaviour work, but the local Dart VM crashed before analysis could run.
+- Added checkout order creation through `OrderController` using existing cart, selected address, and selected payment method state.
+- Kept the temporary DummyJSON cart-to-order payload adaptation isolated in the order controller layer.
+- Added checkout validation for empty cart, missing address, and missing payment method before placing an order.
+- Replaced direct Pay Now/Checkout Now to Payment Success with order creation followed by success navigation.
+- Passed the created order id/reference into Payment Success and displayed the real checkout-generated reference.
+- Removed the user-facing `Preview failed payment` checkout action while keeping Payment Failed available by route.
+- Updated Order Details to reuse the just-created selected order when opened from Payment Success.
+- Attempted `dart format` after checkout-to-order work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after checkout-to-order work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Connect checkout order creation and replace temporary payment/result references.
+- Replace DummyJSON cart-to-order adaptation with a real orders endpoint when backend support exists.
 
 ## Known Risks
 
@@ -240,7 +249,7 @@
 - Cart item selection is display-only from `CartItem.isSelected`; no selection toggle/update API exists yet.
 - Cart promo code row is visual-only until discount/promo logic is connected.
 - Cart summary currency defaults to USD because the Cart aggregate does not expose a currency field.
-- Checkout payment submission is still a temporary UI flow to Payment Success until order and gateway integration exist.
+- Checkout now creates an order before Payment Success, but payment gateway processing is still intentionally not connected.
 - Checkout delivery fee remains a placeholder value until delivery method/rates are connected.
 - Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
 - DummyJSON supports login/current-user/refresh only; registration, OTP, password reset, and profile completion remain cleanly deferred with user feedback.
@@ -250,8 +259,8 @@
 - Orders currently depend on the existing DummyJSON cart-to-order adaptation until a real orders API is available.
 - Order tracking map/courier actions are visual placeholders until live tracking/provider data exists.
 - History tab may be empty with DummyJSON-adapted orders because status data is limited.
-- Payment result reference labels are temporary until real order creation and payment transaction references are connected.
-- Payment success currently navigates to My Orders rather than a newly created order detail because checkout does not create persisted orders yet.
+- Order creation currently uses the existing DummyJSON cart endpoint adapter until a real orders API is available.
+- Payment Success displays the checkout-generated order reference, but real payment transaction references are not connected yet.
 - Notifications depend on the API-ready notification datasource and may show error/empty states until a real backend notification endpoint is available.
 - Mark-as-read and mark-all-as-read actions call the existing notification use cases, but backend endpoint shape still needs confirmation.
 - Messages depend on the API-ready message datasource and may show error/empty states until a real backend conversations/messages endpoint is available.
@@ -259,7 +268,7 @@
 - Send-message behavior calls the existing use case, but final backend endpoint shape still needs confirmation.
 - Wishlist state is temporary in-memory presentation state and will reset on app restart until persistence or backend wishlist APIs are connected.
 - Favorite sorting is local over currently favorited products; no backend wishlist sorting or pagination is connected yet.
-- Payment result screens are still temporary UI result flows until checkout creates persisted orders and real payment transaction references.
+- Payment result screens remain UI-only for gateway outcomes until real payment processing is connected.
 
 ## Blockers
 
@@ -267,4 +276,4 @@
 
 ## Suggested Commit Message
 
-feat: complete core auth behaviour
+feat: connect checkout order creation

@@ -36,6 +36,11 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
       return;
     }
 
+    final selectedOrder = ref.read(orderControllerProvider).selectedOrder;
+    if (selectedOrder?.id == widget.orderId) {
+      return;
+    }
+
     await ref.read(orderControllerProvider.notifier).loadOrderById(id);
   }
 

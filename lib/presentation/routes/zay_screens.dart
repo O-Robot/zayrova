@@ -121,7 +121,13 @@ class ZayScreens {
       case ZayRoutes.addAddress:
         return _page(ZayRoutes.addAddress, const AddAddressScreen());
       case ZayRoutes.paymentSuccess:
-        return _page(ZayRoutes.paymentSuccess, const PaymentSuccessScreen());
+        return _page(
+          ZayRoutes.paymentSuccess,
+          PaymentSuccessScreen(
+            orderId: data['orderId']?.toString(),
+            orderReference: data['orderReference']?.toString(),
+          ),
+        );
       case ZayRoutes.paymentFailed:
         return _page(ZayRoutes.paymentFailed, const PaymentFailedScreen());
       case ZayRoutes.orders:

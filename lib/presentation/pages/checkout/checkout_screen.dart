@@ -12,6 +12,7 @@ import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/zay_network_image.dart';
 import 'package:zayrova/presentation/providers/feature/address_controller.dart';
 import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
+import 'package:zayrova/presentation/providers/feature/order_controller.dart';
 import 'package:zayrova/presentation/providers/feature/payment_method_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
@@ -50,6 +51,56 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         .loadUserCart(temporaryDummyJsonCartUserId);
   }
 
+  Future<void> _placeOrder({
+    required Cart cart,
+    required Address? selectedAddress,
+    required PaymentMethod? selectedPaymentMethod,
+  }) async {
+    if (cart.isEmpty) {
+      _showCheckoutMessage('Add items to your cart before checking out.');
+      return;
+    }
+
+    if (selectedAddress == null) {
+      _showCheckoutMessage('Select a delivery address before placing order.');
+      return;
+    }
+
+    if (selectedPaymentMethod == null) {
+      _showCheckoutMessage('Select a payment method before placing order.');
+      return;
+    }
+
+    final order = await ref.read(orderControllerProvider.notifier).createOrderFromCheckout(
+          cart: cart,
+          shippingAddress: selectedAddress,
+          paymentMethod: selectedPaymentMethod,
+          deliveryFee: _deliveryFeePlaceholder,
+        );
+
+    if (!mounted) {
+      return;
+    }
+
+    if (order == null) {
+      final message =
+          ref.read(orderControllerProvider).errorMessage ?? 'Unable to create order.';
+      _showCheckoutMessage(message);
+      return;
+    }
+
+    ZayRouter.goto(ZayRoutes.paymentSuccess, {
+      'orderId': order.id,
+      'orderReference': order.orderNumber ?? order.id,
+    });
+  }
+
+  void _showCheckoutMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: ZayColors.primary),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartState = ref.watch(cartControllerProvider);
@@ -57,6 +108,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     final selectedAddress = ref.watch(addressControllerProvider).selectedAddress;
     final selectedPaymentMethod =
         ref.watch(paymentMethodControllerProvider).selectedMethod;
+    final orderState = ref.watch(orderControllerProvider);
 
     return Scaffold(
       backgroundColor: ZayColors.white,
@@ -72,6 +124,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 selectedPaymentMethod: selectedPaymentMethod,
                 deliveryFee: _deliveryFeePlaceholder,
                 onRetry: _reloadCart,
+                isPlacingOrder: orderState.isLoading,
+                onPlaceOrder: (checkoutCart) => _placeOrder(
+                  cart: checkoutCart,
+                  selectedAddress: selectedAddress,
+                  selectedPaymentMethod: selectedPaymentMethod,
+                ),
               ),
             ),
           ],
@@ -131,6 +189,8 @@ class _CheckoutBody extends StatelessWidget {
     required this.selectedPaymentMethod,
     required this.deliveryFee,
     required this.onRetry,
+    required this.isPlacingOrder,
+    required this.onPlaceOrder,
   });
 
   final CartState state;
@@ -139,6 +199,8 @@ class _CheckoutBody extends StatelessWidget {
   final PaymentMethod? selectedPaymentMethod;
   final double deliveryFee;
   final Future<void> Function() onRetry;
+  final bool isPlacingOrder;
+  final ValueChanged<Cart> onPlaceOrder;
 
   @override
   Widget build(BuildContext context) {
@@ -199,7 +261,11 @@ class _CheckoutBody extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: _CheckoutActionBar(total: payableTotal),
+          child: _CheckoutActionBar(
+            total: payableTotal,
+            isLoading: isPlacingOrder,
+            onCheckout: () => onPlaceOrder(checkoutCart),
+          ),
         ),
       ],
     );
@@ -722,9 +788,15 @@ class _SummaryRow extends StatelessWidget {
 }
 
 class _CheckoutActionBar extends StatelessWidget {
-  const _CheckoutActionBar({required this.total});
+  const _CheckoutActionBar({
+    required this.total,
+    required this.isLoading,
+    required this.onCheckout,
+  });
 
   final double total;
+  final bool isLoading;
+  final VoidCallback onCheckout;
 
   @override
   Widget build(BuildContext context) {
@@ -767,21 +839,10 @@ class _CheckoutActionBar extends StatelessWidget {
             ),
             const SizedBox(height: 22),
             ZayButton.primary(
-              // Temporary UI-only flow until order creation and payment gateway
-              // integration are connected.
-              action: () => ZayRouter.goto(ZayRoutes.paymentSuccess),
+              action: onCheckout,
               text: 'Checkout Now',
               fullWidth: true,
-            ),
-            TextButton(
-              onPressed: () => ZayRouter.goto(ZayRoutes.paymentFailed),
-              child: Text(
-                'Preview failed payment',
-                style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                  color: ZayColors.textSecondary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              isLoading: isLoading,
             ),
           ],
         ),
