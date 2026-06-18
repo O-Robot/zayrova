@@ -13,6 +13,16 @@ class LocationAccess extends StatefulWidget {
 }
 
 class _LocationAccessState extends State<LocationAccess> {
+  void _showLocationComingSoon() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Location permission is coming soon. Enter your location manually for now.',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -64,7 +74,7 @@ class _LocationAccessState extends State<LocationAccess> {
                 SizedBox(
                   width: double.infinity,
                   child: ZayButton.primary(
-                    action: () {},
+                    action: _showLocationComingSoon,
                     text: 'Allow Location Access',
                   ),
                 ),

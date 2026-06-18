@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Checkout Persistence Cleanup
-- Current Feature: Address And Payment Method Persistence
+- Current Phase: Location Flow Cleanup
+- Current Feature: Location Access And Manual Location Behaviour
 - Current Status: In Progress
 
 ## Completed Work
@@ -257,10 +257,16 @@
 - Updated the local storage helper to await SharedPreferences writes and removals.
 - Attempted `dart format` after address/payment persistence work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after address/payment persistence work, but the local Dart VM crashed before analysis could run.
+- Cleaned up Location Access so unsupported location permission now shows clear coming-soon feedback.
+- Cleaned up Manual Location so clear input, current-location, typed search result, and submit actions no longer silently fail.
+- Saved manually typed locations into the existing local/session address state without adding GPS or fake geocoding data.
+- Kept the location screens visually aligned with the old location references and did not change onboarding.
+- Attempted `dart format` after location cleanup work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after location cleanup work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Run analyzer in a healthy local Flutter environment and connect remove actions where the final account/payment UI requires them.
+- Run analyzer in a healthy local Flutter environment, then add real location permission/geocoding only if approved.
 
 ## Known Risks
 
@@ -278,6 +284,8 @@
 - Profile edits and completion update local/session auth state only until profile mutation/media APIs are connected.
 - Address and payment method persistence is local/session only until real profile and payment APIs replace it.
 - Payment method storage intentionally persists metadata only; full card numbers and CVV remain form-only values.
+- Location permission/current-location actions are intentionally coming-soon until GPS/geocoding packages are approved.
+- Manual Location stores the typed text as a local/session address entry without live search/geocoding enrichment.
 - Security toggles are local UI state only and do not persist yet.
 - Help and legal content is static until CMS/support/legal content sources are added.
 - Orders currently depend on the existing DummyJSON cart-to-order adaptation until a real orders API is available.
@@ -300,4 +308,4 @@
 
 ## Suggested Commit Message
 
-feat: persist checkout address and payment metadata
+feat: clean up manual location behaviour
