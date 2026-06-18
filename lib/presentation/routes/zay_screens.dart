@@ -27,7 +27,6 @@ import 'package:zayrova/presentation/pages/orders/order_rating_screen.dart';
 import 'package:zayrova/presentation/pages/orders/order_review_screen.dart';
 import 'package:zayrova/presentation/pages/orders/order_tracking_screen.dart';
 import 'package:zayrova/presentation/pages/orders/orders_screen.dart';
-import 'package:zayrova/presentation/pages/placeholder/placeholder_screen.dart';
 import 'package:zayrova/presentation/pages/profile/edit_profile_screen.dart';
 import 'package:zayrova/presentation/pages/profile/profile_screen.dart';
 import 'package:zayrova/presentation/pages/search/catalog_filter.dart';
@@ -96,8 +95,6 @@ class ZayScreens {
             categoryName: data['categoryName']?.toString(),
           ),
         );
-      case ZayRoutes.categoryDetails:
-        return _placeholder(ZayRoutes.categoryDetails, 'Category Details');
       case ZayRoutes.search:
         return _page(ZayRoutes.search, const SearchScreen());
       case ZayRoutes.filter:
@@ -112,10 +109,7 @@ class ZayScreens {
       case ZayRoutes.cart:
         return _page(ZayRoutes.cart, const CartScreen());
       case ZayRoutes.checkout:
-      case ZayRoutes.payment:
-        return _page(route ?? ZayRoutes.checkout, const CheckoutScreen());
-      case ZayRoutes.orderSummary:
-        return _placeholder(ZayRoutes.orderSummary, 'Order Summary');
+        return _page(ZayRoutes.checkout, const CheckoutScreen());
       case ZayRoutes.changePaymentMethod:
         return _page(
           ZayRoutes.changePaymentMethod,
@@ -183,7 +177,6 @@ class ZayScreens {
         return _page(ZayRoutes.changePassword, const ChangePasswordScreen());
       case ZayRoutes.notifications:
         return _page(ZayRoutes.notifications, const NotificationsScreen());
-      case ZayRoutes.chat:
       case ZayRoutes.messages:
         return _page(ZayRoutes.messages, const MessagesScreen());
       case ZayRoutes.messageDetail:
@@ -201,9 +194,5 @@ class ZayScreens {
       default:
         return _page('404', const ErrorScreen(code: 404));
     }
-  }
-
-  static MaterialPageRoute _placeholder(String route, String title) {
-    return _page(route, PlaceholderScreen(title: title));
   }
 }

@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Orders Experience Completion
-- Current Feature: Order Review And Rating Screens
+- Current Phase: Navigation Cleanup
+- Current Feature: Route Rationalisation
 - Current Status: In Progress
 
 ## Completed Work
@@ -270,10 +270,17 @@
 - Routed delivered history orders to the new review flow while preserving detail/tracking navigation.
 - Attempted `dart format` after order review/rating work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after order review/rating work, but the local Dart VM crashed before analysis could run.
+- Removed unused `/category-details` route and placeholder mapping; category browsing now uses `/category`.
+- Removed unused `/order-summary` route and placeholder mapping; checkout/order details cover that flow.
+- Kept `/order-review` and `/order-rating` because both now resolve to real order review screens.
+- Removed unused duplicate `/payment` and `/chat` aliases; checkout and messages remain the canonical routes.
+- Confirmed route mappings no longer point to `PlaceholderScreen`.
+- Attempted `dart format` after route rationalisation, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after route rationalisation, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Run analyzer in a healthy local Flutter environment, then connect review submission to backend APIs when available.
+- Run analyzer in a healthy local Flutter environment and remove the now-unused placeholder screen file if no future placeholder routes are planned.
 
 ## Known Risks
 
@@ -300,6 +307,7 @@
 - History tab may be empty with DummyJSON-adapted orders because status data is limited.
 - Order creation currently uses the existing DummyJSON cart endpoint adapter until a real orders API is available.
 - Order reviews are stored locally/session-side until a real review endpoint is available.
+- `PlaceholderScreen` is no longer referenced by the route map and can be deleted in a later cleanup if placeholders are no longer part of the workflow.
 - Payment Success displays the checkout-generated order reference, but real payment transaction references are not connected yet.
 - Notifications depend on the API-ready notification datasource and may show error/empty states until a real backend notification endpoint is available.
 - Mark-as-read and mark-all-as-read actions call the existing notification use cases, but backend endpoint shape still needs confirmation.
@@ -316,4 +324,4 @@
 
 ## Suggested Commit Message
 
-feat: add order review and rating screens
+chore: rationalise app routes

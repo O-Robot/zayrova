@@ -3,13 +3,10 @@ class ZayRoutes {
   static const String getStarted = '/get-started';
   static const String onboardingPage = '/onboard-page';
   static const String categories = '/categories';
-  static const String categoryDetails = '/category-details';
   static const String filter = '/filter';
   static const String cart = '/cart';
   static const String checkout = '/checkout';
-  static const String orderSummary = '/order-summary';
   static const String orderDetails = '/order-details';
-  static const String payment = '/payment';
   static const String changePaymentMethod = '/change-payment-method';
   static const String addPaymentMethod = '/add-payment-method';
   static const String address = '/address';
@@ -49,7 +46,6 @@ class ZayRoutes {
   static const String orders = '/orders';
   static const String wishlist = '/wishlist';
   static const String category = '/category';
-  static const String chat = '/chat';
   static const String profile = '/profile';
   static const String productDetails = '/product-details';
 }
