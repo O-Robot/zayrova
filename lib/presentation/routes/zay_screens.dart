@@ -23,6 +23,8 @@ import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
 import 'package:zayrova/presentation/pages/notifications/notifications_screen.dart';
 import 'package:zayrova/presentation/pages/orders/order_details_screen.dart';
+import 'package:zayrova/presentation/pages/orders/order_rating_screen.dart';
+import 'package:zayrova/presentation/pages/orders/order_review_screen.dart';
 import 'package:zayrova/presentation/pages/orders/order_tracking_screen.dart';
 import 'package:zayrova/presentation/pages/orders/orders_screen.dart';
 import 'package:zayrova/presentation/pages/placeholder/placeholder_screen.dart';
@@ -156,9 +158,19 @@ class ZayScreens {
           OrderTrackingScreen(orderId: data['orderId']?.toString()),
         );
       case ZayRoutes.orderReview:
-        return _placeholder(ZayRoutes.orderReview, 'Order Review');
+        return _page(
+          ZayRoutes.orderReview,
+          OrderReviewScreen(
+            orderId: data is Map ? data['orderId']?.toString() : null,
+          ),
+        );
       case ZayRoutes.orderRating:
-        return _placeholder(ZayRoutes.orderRating, 'Order Rating');
+        return _page(
+          ZayRoutes.orderRating,
+          OrderRatingScreen(
+            orderId: data is Map ? data['orderId']?.toString() : null,
+          ),
+        );
       case ZayRoutes.profile:
         return _page(ZayRoutes.profile, const ProfileScreen());
       case ZayRoutes.settings:

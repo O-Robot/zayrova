@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Location Flow Cleanup
-- Current Feature: Location Access And Manual Location Behaviour
+- Current Phase: Orders Experience Completion
+- Current Feature: Order Review And Rating Screens
 - Current Status: In Progress
 
 ## Completed Work
@@ -263,10 +263,17 @@
 - Kept the location screens visually aligned with the old location references and did not change onboarding.
 - Attempted `dart format` after location cleanup work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after location cleanup work, but the local Dart VM crashed before analysis could run.
+- Replaced the Order Review placeholder route with a real order review summary screen.
+- Replaced the Order Rating placeholder route with a real rating and written-review form.
+- Added isolated local/session order review persistence until backend review APIs exist.
+- Added rating validation, review success feedback, and navigation back to Orders.
+- Routed delivered history orders to the new review flow while preserving detail/tracking navigation.
+- Attempted `dart format` after order review/rating work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after order review/rating work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Run analyzer in a healthy local Flutter environment, then add real location permission/geocoding only if approved.
+- Run analyzer in a healthy local Flutter environment, then connect review submission to backend APIs when available.
 
 ## Known Risks
 
@@ -292,6 +299,7 @@
 - Order tracking map/courier actions are visual placeholders until live tracking/provider data exists.
 - History tab may be empty with DummyJSON-adapted orders because status data is limited.
 - Order creation currently uses the existing DummyJSON cart endpoint adapter until a real orders API is available.
+- Order reviews are stored locally/session-side until a real review endpoint is available.
 - Payment Success displays the checkout-generated order reference, but real payment transaction references are not connected yet.
 - Notifications depend on the API-ready notification datasource and may show error/empty states until a real backend notification endpoint is available.
 - Mark-as-read and mark-all-as-read actions call the existing notification use cases, but backend endpoint shape still needs confirmation.
@@ -308,4 +316,4 @@
 
 ## Suggested Commit Message
 
-feat: clean up manual location behaviour
+feat: add order review and rating screens

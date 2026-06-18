@@ -118,15 +118,24 @@ class _OrdersBody extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(24, 0, 24, 28),
         itemBuilder: (context, index) {
           final order = orders[index];
+          final canReview = isHistory && order.status == OrderStatus.delivered;
 
           return OrderCard(
             order: order,
-            primaryActionText: isHistory ? 'Received Order' : 'Tracking',
+            primaryActionText: canReview
+                ? 'Review'
+                : isHistory
+                    ? 'Detail'
+                    : 'Tracking',
             onDetail: () => ZayRouter.goto(ZayRoutes.orderDetails, {
               'orderId': order.id,
             }),
             onPrimaryAction: () => ZayRouter.goto(
-              isHistory ? ZayRoutes.orderDetails : ZayRoutes.orderTracking,
+              canReview
+                  ? ZayRoutes.orderReview
+                  : isHistory
+                      ? ZayRoutes.orderDetails
+                      : ZayRoutes.orderTracking,
               {'orderId': order.id},
             ),
           );
