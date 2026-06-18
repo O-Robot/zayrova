@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Wishlist UI Implementation
-- Current Feature: Favorite Experience
+- Current Phase: Checkout UI Implementation
+- Current Feature: Payment Result Screens
 - Status: In Progress
 
 ## Completed Work
@@ -212,6 +212,12 @@
 - Preserved the existing bottom navigation Favorite destination and kept onboarding unchanged.
 - Attempted `dart format` after Favorite work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after Favorite work, but the local Dart VM crashed before analysis could run.
+- Confirmed payment success and payment failed routes are mapped to real result screens.
+- Refined the payment result UI to better match the docs/new payment success bottom-sheet direction.
+- Preserved success navigation to My Orders, failure retry navigation to Checkout, and Continue Shopping navigation to Home.
+- Kept payment result screens as UI-only flow without creating orders or submitting payments.
+- Attempted `dart format` after Payment Result refinement, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after Payment Result refinement, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
@@ -247,6 +253,7 @@
 - Send-message behavior calls the existing use case, but final backend endpoint shape still needs confirmation.
 - Wishlist state is temporary in-memory presentation state and will reset on app restart until persistence or backend wishlist APIs are connected.
 - Favorite sorting is local over currently favorited products; no backend wishlist sorting or pagination is connected yet.
+- Payment result screens are still temporary UI result flows until checkout creates persisted orders and real payment transaction references.
 
 ## Blockers
 
@@ -254,4 +261,4 @@
 
 ## Suggested Commit Message
 
-feat: build favorite experience
+feat: refine payment result screens

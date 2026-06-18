@@ -67,55 +67,77 @@ class _PaymentResultScaffold extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ZayColors.white,
+      backgroundColor: const Color(0xFFE6E6E9),
       body: SafeArea(
         child: Column(
           children: [
             const _PaymentResultHeader(),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 26, 24, 28),
-                child: Column(
-                  children: [
-                    const Spacer(),
-                    visual,
-                    const SizedBox(height: 42),
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                        color: ZayColors.textPrimary,
-                        fontWeight: FontWeight.w900,
-                      ),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  width: double.infinity,
+                  constraints: const BoxConstraints(minHeight: 560),
+                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+                  decoration: const BoxDecoration(
+                    color: ZayColors.white,
+                    borderRadius: BorderRadius.vertical(
+                      top: Radius.circular(36),
                     ),
-                    const SizedBox(height: 18),
-                    Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style:
-                          ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                        color: ZayColors.textSecondary,
-                        height: 1.65,
-                        fontWeight: FontWeight.w500,
-                      ),
+                  ),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 64,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFE4E6EE),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        const SizedBox(height: 70),
+                        visual,
+                        const SizedBox(height: 42),
+                        Text(
+                          title,
+                          textAlign: TextAlign.center,
+                          style: ZayTheme.lightTheme.textTheme.titleLarge
+                              ?.copyWith(
+                            color: ZayColors.textPrimary,
+                            fontWeight: FontWeight.w900,
+                          ),
+                        ),
+                        const SizedBox(height: 18),
+                        Text(
+                          message,
+                          textAlign: TextAlign.center,
+                          style: ZayTheme.lightTheme.textTheme.displayLarge
+                              ?.copyWith(
+                            color: ZayColors.textSecondary,
+                            height: 1.65,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 22),
+                        // Temporary until checkout creates a persisted order
+                        // and backend transaction reference.
+                        _ReferencePill(label: referenceLabel),
+                        const SizedBox(height: 58),
+                        ZayButton.primary(
+                          action: () => ZayRouter.goto(primaryRoute),
+                          text: primaryText,
+                          fullWidth: true,
+                        ),
+                        const SizedBox(height: 14),
+                        ZayButton.outline(
+                          action: () => ZayRouter.goto(secondaryRoute),
+                          text: secondaryText,
+                          fullWidth: true,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 22),
-                    // Temporary until checkout creates a persisted order and
-                    // backend transaction reference.
-                    _ReferencePill(label: referenceLabel),
-                    const Spacer(),
-                    ZayButton.primary(
-                      action: () => ZayRouter.goto(primaryRoute),
-                      text: primaryText,
-                      fullWidth: true,
-                    ),
-                    const SizedBox(height: 14),
-                    ZayButton.outline(
-                      action: () => ZayRouter.goto(secondaryRoute),
-                      text: secondaryText,
-                      fullWidth: true,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
