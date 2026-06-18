@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/components/empty_state.dart';
 import 'package:zayrova/presentation/pages/profile/profile_components.dart';
 import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
@@ -16,6 +17,7 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   late final TextEditingController nameController;
   late final TextEditingController emailController;
+  String? formError;
 
   @override
   void initState() {
@@ -32,10 +34,50 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.dispose();
   }
 
-  void _showDeferredSaveMessage() {
+  Future<void> _saveProfile() async {
+    final user = ref.read(authControllerProvider).currentUser;
+    if (user == null) {
+      setState(() => formError = 'Sign in before editing profile details.');
+      return;
+    }
+
+    final name = nameController.text.trim();
+    final contact = emailController.text.trim();
+
+    if (name.isEmpty || contact.isEmpty) {
+      setState(() => formError = 'Name and contact are required.');
+      return;
+    }
+
+    setState(() => formError = null);
+
+    final isEmail = contact.contains('@');
+    final updatedUser = user.copyWith(
+      fullName: name,
+      email: isEmail ? contact : user.email,
+      phoneNumber: isEmail ? user.phoneNumber : contact,
+    );
+
+    await ref.read(authControllerProvider.notifier).updateLocalProfile(
+          updatedUser,
+        );
+
+    if (!mounted) {
+      return;
+    }
+
+    final error = ref.read(authControllerProvider).errorMessage;
+    if (error != null && error.isNotEmpty) {
+      setState(() => formError = error);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(error), backgroundColor: ZayColors.primary),
+      );
+      return;
+    }
+
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Profile saving will be connected with profile APIs.'),
+        content: Text('Profile updated for this session.'),
         backgroundColor: ZayColors.primary,
       ),
     );
@@ -43,7 +85,8 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(authControllerProvider).currentUser;
+    final authState = ref.watch(authControllerProvider);
+    final user = authState.currentUser;
 
     if (user == null) {
       return const ProfilePageShell(
@@ -61,7 +104,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     return ProfilePageShell(
       title: 'Edit Profile',
-      bottom: _SaveBar(onSave: _showDeferredSaveMessage),
+      bottom: _SaveBar(
+        onSave: _saveProfile,
+        isSaving: authState.isLoading,
+      ),
       children: [
         Center(
           child: ProfileAvatar(
@@ -85,6 +131,16 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           icon: Icons.mail_outline,
           keyboardType: TextInputType.emailAddress,
         ),
+        if (formError != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            formError!,
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+              color: const Color(0xFFE53935),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
         const SizedBox(height: 24),
         ProfileSectionTitle(title: 'Account Linked With'),
         const SizedBox(height: 12),
@@ -92,7 +148,14 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           title: 'Google',
           icon: Icons.g_mobiledata,
           trailingText: '',
-          onTap: () {},
+          onTap: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Social account linking is coming soon.'),
+                backgroundColor: ZayColors.primary,
+              ),
+            );
+          },
         ),
         const SizedBox(height: 120),
       ],
@@ -101,9 +164,13 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 }
 
 class _SaveBar extends StatelessWidget {
-  const _SaveBar({required this.onSave});
+  const _SaveBar({
+    required this.onSave,
+    required this.isSaving,
+  });
 
   final VoidCallback onSave;
+  final bool isSaving;
 
   @override
   Widget build(BuildContext context) {
@@ -125,6 +192,7 @@ class _SaveBar extends StatelessWidget {
           action: onSave,
           text: 'Save Changes',
           fullWidth: true,
+          isLoading: isSaving,
         ),
       ),
     );

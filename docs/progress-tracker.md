@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Catalog Flow Completion
-- Current Feature: Filter Integration
+- Current Phase: Profile Behaviour Completion
+- Current Feature: Profile And Edit Profile Behaviour
 - Status: In Progress
 
 ## Completed Work
@@ -241,10 +241,18 @@
 - Updated filtered empty states to clearly explain when no products match selected filters.
 - Attempted `dart format` after filter integration, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after filter integration, but the local Dart VM crashed before analysis could run.
+- Added a temporary local/session profile update bridge in `AuthController`.
+- Wired Edit Profile save to validate required fields, update the current user state, show saving state, and display success/error feedback.
+- Kept Profile display driven by the current `AuthController` user data.
+- Replaced the Edit Profile Google linked-account no-op with clear coming-soon feedback.
+- Wired Complete Profile to update signed-in user phone/gender state and show a clean unsupported-backend message when no user is signed in.
+- Preserved profile image picker behavior while keeping media upload deferred until profile APIs exist.
+- Attempted `dart format` after profile behaviour work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after profile behaviour work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Add backend/server-side catalog filtering and pagination when the API supports it.
+- Add persistent profile mutation/media upload APIs when backend support exists.
 
 ## Known Risks
 
@@ -258,8 +266,8 @@
 - Checkout now creates an order before Payment Success, but payment gateway processing is still intentionally not connected.
 - Checkout delivery fee remains a placeholder value until delivery method/rates are connected.
 - Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
-- DummyJSON supports login/current-user/refresh only; registration, OTP, password reset, and profile completion remain cleanly deferred with user feedback.
-- Profile edit save and password change are UI-only until profile/auth mutation APIs are connected.
+- DummyJSON supports login/current-user/refresh only; registration, OTP, and password reset remain cleanly deferred with user feedback.
+- Profile edits and completion update local/session auth state only until profile mutation/media APIs are connected.
 - Security toggles are local UI state only and do not persist yet.
 - Help and legal content is static until CMS/support/legal content sources are added.
 - Orders currently depend on the existing DummyJSON cart-to-order adaptation until a real orders API is available.
@@ -282,4 +290,4 @@
 
 ## Suggested Commit Message
 
-feat: connect catalog filters
+feat: complete local profile behaviour

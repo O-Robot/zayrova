@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/components/profile_image_picker.dart';
 import 'package:zayrova/presentation/pages/auth/auth_components.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/input.dart';
 
-class CompleteProfile extends StatefulWidget {
+class CompleteProfile extends ConsumerStatefulWidget {
   const CompleteProfile({super.key});
 
   @override
-  State<CompleteProfile> createState() => _CompleteProfileState();
+  ConsumerState<CompleteProfile> createState() => _CompleteProfileState();
 }
 
-class _CompleteProfileState extends State<CompleteProfile> {
+class _CompleteProfileState extends ConsumerState<CompleteProfile> {
   final phoneNumber = TextEditingController();
   String? selectedGender;
   XFile? pickedImage;
@@ -35,29 +37,57 @@ class _CompleteProfileState extends State<CompleteProfile> {
     });
   }
 
-  void _completeProfile() {
+  Future<void> _completeProfile() async {
     if (phoneNumber.text.trim().isEmpty || selectedGender == null) {
       setState(() => formError = 'Add your phone number and gender.');
       return;
     }
 
-    final includesProfileImage = pickedImage != null;
+    final user = ref.read(authControllerProvider).currentUser;
+    if (user == null) {
+      setState(() {
+        formError =
+            'Sign in first. DummyJSON does not support standalone profile completion.';
+      });
+      return;
+    }
+
     setState(() => formError = null);
+    await ref.read(authControllerProvider.notifier).updateLocalProfile(
+          user.copyWith(
+            phoneNumber: phoneNumber.text.trim(),
+            gender: selectedGender,
+          ),
+        );
+
+    if (!mounted) {
+      return;
+    }
+
+    final error = ref.read(authControllerProvider).errorMessage;
+    if (error != null && error.isNotEmpty) {
+      setState(() => formError = error);
+      return;
+    }
+
+    final includesProfileImage = pickedImage != null;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
           includesProfileImage
-              ? 'Profile details and photo will be saved once profile APIs are connected.'
-              : 'Profile completion will be saved once profile APIs are connected.',
+              ? 'Profile updated for this session. Photo upload will be connected with profile APIs.'
+              : 'Profile updated for this session.',
         ),
         backgroundColor: ZayColors.primary,
       ),
     );
-    ZayRouter.goto(ZayRoutes.login);
+    ZayRouter.goto(ZayRoutes.profile);
   }
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+
     return AuthScaffold(
       showBackButton: true,
       children: [
@@ -107,6 +137,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
         AuthPrimaryButton(
           action: _completeProfile,
           text: 'Complete Profile',
+          isLoading: authState.isLoading,
         ),
       ],
     );

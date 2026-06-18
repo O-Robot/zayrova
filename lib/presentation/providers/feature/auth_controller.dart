@@ -111,6 +111,22 @@ class AuthController extends Notifier<AuthState> {
     );
   }
 
+  Future<void> updateLocalProfile(UserProfile profile) async {
+    if (state.currentUser == null) {
+      state = state.copyWith(
+        errorMessage: 'Sign in before updating profile details.',
+      );
+      return;
+    }
+
+    state = state.copyWith(isLoading: true, clearError: true);
+
+    // Temporary local/session profile update until profile mutation APIs exist.
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+
+    state = state.copyWith(currentUser: profile, isLoading: false);
+  }
+
   Future<void> logout() async {
     state = state.copyWith(isLoading: true, clearError: true);
 
