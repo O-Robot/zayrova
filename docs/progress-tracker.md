@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Notifications UI Implementation
-- Current Feature: Notifications Experience
+- Current Phase: Messaging UI Implementation
+- Current Feature: Messaging Experience
 - Status: In Progress
 
 ## Completed Work
@@ -195,10 +195,19 @@
 - Kept notification data sourced from existing notification architecture without fake notification rows in the UI.
 - Attempted `dart format` after Notifications work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after Notifications work, but the local Dart VM crashed before analysis could run.
+- Added a small Riverpod MessageController that consumes existing message use cases and exposes conversations, selected conversation messages, loading, sending, error, and empty-ready state.
+- Replaced the Messages placeholder with a real message list screen using the docs/new Message reference.
+- Added conversation search, activities strip, conversation list, unread indicators, last-message preview, timestamps, loading, empty, error, retry, and pull-to-refresh states.
+- Replaced the Message Detail placeholder with a real conversation screen using the docs/new Message Detail reference.
+- Added conversation header, message bubbles, sender/receiver alignment, date separators, timestamps, scrollable message history, and a send-message composer.
+- Preserved Messages to Message Detail navigation through the existing `/messages` and `/message-detail` routes.
+- Kept messaging data sourced from existing conversation/message architecture without fake conversation or message history in the UI.
+- Attempted `dart format` after Messaging work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after Messaging work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Build Messaging screens using docs/new message references.
+- Continue project completion with Wishlist polish and final integration cleanup.
 
 ## Known Risks
 
@@ -225,6 +234,9 @@
 - Payment success currently navigates to My Orders rather than a newly created order detail because checkout does not create persisted orders yet.
 - Notifications depend on the API-ready notification datasource and may show error/empty states until a real backend notification endpoint is available.
 - Mark-as-read and mark-all-as-read actions call the existing notification use cases, but backend endpoint shape still needs confirmation.
+- Messages depend on the API-ready message datasource and may show error/empty states until a real backend conversations/messages endpoint is available.
+- Message avatar images and online presence are not available in the current Conversation entity, so the UI uses initials and local active/closed state only.
+- Send-message behavior calls the existing use case, but final backend endpoint shape still needs confirmation.
 
 ## Blockers
 
@@ -232,4 +244,4 @@
 
 ## Suggested Commit Message
 
-feat: build notifications experience
+feat: build messaging experience

@@ -16,6 +16,8 @@ import 'package:zayrova/presentation/pages/home/home_screen.dart';
 import 'package:zayrova/presentation/pages/home/category_screen.dart';
 import 'package:zayrova/presentation/pages/location/location_access.dart';
 import 'package:zayrova/presentation/pages/location/location_page.dart';
+import 'package:zayrova/presentation/pages/messages/message_detail_screen.dart';
+import 'package:zayrova/presentation/pages/messages/messages_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/get_started_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/onboarding_screen.dart';
 import 'package:zayrova/presentation/pages/onboarding/splash_screen.dart';
@@ -157,9 +159,15 @@ class ZayScreens {
         return _page(ZayRoutes.notifications, const NotificationsScreen());
       case ZayRoutes.chat:
       case ZayRoutes.messages:
-        return _placeholder(ZayRoutes.messages, 'Messages');
+        return _page(ZayRoutes.messages, const MessagesScreen());
       case ZayRoutes.messageDetail:
-        return _placeholder(ZayRoutes.messageDetail, 'Message Detail');
+        return _page(
+          ZayRoutes.messageDetail,
+          MessageDetailScreen(
+            conversationId: data['conversationId']?.toString(),
+            title: data['title']?.toString(),
+          ),
+        );
       case ZayRoutes.helpSupport:
         return _page(ZayRoutes.helpSupport, const HelpSupportScreen());
       case ZayRoutes.legalAndPolicies:
