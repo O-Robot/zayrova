@@ -9,6 +9,7 @@ import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/zay_network_image.dart';
 import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
+import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
@@ -110,6 +111,7 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
     }
 
     final catalogState = ref.watch(catalogControllerProvider);
+    final wishlistState = ref.watch(wishlistControllerProvider);
     final product = catalogState.selectedProduct;
     final isCurrentProduct = product?.id == widget.productId;
     final shouldShowLoading = catalogState.isLoading || !isCurrentProduct;
@@ -139,12 +141,16 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
       selectedColorIndex: _selectedColorIndex,
       quantity: _quantity,
       isAddingToCart: _isAddingToCart,
+      isFavorite: wishlistState.contains(product.id),
       onToggleExpanded: () => setState(() => _isExpanded = !_isExpanded),
       onImageSelected: (index) => setState(() => _selectedImageIndex = index),
       onSizeSelected: (index) => setState(() => _selectedSizeIndex = index),
       onColorSelected: (index) => setState(() => _selectedColorIndex = index),
       onQuantityChanged: (quantity) => setState(() => _quantity = quantity),
       onAddToCart: () => _addToCart(product),
+      onFavoriteToggle: () {
+        ref.read(wishlistControllerProvider.notifier).toggleProduct(product);
+      },
     );
   }
 }
@@ -158,12 +164,14 @@ class _ProductDetailsContent extends StatelessWidget {
     required this.selectedColorIndex,
     required this.quantity,
     required this.isAddingToCart,
+    required this.isFavorite,
     required this.onToggleExpanded,
     required this.onImageSelected,
     required this.onSizeSelected,
     required this.onColorSelected,
     required this.onQuantityChanged,
     required this.onAddToCart,
+    required this.onFavoriteToggle,
   });
 
   final Product product;
@@ -173,12 +181,14 @@ class _ProductDetailsContent extends StatelessWidget {
   final int selectedColorIndex;
   final int quantity;
   final bool isAddingToCart;
+  final bool isFavorite;
   final VoidCallback onToggleExpanded;
   final ValueChanged<int> onImageSelected;
   final ValueChanged<int> onSizeSelected;
   final ValueChanged<int> onColorSelected;
   final ValueChanged<int> onQuantityChanged;
   final VoidCallback onAddToCart;
+  final VoidCallback onFavoriteToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -218,6 +228,8 @@ class _ProductDetailsContent extends StatelessWidget {
                   onSizeSelected: onSizeSelected,
                   onColorSelected: onColorSelected,
                   onQuantityChanged: onQuantityChanged,
+                  isFavorite: isFavorite,
+                  onFavoriteToggle: onFavoriteToggle,
                 ),
               ),
             ],
@@ -359,6 +371,8 @@ class _ProductInfoSheet extends StatelessWidget {
     required this.onSizeSelected,
     required this.onColorSelected,
     required this.onQuantityChanged,
+    required this.isFavorite,
+    required this.onFavoriteToggle,
   });
 
   final Product product;
@@ -370,6 +384,8 @@ class _ProductInfoSheet extends StatelessWidget {
   final ValueChanged<int> onSizeSelected;
   final ValueChanged<int> onColorSelected;
   final ValueChanged<int> onQuantityChanged;
+  final bool isFavorite;
+  final VoidCallback onFavoriteToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -385,7 +401,11 @@ class _ProductInfoSheet extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _ProductTitleRow(product: product),
+            _ProductTitleRow(
+              product: product,
+              isFavorite: isFavorite,
+              onFavoriteToggle: onFavoriteToggle,
+            ),
             const SizedBox(height: 14),
             _RatingRow(product: product),
             const SizedBox(height: 24),
@@ -427,9 +447,15 @@ class _ProductInfoSheet extends StatelessWidget {
 }
 
 class _ProductTitleRow extends StatelessWidget {
-  const _ProductTitleRow({required this.product});
+  const _ProductTitleRow({
+    required this.product,
+    required this.isFavorite,
+    required this.onFavoriteToggle,
+  });
 
   final Product product;
+  final bool isFavorite;
+  final VoidCallback onFavoriteToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -447,17 +473,20 @@ class _ProductTitleRow extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 16),
-        Container(
-          width: 58,
-          height: 58,
-          decoration: const BoxDecoration(
-            color: ZayColors.cancel,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.favorite_border,
-            color: ZayColors.textPrimary,
-            size: 30,
+        GestureDetector(
+          onTap: onFavoriteToggle,
+          child: Container(
+            width: 58,
+            height: 58,
+            decoration: const BoxDecoration(
+              color: ZayColors.cancel,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: isFavorite ? ZayColors.secondary : ZayColors.textPrimary,
+              size: 30,
+            ),
           ),
         ),
       ],

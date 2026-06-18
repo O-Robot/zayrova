@@ -78,6 +78,7 @@ class ProductCard extends StatelessWidget {
     required Product product,
     required VoidCallback action,
     required VoidCallback onFavoriteToggle,
+    bool? isFavorite,
     double width = 170,
     ProductCardVariant variant = ProductCardVariant.standard,
   }) {
@@ -94,7 +95,7 @@ class ProductCard extends StatelessWidget {
     return ProductCard(
       key: key,
       imagePath: imagePath,
-      isFavorite: product.isFavorite,
+      isFavorite: isFavorite ?? product.isFavorite,
       onFavoriteToggle: onFavoriteToggle,
       price: product.price.toStringAsFixed(2),
       oldPrice: oldPrice,

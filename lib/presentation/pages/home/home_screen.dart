@@ -12,6 +12,7 @@ import 'package:zayrova/presentation/components/error_state.dart';
 import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/zay_network_image.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
+import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
@@ -497,12 +498,24 @@ class _HomeProductGrid extends StatelessWidget {
           spacing: spacing,
           runSpacing: 28,
           children: products.map((product) {
-            return _HomeProductCard(
-              product: product,
-              width: cardWidth,
-              onTap: () => ZayRouter.goto(ZayRoutes.productDetails, {
-                'productId': product.id,
-              }),
+            return Consumer(
+              builder: (context, ref, _) {
+                final wishlist = ref.watch(wishlistControllerProvider);
+
+                return _HomeProductCard(
+                  product: product,
+                  width: cardWidth,
+                  isFavorite: wishlist.contains(product.id),
+                  onFavoriteToggle: () {
+                    ref
+                        .read(wishlistControllerProvider.notifier)
+                        .toggleProduct(product);
+                  },
+                  onTap: () => ZayRouter.goto(ZayRoutes.productDetails, {
+                    'productId': product.id,
+                  }),
+                );
+              },
             );
           }).toList(),
         );
@@ -516,11 +529,15 @@ class _HomeProductCard extends StatelessWidget {
     required this.product,
     required this.width,
     required this.onTap,
+    required this.isFavorite,
+    required this.onFavoriteToggle,
   });
 
   final Product product;
   final double width;
   final VoidCallback onTap;
+  final bool isFavorite;
+  final VoidCallback onFavoriteToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -547,17 +564,22 @@ class _HomeProductCard extends StatelessWidget {
                   Positioned(
                     top: 12,
                     right: 12,
-                    child: Container(
-                      width: 34,
-                      height: 34,
-                      decoration: BoxDecoration(
-                        color: ZayColors.textSecondary.withAlpha(190),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.favorite_border,
-                        color: ZayColors.white,
-                        size: 22,
+                    child: GestureDetector(
+                      onTap: onFavoriteToggle,
+                      child: Container(
+                        width: 34,
+                        height: 34,
+                        decoration: BoxDecoration(
+                          color: ZayColors.textSecondary.withAlpha(190),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(
+                          isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: isFavorite
+                              ? ZayColors.secondary
+                              : ZayColors.white,
+                          size: 22,
+                        ),
                       ),
                     ),
                   ),

@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Messaging UI Implementation
-- Current Feature: Messaging Experience
+- Current Phase: Wishlist UI Implementation
+- Current Feature: Favorite Experience
 - Status: In Progress
 
 ## Completed Work
@@ -204,10 +204,18 @@
 - Kept messaging data sourced from existing conversation/message architecture without fake conversation or message history in the UI.
 - Attempted `dart format` after Messaging work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after Messaging work, but the local Dart VM crashed before analysis could run.
+- Added a small temporary Riverpod WishlistController that stores favorite Product entities in memory until wishlist/profile persistence APIs exist.
+- Extended ProductCard.fromProduct with a favorite-state override while preserving existing constructor usage.
+- Replaced the hardcoded Wishlist prototype with a real My Favorite bottom-tab screen using the docs/new My Favorite reference.
+- Added favorite search, sort chips, two-column ProductCard grid, empty state, remove-from-favorite action, and Product Details navigation.
+- Wired favorite add/remove actions through Home, View All Products, Category, Search Results, and Product Details.
+- Preserved the existing bottom navigation Favorite destination and kept onboarding unchanged.
+- Attempted `dart format` after Favorite work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after Favorite work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Continue project completion with Wishlist polish and final integration cleanup.
+- Run final UI consistency cleanup and resolve remaining analyzer issues once the local Dart VM is fixed.
 
 ## Known Risks
 
@@ -237,6 +245,8 @@
 - Messages depend on the API-ready message datasource and may show error/empty states until a real backend conversations/messages endpoint is available.
 - Message avatar images and online presence are not available in the current Conversation entity, so the UI uses initials and local active/closed state only.
 - Send-message behavior calls the existing use case, but final backend endpoint shape still needs confirmation.
+- Wishlist state is temporary in-memory presentation state and will reset on app restart until persistence or backend wishlist APIs are connected.
+- Favorite sorting is local over currently favorited products; no backend wishlist sorting or pagination is connected yet.
 
 ## Blockers
 
@@ -244,4 +254,4 @@
 
 ## Suggested Commit Message
 
-feat: build messaging experience
+feat: build favorite experience

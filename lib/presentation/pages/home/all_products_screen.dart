@@ -10,6 +10,7 @@ import 'package:zayrova/presentation/components/error_state.dart';
 import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
+import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
@@ -364,14 +365,25 @@ class _CatalogProductGrid extends StatelessWidget {
           spacing: spacing,
           runSpacing: 28,
           children: products.map((product) {
-            return ProductCard.fromProduct(
-              product: product,
-              width: cardWidth,
-              variant: ProductCardVariant.compact,
-              action: () => ZayRouter.goto(ZayRoutes.productDetails, {
-                'productId': product.id,
-              }),
-              onFavoriteToggle: () {},
+            return Consumer(
+              builder: (context, ref, _) {
+                final wishlist = ref.watch(wishlistControllerProvider);
+
+                return ProductCard.fromProduct(
+                  product: product,
+                  width: cardWidth,
+                  variant: ProductCardVariant.compact,
+                  isFavorite: wishlist.contains(product.id),
+                  action: () => ZayRouter.goto(ZayRoutes.productDetails, {
+                    'productId': product.id,
+                  }),
+                  onFavoriteToggle: () {
+                    ref
+                        .read(wishlistControllerProvider.notifier)
+                        .toggleProduct(product);
+                  },
+                );
+              },
             );
           }).toList(),
         );
