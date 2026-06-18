@@ -11,6 +11,7 @@ import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
+import 'package:zayrova/presentation/pages/search/catalog_filter.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
@@ -30,7 +31,7 @@ class CategoryScreen extends ConsumerStatefulWidget {
 
 class _CategoryScreenState extends ConsumerState<CategoryScreen> {
   String? _requestedCategorySlug;
-  _CategorySortOption _selectedSort = _CategorySortOption.all;
+  CatalogFilterValues _filters = const CatalogFilterValues();
 
   String? get _safeCategorySlug {
     final categorySlug = widget.categorySlug;
@@ -71,14 +72,23 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
         .loadProductsByCategory(categorySlug);
   }
 
+  Future<void> _openFilters() async {
+    final result = await ZayRouter.goto(ZayRoutes.filter, {
+      'filters': _filters.toMap(),
+    });
+
+    if (!mounted || result is! Map) {
+      return;
+    }
+
+    setState(() => _filters = CatalogFilterValues.fromMap(result));
+  }
+
   @override
   Widget build(BuildContext context) {
     final categorySlug = _safeCategorySlug;
     final catalogState = ref.watch(catalogControllerProvider);
-    final products = _sortedProducts(
-      catalogState.categoryProducts,
-      _selectedSort,
-    );
+    final products = _filters.applyTo(catalogState.categoryProducts);
 
     return Scaffold(
       appBar: null,
@@ -90,12 +100,18 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
             _CategoryHeader(
               title: _categoryTitle,
               onSearch: () => ZayRouter.goto(ZayRoutes.search),
-              onFilter: () => ZayRouter.goto(ZayRoutes.filter),
+              onFilter: _openFilters,
             ),
             const SizedBox(height: 22),
             _CategorySortChips(
-              selectedSort: _selectedSort,
-              onChanged: (sort) => setState(() => _selectedSort = sort),
+              selectedSort: _sortFromFilter(_filters.sort),
+              onChanged: (sort) {
+                setState(() {
+                  _filters = _filters.copyWith(
+                    sort: _filterSortFromCategory(sort),
+                  );
+                });
+              },
             ),
             const SizedBox(height: 22),
             Expanded(
@@ -105,6 +121,7 @@ class _CategoryScreenState extends ConsumerState<CategoryScreen> {
                 requestedCategorySlug: _requestedCategorySlug,
                 state: catalogState,
                 products: products,
+                hasActiveFilters: _filters.hasActiveFilters,
                 onRetry: _loadCategory,
               ),
             ),
@@ -287,6 +304,7 @@ class _CategoryBody extends StatelessWidget {
     required this.requestedCategorySlug,
     required this.state,
     required this.products,
+    required this.hasActiveFilters,
     required this.onRetry,
   });
 
@@ -295,6 +313,7 @@ class _CategoryBody extends StatelessWidget {
   final String? requestedCategorySlug;
   final CatalogState state;
   final List<Product> products;
+  final bool hasActiveFilters;
   final Future<void> Function() onRetry;
 
   @override
@@ -325,8 +344,10 @@ class _CategoryBody extends StatelessWidget {
     if (products.isEmpty) {
       return EmptyStateWidget(
         icon: Icons.inventory_2_outlined,
-        title: 'No products found',
-        message: 'No products found in this category yet.',
+        title: hasActiveFilters ? 'No matching products' : 'No products found',
+        message: hasActiveFilters
+            ? 'No products in this category match the selected filters.'
+            : 'No products found in this category yet.',
         actionText: 'Retry',
         onAction: () => onRetry(),
       );
@@ -517,21 +538,30 @@ enum _CategorySortOption {
   final String label;
 }
 
-List<Product> _sortedProducts(
-  List<Product> products,
-  _CategorySortOption sort,
-) {
-  final sortedProducts = [...products];
+_CategorySortOption _sortFromFilter(CatalogFilterSort sort) {
+  switch (sort) {
+    case CatalogFilterSort.recommended:
+      return _CategorySortOption.all;
+    case CatalogFilterSort.newest:
+      return _CategorySortOption.latest;
+    case CatalogFilterSort.highestRated:
+      return _CategorySortOption.mostPopular;
+    case CatalogFilterSort.priceLowToHigh:
+      return _CategorySortOption.cheapest;
+    case CatalogFilterSort.priceHighToLow:
+      return _CategorySortOption.all;
+  }
+}
 
+CatalogFilterSort _filterSortFromCategory(_CategorySortOption sort) {
   switch (sort) {
     case _CategorySortOption.all:
+      return CatalogFilterSort.recommended;
     case _CategorySortOption.latest:
-      return sortedProducts;
+      return CatalogFilterSort.newest;
     case _CategorySortOption.mostPopular:
-      sortedProducts.sort((a, b) => (b.rating ?? 0).compareTo(a.rating ?? 0));
-      return sortedProducts;
+      return CatalogFilterSort.highestRated;
     case _CategorySortOption.cheapest:
-      sortedProducts.sort((a, b) => a.price.compareTo(b.price));
-      return sortedProducts;
+      return CatalogFilterSort.priceLowToHigh;
   }
 }

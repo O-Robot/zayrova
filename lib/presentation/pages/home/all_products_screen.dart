@@ -11,6 +11,7 @@ import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
+import 'package:zayrova/presentation/pages/search/catalog_filter.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
@@ -22,7 +23,7 @@ class AllProductsScreen extends ConsumerStatefulWidget {
 }
 
 class _AllProductsScreenState extends ConsumerState<AllProductsScreen> {
-  _CatalogSortOption _selectedSort = _CatalogSortOption.all;
+  CatalogFilterValues _filters = const CatalogFilterValues();
 
   @override
   void initState() {
@@ -34,10 +35,22 @@ class _AllProductsScreenState extends ConsumerState<AllProductsScreen> {
     await ref.read(catalogControllerProvider.notifier).loadProducts(limit: 100);
   }
 
+  Future<void> _openFilters() async {
+    final result = await ZayRouter.goto(ZayRoutes.filter, {
+      'filters': _filters.toMap(),
+    });
+
+    if (!mounted || result is! Map) {
+      return;
+    }
+
+    setState(() => _filters = CatalogFilterValues.fromMap(result));
+  }
+
   @override
   Widget build(BuildContext context) {
     final catalogState = ref.watch(catalogControllerProvider);
-    final products = _sortedProducts(catalogState.products, _selectedSort);
+    final products = _filters.applyTo(catalogState.products);
 
     return Scaffold(
       appBar: null,
@@ -48,18 +61,25 @@ class _AllProductsScreenState extends ConsumerState<AllProductsScreen> {
           children: [
             _CatalogHeader(
               onSearch: () => ZayRouter.goto(ZayRoutes.search),
-              onFilter: () => ZayRouter.goto(ZayRoutes.filter),
+              onFilter: _openFilters,
             ),
             const SizedBox(height: 22),
             _CatalogSortChips(
-              selectedSort: _selectedSort,
-              onChanged: (sort) => setState(() => _selectedSort = sort),
+              selectedSort: _sortFromFilter(_filters.sort),
+              onChanged: (sort) {
+                setState(() {
+                  _filters = _filters.copyWith(
+                    sort: _filterSortFromCatalog(sort),
+                  );
+                });
+              },
             ),
             const SizedBox(height: 22),
             Expanded(
               child: _CatalogBody(
                 state: catalogState,
                 products: products,
+                hasActiveFilters: _filters.hasActiveFilters,
                 onRetry: _loadProducts,
               ),
             ),
@@ -236,11 +256,13 @@ class _CatalogBody extends StatelessWidget {
   const _CatalogBody({
     required this.state,
     required this.products,
+    required this.hasActiveFilters,
     required this.onRetry,
   });
 
   final CatalogState state;
   final List<Product> products;
+  final bool hasActiveFilters;
   final Future<void> Function() onRetry;
 
   @override
@@ -260,8 +282,10 @@ class _CatalogBody extends StatelessWidget {
     if (products.isEmpty) {
       return EmptyStateWidget(
         icon: Icons.inventory_2_outlined,
-        title: 'No products found',
-        message: 'There are no products available right now.',
+        title: hasActiveFilters ? 'No matching products' : 'No products found',
+        message: hasActiveFilters
+            ? 'Try adjusting or resetting your filters.'
+            : 'There are no products available right now.',
         actionText: 'Retry',
         onAction: () => onRetry(),
       );
@@ -448,21 +472,30 @@ enum _CatalogSortOption {
   final String label;
 }
 
-List<Product> _sortedProducts(
-  List<Product> products,
-  _CatalogSortOption sort,
-) {
-  final sortedProducts = [...products];
+_CatalogSortOption _sortFromFilter(CatalogFilterSort sort) {
+  switch (sort) {
+    case CatalogFilterSort.recommended:
+      return _CatalogSortOption.all;
+    case CatalogFilterSort.newest:
+      return _CatalogSortOption.latest;
+    case CatalogFilterSort.highestRated:
+      return _CatalogSortOption.mostPopular;
+    case CatalogFilterSort.priceLowToHigh:
+      return _CatalogSortOption.cheapest;
+    case CatalogFilterSort.priceHighToLow:
+      return _CatalogSortOption.all;
+  }
+}
 
+CatalogFilterSort _filterSortFromCatalog(_CatalogSortOption sort) {
   switch (sort) {
     case _CatalogSortOption.all:
+      return CatalogFilterSort.recommended;
     case _CatalogSortOption.latest:
-      return sortedProducts;
+      return CatalogFilterSort.newest;
     case _CatalogSortOption.mostPopular:
-      sortedProducts.sort((a, b) => (b.rating ?? 0).compareTo(a.rating ?? 0));
-      return sortedProducts;
+      return CatalogFilterSort.highestRated;
     case _CatalogSortOption.cheapest:
-      sortedProducts.sort((a, b) => a.price.compareTo(b.price));
-      return sortedProducts;
+      return CatalogFilterSort.priceLowToHigh;
   }
 }

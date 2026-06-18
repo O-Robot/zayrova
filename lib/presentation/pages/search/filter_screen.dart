@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/presentation/pages/search/catalog_filter.dart';
 import 'package:zayrova/presentation/components/top_navigation.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
-import 'package:zayrova/presentation/routes/zay_router.dart';
 
 class FilterScreen extends ConsumerStatefulWidget {
-  const FilterScreen({super.key});
+  const FilterScreen({super.key, this.initialFilters});
+
+  final CatalogFilterValues? initialFilters;
 
   @override
   ConsumerState<FilterScreen> createState() => _FilterScreenState();
@@ -26,13 +28,23 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
 
   String _selectedCategory = 'All';
   String _selectedSort = _sortOptions.first;
-  RangeValues _priceRange = const RangeValues(0, 1500);
+  RangeValues _priceRange = const RangeValues(0, 3000);
   double? _minimumRating;
   bool _inStockOnly = false;
 
   @override
   void initState() {
     super.initState();
+    final filters = widget.initialFilters ?? const CatalogFilterValues();
+    _selectedCategory = filters.categoryName ?? 'All';
+    _selectedSort = filters.sort.label;
+    _priceRange = RangeValues(
+      filters.minimumPrice.clamp(0, 3000).toDouble(),
+      filters.maximumPrice.clamp(0, 3000).toDouble(),
+    );
+    _minimumRating = filters.minimumRating;
+    _inStockOnly = filters.inStockOnly;
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final catalogState = ref.read(catalogControllerProvider);
       if (!catalogState.hasLoadedCategories && !catalogState.isLoading) {
@@ -45,14 +57,23 @@ class _FilterScreenState extends ConsumerState<FilterScreen> {
     setState(() {
       _selectedCategory = 'All';
       _selectedSort = _sortOptions.first;
-      _priceRange = const RangeValues(0, 1500);
+      _priceRange = const RangeValues(0, 3000);
       _minimumRating = null;
       _inStockOnly = false;
     });
   }
 
   void _applyFilters() {
-    ZayRouter.goBack();
+    Navigator.of(context).pop(
+      CatalogFilterValues(
+        categoryName: _selectedCategory == 'All' ? null : _selectedCategory,
+        minimumRating: _minimumRating,
+        sort: CatalogFilterSort.fromLabel(_selectedSort),
+        inStockOnly: _inStockOnly,
+        minimumPrice: _priceRange.start,
+        maximumPrice: _priceRange.end,
+      ).toMap(),
+    );
   }
 
   @override

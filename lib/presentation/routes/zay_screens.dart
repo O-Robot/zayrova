@@ -28,6 +28,7 @@ import 'package:zayrova/presentation/pages/orders/orders_screen.dart';
 import 'package:zayrova/presentation/pages/placeholder/placeholder_screen.dart';
 import 'package:zayrova/presentation/pages/profile/edit_profile_screen.dart';
 import 'package:zayrova/presentation/pages/profile/profile_screen.dart';
+import 'package:zayrova/presentation/pages/search/catalog_filter.dart';
 import 'package:zayrova/presentation/pages/search/filter_screen.dart';
 import 'package:zayrova/presentation/pages/search/search_screen.dart';
 import 'package:zayrova/presentation/pages/settings/change_password_screen.dart';
@@ -98,7 +99,14 @@ class ZayScreens {
       case ZayRoutes.search:
         return _page(ZayRoutes.search, const SearchScreen());
       case ZayRoutes.filter:
-        return _page(ZayRoutes.filter, const FilterScreen());
+        return _page(
+          ZayRoutes.filter,
+          FilterScreen(
+            initialFilters: CatalogFilterValues.fromMap(
+              data['filters'] is Map ? data['filters'] as Map : null,
+            ),
+          ),
+        );
       case ZayRoutes.cart:
         return _page(ZayRoutes.cart, const CartScreen());
       case ZayRoutes.checkout:

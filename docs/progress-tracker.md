@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Checkout Flow Completion
-- Current Feature: Checkout To Order Flow
+- Current Phase: Catalog Flow Completion
+- Current Feature: Filter Integration
 - Status: In Progress
 
 ## Completed Work
@@ -234,17 +234,23 @@
 - Updated Order Details to reuse the just-created selected order when opened from Payment Success.
 - Attempted `dart format` after checkout-to-order work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after checkout-to-order work, but the local Dart VM crashed before analysis could run.
+- Added a reusable catalog filter value object for category, rating, sort, availability, and price range filtering.
+- Updated FilterScreen to initialize from existing filter values and return selected values through the current route flow.
+- Connected filters to Search Results, All Products, and Category Products using client-side filtering over real API-loaded products.
+- Preserved current filter UI design, catalog loading/error/empty states, and existing routes.
+- Updated filtered empty states to clearly explain when no products match selected filters.
+- Attempted `dart format` after filter integration, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after filter integration, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Replace DummyJSON cart-to-order adaptation with a real orders endpoint when backend support exists.
+- Add backend/server-side catalog filtering and pagination when the API supports it.
 
 ## Known Risks
 
 - Product sorting is local UI sorting over currently loaded catalog results; backend pagination and server-side sorting are not connected yet.
 - The all-products screen currently requests up to 100 products through the existing catalog controller.
-- Category sorting is local UI sorting over the loaded category product list.
-- Search result sorting is local UI sorting over the loaded search results.
+- Catalog filters and sorting are client-side over currently loaded results until backend filtering is available.
 - Product color circles only render for parseable color names/hex values; unparseable color values render as text chips.
 - Cart item selection is display-only from `CartItem.isSelected`; no selection toggle/update API exists yet.
 - Cart promo code row is visual-only until discount/promo logic is connected.
@@ -276,4 +282,4 @@
 
 ## Suggested Commit Message
 
-feat: connect checkout order creation
+feat: connect catalog filters

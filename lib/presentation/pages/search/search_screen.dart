@@ -9,6 +9,7 @@ import 'package:zayrova/presentation/components/empty_state.dart';
 import 'package:zayrova/presentation/components/error_state.dart';
 import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/product_card.dart';
+import 'package:zayrova/presentation/pages/search/catalog_filter.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
@@ -25,7 +26,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
   String _submittedQuery = '';
-  _SearchSortOption _selectedSort = _SearchSortOption.all;
+  CatalogFilterValues _filters = const CatalogFilterValues();
 
   bool get _hasSearched => _submittedQuery.isNotEmpty;
 
@@ -55,18 +56,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     setState(() {
       _submittedQuery = query;
-      _selectedSort = _SearchSortOption.all;
     });
     await ref.read(catalogControllerProvider.notifier).searchProducts(query);
+  }
+
+  Future<void> _openFilters() async {
+    final result = await ZayRouter.goto(ZayRoutes.filter, {
+      'filters': _filters.toMap(),
+    });
+
+    if (!mounted || result is! Map) {
+      return;
+    }
+
+    setState(() => _filters = CatalogFilterValues.fromMap(result));
   }
 
   @override
   Widget build(BuildContext context) {
     final catalogState = ref.watch(catalogControllerProvider);
-    final results = _sortedProducts(
-      catalogState.searchResults,
-      _selectedSort,
-    );
+    final results = _filters.applyTo(catalogState.searchResults);
 
     return Scaffold(
       appBar: null,
@@ -80,7 +89,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               focusNode: _searchFocusNode,
               hasSearched: _hasSearched,
               onSubmitted: _submitSearch,
-              onFilterTap: () => ZayRouter.goto(ZayRoutes.filter),
+              onFilterTap: _openFilters,
             ),
             Expanded(
               child: _SearchBody(
@@ -88,8 +97,15 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 query: _submittedQuery,
                 hasSearched: _hasSearched,
                 products: results,
-                selectedSort: _selectedSort,
-                onSortChanged: (sort) => setState(() => _selectedSort = sort),
+                hasActiveFilters: _filters.hasActiveFilters,
+                selectedSort: _sortFromFilter(_filters.sort),
+                onSortChanged: (sort) {
+                  setState(() {
+                    _filters = _filters.copyWith(
+                      sort: _filterSortFromSearch(sort),
+                    );
+                  });
+                },
                 onRetry: _submitSearch,
               ),
             ),
@@ -239,6 +255,7 @@ class _SearchBody extends StatelessWidget {
     required this.query,
     required this.hasSearched,
     required this.products,
+    required this.hasActiveFilters,
     required this.selectedSort,
     required this.onSortChanged,
     required this.onRetry,
@@ -248,6 +265,7 @@ class _SearchBody extends StatelessWidget {
   final String query;
   final bool hasSearched;
   final List<Product> products;
+  final bool hasActiveFilters;
   final _SearchSortOption selectedSort;
   final ValueChanged<_SearchSortOption> onSortChanged;
   final Future<void> Function([String? value]) onRetry;
@@ -273,8 +291,10 @@ class _SearchBody extends StatelessWidget {
     if (state.isSearchEmpty || products.isEmpty) {
       return EmptyStateWidget(
         icon: Icons.search_off_rounded,
-        title: 'No results found',
-        message: 'No products found for "$query".',
+        title: hasActiveFilters ? 'No matching results' : 'No results found',
+        message: hasActiveFilters
+            ? 'No products match "$query" with the selected filters.'
+            : 'No products found for "$query".',
         actionText: 'Retry',
         onAction: () => onRetry(),
       );
@@ -554,21 +574,30 @@ enum _SearchSortOption {
   final String label;
 }
 
-List<Product> _sortedProducts(
-  List<Product> products,
-  _SearchSortOption sort,
-) {
-  final sortedProducts = [...products];
+_SearchSortOption _sortFromFilter(CatalogFilterSort sort) {
+  switch (sort) {
+    case CatalogFilterSort.recommended:
+      return _SearchSortOption.all;
+    case CatalogFilterSort.newest:
+      return _SearchSortOption.latest;
+    case CatalogFilterSort.highestRated:
+      return _SearchSortOption.mostPopular;
+    case CatalogFilterSort.priceLowToHigh:
+      return _SearchSortOption.cheapest;
+    case CatalogFilterSort.priceHighToLow:
+      return _SearchSortOption.all;
+  }
+}
 
+CatalogFilterSort _filterSortFromSearch(_SearchSortOption sort) {
   switch (sort) {
     case _SearchSortOption.all:
+      return CatalogFilterSort.recommended;
     case _SearchSortOption.latest:
-      return sortedProducts;
+      return CatalogFilterSort.newest;
     case _SearchSortOption.mostPopular:
-      sortedProducts.sort((a, b) => (b.rating ?? 0).compareTo(a.rating ?? 0));
-      return sortedProducts;
+      return CatalogFilterSort.highestRated;
     case _SearchSortOption.cheapest:
-      sortedProducts.sort((a, b) => a.price.compareTo(b.price));
-      return sortedProducts;
+      return CatalogFilterSort.priceLowToHigh;
   }
 }
