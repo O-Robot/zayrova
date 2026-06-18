@@ -56,6 +56,31 @@ class _VerifyEmailState extends State<VerifyEmail> {
     }
   }
 
+  void _submitCode() {
+    if (!isButtonEnabled) {
+      return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'OTP verification needs backend support. Continue to reset password UI for now.',
+        ),
+        backgroundColor: ZayColors.primary,
+      ),
+    );
+    ZayRouter.goto(ZayRoutes.setPassword);
+  }
+
+  void _resendCode() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Code resend is coming with the auth backend.'),
+        backgroundColor: ZayColors.primary,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
@@ -89,7 +114,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
         AuthPrimaryButton(
           text: 'Submit',
           isDisabled: !isButtonEnabled,
-          action: () => ZayRouter.goto(ZayRoutes.completeProfile),
+          action: _submitCode,
         ),
         const SizedBox(height: 24),
         Center(
@@ -109,7 +134,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
                     color: ZayColors.primary,
                     fontWeight: FontWeight.w800,
                   ),
-                  recognizer: TapGestureRecognizer()..onTap = () {},
+                  recognizer: TapGestureRecognizer()..onTap = _resendCode,
                 ),
               ],
             ),

@@ -14,11 +14,30 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   final TextEditingController email = TextEditingController();
+  String? formError;
 
   @override
   void dispose() {
     email.dispose();
     super.dispose();
+  }
+
+  void _sendCode() {
+    if (email.text.trim().isEmpty) {
+      setState(() => formError = 'Enter your email or phone number.');
+      return;
+    }
+
+    setState(() => formError = null);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Password recovery is not supported by DummyJSON yet. You can continue through the recovery UI.',
+        ),
+        backgroundColor: ZayColors.primary,
+      ),
+    );
+    ZayRouter.goto(ZayRoutes.verifyEmail);
   }
 
   @override
@@ -37,10 +56,25 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           controller: email,
           icon: Icons.mail_outline,
           keyboardType: TextInputType.emailAddress,
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
+          },
         ),
+        if (formError != null) ...[
+          const SizedBox(height: 14),
+          Text(
+            formError!,
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+              color: const Color(0xFFE53935),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
         const SizedBox(height: 42),
         AuthPrimaryButton(
-          action: () => ZayRouter.goto(ZayRoutes.verifyEmail),
+          action: _sendCode,
           text: 'Send Code',
         ),
         const SizedBox(height: 30),

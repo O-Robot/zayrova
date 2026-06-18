@@ -2,8 +2,8 @@
 
 ## Current Status
 
-- Current Phase: Checkout UI Implementation
-- Current Feature: Payment Result Screens
+- Current Phase: Auth Behaviour Completion
+- Current Feature: Core Authentication Flow
 - Status: In Progress
 
 ## Completed Work
@@ -218,10 +218,17 @@
 - Kept payment result screens as UI-only flow without creating orders or submitting payments.
 - Attempted `dart format` after Payment Result refinement, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after Payment Result refinement, but the local Dart VM crashed before analysis could run.
+- Wired Sign In to `AuthController.login` instead of routing directly to Home.
+- Added Sign In loading state, required-field validation, API/auth error display, and success navigation to Home.
+- Added clear unsupported-flow feedback for Sign Up, Forgot Password, Verify Email submit/resend, Set Password, Complete Profile, and social auth buttons.
+- Wired Settings logout through `AuthController.logout` before navigating back to Sign In.
+- Preserved existing auth visuals, DummyJSON login usage, and the current `getCurrentUser`/refresh token paths.
+- Attempted `dart format` after auth behaviour work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after auth behaviour work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Run final UI consistency cleanup and resolve remaining analyzer issues once the local Dart VM is fixed.
+- Connect checkout order creation and replace temporary payment/result references.
 
 ## Known Risks
 
@@ -236,8 +243,7 @@
 - Checkout payment submission is still a temporary UI flow to Payment Success until order and gateway integration exist.
 - Checkout delivery fee remains a placeholder value until delivery method/rates are connected.
 - Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
-- Auth screens still preserve several pre-existing placeholder submit actions until full auth signup/reset/profile flows are wired.
-- Sign In still preserves the existing route-only login behavior instead of calling AuthController.
+- DummyJSON supports login/current-user/refresh only; registration, OTP, password reset, and profile completion remain cleanly deferred with user feedback.
 - Profile edit save and password change are UI-only until profile/auth mutation APIs are connected.
 - Security toggles are local UI state only and do not persist yet.
 - Help and legal content is static until CMS/support/legal content sources are added.
@@ -261,4 +267,4 @@
 
 ## Suggested Commit Message
 
-feat: refine payment result screens
+feat: complete core auth behaviour

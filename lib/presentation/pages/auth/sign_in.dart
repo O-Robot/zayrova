@@ -1,22 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/pages/auth/auth_components.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 
-class SignIn extends StatefulWidget {
+class SignIn extends ConsumerStatefulWidget {
   const SignIn({super.key});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  ConsumerState<SignIn> createState() => _SignInState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInState extends ConsumerState<SignIn> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   bool showPassword = false;
+  String? formError;
 
   @override
   void dispose() {
@@ -25,8 +28,43 @@ class _SignInState extends State<SignIn> {
     super.dispose();
   }
 
+  Future<void> _signIn() async {
+    final username = email.text.trim();
+    final pass = password.text;
+
+    if (username.isEmpty || pass.isEmpty) {
+      setState(() => formError = 'Enter your username and password.');
+      return;
+    }
+
+    setState(() => formError = null);
+
+    await ref.read(authControllerProvider.notifier).login(
+          username: username,
+          password: pass,
+        );
+
+    if (!mounted) {
+      return;
+    }
+
+    final authState = ref.read(authControllerProvider);
+    if (authState.isAuthenticated) {
+      ZayRouter.exit(ZayRoutes.home);
+      return;
+    }
+
+    final message = authState.errorMessage ?? 'Unable to sign in.';
+    setState(() => formError = message);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: ZayColors.primary),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+
     return AuthScaffold(
       children: [
         const AuthHeader(
@@ -40,6 +78,11 @@ class _SignInState extends State<SignIn> {
           controller: email,
           icon: Icons.mail_outline,
           keyboardType: TextInputType.emailAddress,
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
+          },
         ),
         const SizedBox(height: 26),
         AuthField(
@@ -51,6 +94,11 @@ class _SignInState extends State<SignIn> {
           trailingIcon: showPassword ? Icons.visibility : Icons.visibility_off,
           onTrailingTap: () {
             setState(() => showPassword = !showPassword);
+          },
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
           },
         ),
         const SizedBox(height: 8),
@@ -71,10 +119,21 @@ class _SignInState extends State<SignIn> {
             ),
           ),
         ),
+        if (formError != null) ...[
+          const SizedBox(height: 14),
+          Text(
+            formError!,
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+              color: const Color(0xFFE53935),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
         const SizedBox(height: 38),
         AuthPrimaryButton(
-          action: () => ZayRouter.goto(ZayRoutes.home),
+          action: _signIn,
           text: 'Sign In',
+          isLoading: authState.isLoading,
         ),
         const SizedBox(height: 24),
         const AuthDividerLabel(text: 'Or using other method'),

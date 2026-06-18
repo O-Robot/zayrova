@@ -269,15 +269,25 @@ class AuthSocialButton extends StatelessWidget {
     super.key,
     required this.assetPath,
     required this.text,
+    this.onTap,
   });
 
   final String assetPath;
   final String text;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap ??
+          () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Social authentication is coming soon.'),
+                backgroundColor: ZayColors.primary,
+              ),
+            );
+          },
       borderRadius: BorderRadius.circular(30),
       child: Container(
         width: double.infinity,

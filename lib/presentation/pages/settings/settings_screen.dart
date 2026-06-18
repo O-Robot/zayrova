@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/presentation/pages/profile/profile_components.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
 
-class SettingsScreen extends StatelessWidget {
+class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
-  void _showLogoutDialog(BuildContext context) {
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
     showDialog<void>(
       context: context,
       builder: (context) {
@@ -49,9 +51,25 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async {
                     Navigator.of(context).pop();
-                    ZayRouter.goto(ZayRoutes.login);
+                    await ref.read(authControllerProvider.notifier).logout();
+
+                    if (context.mounted) {
+                      final error =
+                          ref.read(authControllerProvider).errorMessage;
+
+                      if (error != null && error.isNotEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(error),
+                            backgroundColor: ZayColors.primary,
+                          ),
+                        );
+                      }
+                    }
+
+                    ZayRouter.exit(ZayRoutes.login);
                   },
                   child: const Text(
                     'Log Out',
@@ -70,7 +88,7 @@ class SettingsScreen extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return ProfilePageShell(
       title: 'Settings',
       children: [
@@ -125,7 +143,7 @@ class SettingsScreen extends StatelessWidget {
           title: 'Logout',
           icon: Icons.logout,
           isDestructive: true,
-          onTap: () => _showLogoutDialog(context),
+          onTap: () => _showLogoutDialog(context, ref),
         ),
       ],
     );

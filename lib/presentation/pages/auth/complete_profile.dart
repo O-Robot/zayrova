@@ -4,6 +4,8 @@ import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/components/profile_image_picker.dart';
 import 'package:zayrova/presentation/pages/auth/auth_components.dart';
+import 'package:zayrova/presentation/routes/zay_router.dart';
+import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/input.dart';
 
 class CompleteProfile extends StatefulWidget {
@@ -17,6 +19,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
   final phoneNumber = TextEditingController();
   String? selectedGender;
   XFile? pickedImage;
+  String? formError;
 
   @override
   void dispose() {
@@ -30,6 +33,27 @@ class _CompleteProfileState extends State<CompleteProfile> {
         pickedImage = image;
       }
     });
+  }
+
+  void _completeProfile() {
+    if (phoneNumber.text.trim().isEmpty || selectedGender == null) {
+      setState(() => formError = 'Add your phone number and gender.');
+      return;
+    }
+
+    final includesProfileImage = pickedImage != null;
+    setState(() => formError = null);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          includesProfileImage
+              ? 'Profile details and photo will be saved once profile APIs are connected.'
+              : 'Profile completion will be saved once profile APIs are connected.',
+        ),
+        backgroundColor: ZayColors.primary,
+      ),
+    );
+    ZayRouter.goto(ZayRoutes.login);
   }
 
   @override
@@ -53,17 +77,35 @@ class _CompleteProfileState extends State<CompleteProfile> {
           controller: phoneNumber,
           icon: Icons.phone_outlined,
           keyboardType: TextInputType.phone,
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
+          },
         ),
         const SizedBox(height: 26),
         _ProfileDropdown(
           value: selectedGender,
           onChanged: (value) {
-            setState(() => selectedGender = value);
+            setState(() {
+              selectedGender = value;
+              formError = null;
+            });
           },
         ),
+        if (formError != null) ...[
+          const SizedBox(height: 14),
+          Text(
+            formError!,
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+              color: const Color(0xFFE53935),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
         const SizedBox(height: 48),
         AuthPrimaryButton(
-          action: () {},
+          action: _completeProfile,
           text: 'Complete Profile',
         ),
       ],

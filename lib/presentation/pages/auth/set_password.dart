@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/pages/auth/auth_components.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/routes/zay_routes.dart';
@@ -15,12 +17,36 @@ class _SetPasswordState extends State<SetPassword> {
   final TextEditingController confirmPassword = TextEditingController();
   bool showPassword = false;
   bool showConfirmPassword = false;
+  String? formError;
 
   @override
   void dispose() {
     password.dispose();
     confirmPassword.dispose();
     super.dispose();
+  }
+
+  void _changePassword() {
+    if (password.text.isEmpty || confirmPassword.text.isEmpty) {
+      setState(() => formError = 'Enter and confirm your new password.');
+      return;
+    }
+
+    if (password.text != confirmPassword.text) {
+      setState(() => formError = 'Passwords do not match.');
+      return;
+    }
+
+    setState(() => formError = null);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Password reset needs backend support before it can update your account.',
+        ),
+        backgroundColor: ZayColors.primary,
+      ),
+    );
+    ZayRouter.goto(ZayRoutes.login);
   }
 
   @override
@@ -43,6 +69,11 @@ class _SetPasswordState extends State<SetPassword> {
           onTrailingTap: () {
             setState(() => showPassword = !showPassword);
           },
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
+          },
         ),
         const SizedBox(height: 26),
         AuthField(
@@ -56,10 +87,25 @@ class _SetPasswordState extends State<SetPassword> {
           onTrailingTap: () {
             setState(() => showConfirmPassword = !showConfirmPassword);
           },
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
+          },
         ),
+        if (formError != null) ...[
+          const SizedBox(height: 14),
+          Text(
+            formError!,
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+              color: const Color(0xFFE53935),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
         const SizedBox(height: 48),
         AuthPrimaryButton(
-          action: () {},
+          action: _changePassword,
           text: 'Change Password',
         ),
         const SizedBox(height: 30),

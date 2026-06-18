@@ -20,6 +20,7 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController password = TextEditingController();
   bool showPassword = false;
   bool acceptsTerms = true;
+  String? formError;
 
   @override
   void dispose() {
@@ -28,6 +29,33 @@ class _SignUpState extends State<SignUp> {
     email.dispose();
     password.dispose();
     super.dispose();
+  }
+
+  void _createAccount() {
+    final hasRequiredFields = firstName.text.trim().isNotEmpty &&
+        lastName.text.trim().isNotEmpty &&
+        email.text.trim().isNotEmpty &&
+        password.text.isNotEmpty;
+
+    if (!hasRequiredFields) {
+      setState(() => formError = 'Complete all required fields to continue.');
+      return;
+    }
+
+    if (!acceptsTerms) {
+      setState(() => formError = 'Accept the terms and conditions to continue.');
+      return;
+    }
+
+    setState(() => formError = null);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text(
+          'Account registration needs a backend endpoint before it can create users.',
+        ),
+        backgroundColor: ZayColors.primary,
+      ),
+    );
   }
 
   @override
@@ -47,6 +75,11 @@ class _SignUpState extends State<SignUp> {
                 hint: 'First name',
                 controller: firstName,
                 icon: Icons.person_outline,
+                onChanged: (_) {
+                  if (formError != null) {
+                    setState(() => formError = null);
+                  }
+                },
               ),
             ),
             const SizedBox(width: 12),
@@ -56,6 +89,11 @@ class _SignUpState extends State<SignUp> {
                 hint: 'Last name',
                 controller: lastName,
                 icon: Icons.person_outline,
+                onChanged: (_) {
+                  if (formError != null) {
+                    setState(() => formError = null);
+                  }
+                },
               ),
             ),
           ],
@@ -67,6 +105,11 @@ class _SignUpState extends State<SignUp> {
           controller: email,
           icon: Icons.mail_outline,
           keyboardType: TextInputType.emailAddress,
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
+          },
         ),
         const SizedBox(height: 26),
         AuthField(
@@ -78,6 +121,11 @@ class _SignUpState extends State<SignUp> {
           trailingIcon: showPassword ? Icons.visibility : Icons.visibility_off,
           onTrailingTap: () {
             setState(() => showPassword = !showPassword);
+          },
+          onChanged: (_) {
+            if (formError != null) {
+              setState(() => formError = null);
+            }
           },
         ),
         const SizedBox(height: 12),
@@ -118,9 +166,19 @@ class _SignUpState extends State<SignUp> {
             ),
           ],
         ),
+        if (formError != null) ...[
+          const SizedBox(height: 12),
+          Text(
+            formError!,
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+              color: const Color(0xFFE53935),
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
         const SizedBox(height: 30),
         AuthPrimaryButton(
-          action: () {},
+          action: _createAccount,
           text: 'Create Account',
         ),
         const SizedBox(height: 24),
