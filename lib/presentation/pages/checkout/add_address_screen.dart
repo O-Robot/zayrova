@@ -59,7 +59,7 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
       isDefault: _isDefault,
     );
 
-    // Temporary in-memory save. Later this should call profile/address APIs.
+    // Local/session save. Later this should call profile/address APIs.
     ref.read(addressControllerProvider.notifier).addAddress(address);
     ZayRouter.goBack();
   }

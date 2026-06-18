@@ -2,9 +2,9 @@
 
 ## Current Status
 
-- Current Phase: Profile Behaviour Completion
-- Current Feature: Profile And Edit Profile Behaviour
-- Status: In Progress
+- Current Phase: Checkout Persistence Cleanup
+- Current Feature: Address And Payment Method Persistence
+- Current Status: In Progress
 
 ## Completed Work
 
@@ -249,10 +249,18 @@
 - Preserved profile image picker behavior while keeping media upload deferred until profile APIs exist.
 - Attempted `dart format` after profile behaviour work, but the local Dart VM crashed before formatting could run.
 - Attempted `flutter analyze` after profile behaviour work, but the local Dart VM crashed before analysis could run.
+- Moved checkout address state from in-memory-only storage to local/session persistence through the address controller.
+- Moved payment method state to local/session metadata persistence through the payment method controller.
+- Persisted only safe payment metadata: card holder title, provider/brand, last four digits, expiry month/year, and default selection.
+- Added controller-level remove support for addresses and payment methods without changing the current screens.
+- Preserved checkout selected address and selected payment method display through existing Riverpod state.
+- Updated the local storage helper to await SharedPreferences writes and removals.
+- Attempted `dart format` after address/payment persistence work, but the local Dart VM crashed before formatting could run.
+- Attempted `flutter analyze` after address/payment persistence work, but the local Dart VM crashed before analysis could run.
 
 ## Next Task
 
-- Add persistent profile mutation/media upload APIs when backend support exists.
+- Run analyzer in a healthy local Flutter environment and connect remove actions where the final account/payment UI requires them.
 
 ## Known Risks
 
@@ -268,6 +276,8 @@
 - Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
 - DummyJSON supports login/current-user/refresh only; registration, OTP, and password reset remain cleanly deferred with user feedback.
 - Profile edits and completion update local/session auth state only until profile mutation/media APIs are connected.
+- Address and payment method persistence is local/session only until real profile and payment APIs replace it.
+- Payment method storage intentionally persists metadata only; full card numbers and CVV remain form-only values.
 - Security toggles are local UI state only and do not persist yet.
 - Help and legal content is static until CMS/support/legal content sources are added.
 - Orders currently depend on the existing DummyJSON cart-to-order adaptation until a real orders API is available.
@@ -290,4 +300,4 @@
 
 ## Suggested Commit Message
 
-feat: complete local profile behaviour
+feat: persist checkout address and payment metadata

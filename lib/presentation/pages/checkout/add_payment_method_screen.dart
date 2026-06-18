@@ -60,7 +60,7 @@ class _AddPaymentMethodScreenState
       isDefault: _isDefault,
     );
 
-    // Temporary in-memory save. Later this should call secure payment/profile
+    // Local/session metadata save. Later this should call secure payment/profile
     // APIs. Full card number and CVV are intentionally not stored.
     ref.read(paymentMethodControllerProvider.notifier).addMethod(method);
     ZayRouter.goBack();

@@ -1,5 +1,6 @@
-import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+
+import 'package:shared_preferences/shared_preferences.dart';
 // ignore_for_file: unnecessary_null_comparison
 
 class LocalStorage {
@@ -33,24 +34,24 @@ class LocalStorage {
 
     if (storage != null) {
       if (val is String) {
-        storage.setString(key, val);
+        await storage.setString(key, val);
       } else if (val is int) {
-        storage.setInt(key, val);
+        await storage.setInt(key, val);
       } else if (val is bool) {
-        storage.setBool(key, val);
+        await storage.setBool(key, val);
       } else if (val is Map) {
         val = json.encode(val); // attempt to converts data to json
 
-        storage.setString(key, val);
+        await storage.setString(key, val);
       } else {
-        storage.setString(key, val);
+        await storage.setString(key, val);
       }
     }
   }
 
   static Future<void> delete(String key) async {
     SharedPreferences storage = await SharedPreferences.getInstance();
-    storage.remove(key);
+    await storage.remove(key);
 
     //////////////////////////////////////////////////////////////////
   }
