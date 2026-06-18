@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/utils/local_storage.dart';
 import 'package:zayrova/domain/entities/payment_method_entity.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 
 // Local/session payment method metadata for the checkout foundation.
 // Replace this with secure payment/profile API use cases when payment
@@ -49,12 +50,15 @@ class PaymentMethodState {
 }
 
 class PaymentMethodController extends Notifier<PaymentMethodState> {
-  static const String _storageKey = 'zayrova_checkout_payment_methods';
-
   @override
   PaymentMethodState build() {
     unawaited(_loadPersistedState());
     return const PaymentMethodState();
+  }
+
+  String get _storageKey {
+    final userId = ref.read(authControllerProvider).currentUser?.id;
+    return 'zayrova_checkout_payment_methods_${userId ?? 'guest'}';
   }
 
   void addMethod(PaymentMethod method) {

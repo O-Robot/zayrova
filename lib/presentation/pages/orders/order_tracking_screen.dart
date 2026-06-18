@@ -28,23 +28,25 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
   }
 
   Future<void> _trackOrder() async {
-    final id = int.tryParse(widget.orderId ?? '');
-    if (id == null) {
+    final orderId = widget.orderId;
+    if (orderId == null || orderId.isEmpty) {
       return;
     }
 
-    await ref.read(orderControllerProvider.notifier).trackOrder(id);
+    await ref
+        .read(orderControllerProvider.notifier)
+        .trackOrderByIdentifier(orderId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final id = int.tryParse(widget.orderId ?? '');
+    final hasOrderId = widget.orderId != null && widget.orderId!.isNotEmpty;
     final state = ref.watch(orderControllerProvider);
 
     return Scaffold(
       backgroundColor: ZayColors.white,
       body: SafeArea(
-        child: id == null
+        child: !hasOrderId
             ? const EmptyStateWidget(
                 icon: Icons.local_shipping_outlined,
                 title: 'Missing order',
@@ -262,7 +264,7 @@ class _TrackingSheet extends StatelessWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text(
-                      'Order status updates will be available when order fulfillment is connected.',
+                      'Order status cannot be updated from the app right now.',
                     ),
                   ),
                 );

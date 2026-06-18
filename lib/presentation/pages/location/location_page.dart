@@ -36,7 +36,7 @@ class _LocationPageState extends ConsumerState<LocationPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'Current location is coming soon. Enter your location manually for now.',
+          'Current location is unavailable right now. Enter your location manually.',
         ),
       ),
     );
@@ -51,8 +51,8 @@ class _LocationPageState extends ConsumerState<LocationPage> {
       return;
     }
 
-    // Local/session save only. Replace with profile/address APIs or real
-    // geocoding when backend and location services are connected.
+    // Local/session save only. Replace with account address services or real
+    // geocoding when location services are available.
     final address = Address(
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       label: 'Manual Location',

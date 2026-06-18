@@ -46,8 +46,7 @@ class _CompleteProfileState extends ConsumerState<CompleteProfile> {
     final user = ref.read(authControllerProvider).currentUser;
     if (user == null) {
       setState(() {
-        formError =
-            'Sign in first. DummyJSON does not support standalone profile completion.';
+        formError = 'Sign in first to complete your profile.';
       });
       return;
     }
@@ -75,8 +74,8 @@ class _CompleteProfileState extends ConsumerState<CompleteProfile> {
       SnackBar(
         content: Text(
           includesProfileImage
-              ? 'Profile updated for this session. Photo upload will be connected with profile APIs.'
-              : 'Profile updated for this session.',
+              ? 'Profile updated. Photo upload will be available soon.'
+              : 'Profile updated.',
         ),
         backgroundColor: ZayColors.primary,
       ),

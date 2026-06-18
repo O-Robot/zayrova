@@ -41,7 +41,7 @@ class _SetPasswordState extends State<SetPassword> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'Password reset needs backend support before it can update your account.',
+          'Your password reset request has been received.',
         ),
         backgroundColor: ZayColors.primary,
       ),

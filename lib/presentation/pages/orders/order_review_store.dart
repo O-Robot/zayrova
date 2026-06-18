@@ -41,9 +41,8 @@ class StoredOrderReview {
   }
 }
 
-// Temporary local/session review persistence until a real reviews endpoint is
-// available. Keep review storage isolated here so the future backend swap does
-// not leak into order UI screens.
+// Local/session review persistence. Keep review storage isolated here so a
+// remote review service can replace it without leaking into order UI screens.
 class OrderReviewStore {
   static const String _storageKey = 'zayrova_order_reviews';
 

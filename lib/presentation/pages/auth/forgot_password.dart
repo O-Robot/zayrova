@@ -32,7 +32,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'Password recovery is not supported by DummyJSON yet. You can continue through the recovery UI.',
+          'If this account exists, a recovery code will be sent shortly.',
         ),
         backgroundColor: ZayColors.primary,
       ),

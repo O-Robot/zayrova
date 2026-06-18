@@ -10,7 +10,7 @@ class SocialButtons {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Social authentication is coming soon.'),
+                content: Text('Social authentication is unavailable right now.'),
                 backgroundColor: ZayColors.primary,
               ),
             );

@@ -2,12 +2,20 @@
 
 ## Current Status
 
-- Current Phase: Demo Stabilisation
-- Current Feature: Must Fix Before Demo
+- Current Phase: Resale Hardening
+- Current Feature: Should Fix Before Resale
 - Current Status: In Progress
 
 ## Completed Work
 
+- Replaced UI reliance on the hardcoded cart user id with cart ownership resolved from the authenticated user where available.
+- Kept the public API cart fallback isolated inside CartController for compatibility.
+- Added user-scoped local wishlist persistence so favorites restore after app restart.
+- Scoped address, payment method, wishlist, and locally-created order persistence to the current user when available.
+- Added configurable checkout delivery fee through `CheckoutConstants`.
+- Persisted locally-created orders with stable order references and allowed order detail/tracking routes to resolve local references.
+- Preserved safe payment metadata storage and avoided persisting full card numbers or CVV.
+- Replaced visible implementation-specific wording across auth, location, settings, legal, order tracking, and order review flows.
 - Fixed Splash session routing so onboarding completion is no longer cleared on every launch.
 - Added lightweight auth profile restoration/persistence through the existing auth controller and local storage.
 - Marked onboarding complete when users skip or finish the old onboarding flow.
@@ -289,13 +297,12 @@
 
 ## Next Task
 
-- Run `flutter analyze` in a healthy local Flutter environment and smoke-test the demo-critical flows from Splash through checkout/order result.
+- Run `flutter analyze` in a healthy local Flutter environment and smoke-test persistence across restart for auth, cart, favorites, address, payment method, and orders.
 
 ## Known Risks
 
 - Product sorting is local UI sorting over currently loaded catalog results; backend pagination and server-side sorting are not connected yet.
 - Auth session restoration currently persists basic profile data locally; full access/refresh token persistence is still limited by the current auth repository result shape.
-- Sign In copy now references DummyJSON for demo clarity; replace with brand/backend-neutral copy when the final auth backend is connected.
 - The all-products screen currently requests up to 100 products through the existing catalog controller.
 - Catalog filters and sorting are client-side over currently loaded results until backend filtering is available.
 - Product color circles only render for parseable color names/hex values; unparseable color values render as text chips.
@@ -303,7 +310,7 @@
 - Cart promo code row is visual-only until discount/promo logic is connected.
 - Cart summary currency defaults to USD because the Cart aggregate does not expose a currency field.
 - Checkout now creates an order before Payment Success, but payment gateway processing is still intentionally not connected.
-- Checkout delivery fee remains a placeholder value until delivery method/rates are connected.
+- Checkout delivery fee is now local configuration; remote delivery rates are still future work.
 - Checkout total currency defaults to USD because the Cart aggregate does not expose a cart-level currency field.
 - DummyJSON supports login/current-user/refresh only; registration, OTP, and password reset remain cleanly deferred with user feedback.
 - Profile edits and completion update local/session auth state only until profile mutation/media APIs are connected.
@@ -325,7 +332,7 @@
 - Messages depend on the API-ready message datasource and may show error/empty states until a real backend conversations/messages endpoint is available.
 - Message avatar images and online presence are not available in the current Conversation entity, so the UI uses initials and local active/closed state only.
 - Send-message behavior calls the existing use case, but final backend endpoint shape still needs confirmation.
-- Wishlist state is temporary in-memory presentation state and will reset on app restart until persistence or backend wishlist APIs are connected.
+- Wishlist state now persists locally per user; remote wishlist sync is still future work.
 - Favorite sorting is local over currently favorited products; no backend wishlist sorting or pagination is connected yet.
 - Payment result screens remain UI-only for gateway outcomes until real payment processing is connected.
 
@@ -335,4 +342,4 @@
 
 ## Suggested Commit Message
 
-fix: stabilise critical user flows
+chore: harden resale-ready local persistence

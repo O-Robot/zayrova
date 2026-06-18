@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/utils/local_storage.dart';
 import 'package:zayrova/domain/entities/address_entity.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 
 // Local/session address persistence for the checkout foundation.
-// Replace this with profile/address API use cases when backend persistence is
-// connected.
+// Replace this with profile/address use cases when remote persistence is ready.
 final addressControllerProvider =
     NotifierProvider<AddressController, AddressState>(AddressController.new);
 
@@ -47,12 +47,15 @@ class AddressState {
 }
 
 class AddressController extends Notifier<AddressState> {
-  static const String _storageKey = 'zayrova_checkout_addresses';
-
   @override
   AddressState build() {
     unawaited(_loadPersistedState());
     return const AddressState();
+  }
+
+  String get _storageKey {
+    final userId = ref.read(authControllerProvider).currentUser?.id;
+    return 'zayrova_checkout_addresses_${userId ?? 'guest'}';
   }
 
   void addAddress(Address address) {

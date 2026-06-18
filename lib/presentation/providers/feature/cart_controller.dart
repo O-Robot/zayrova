@@ -1,13 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/domain/entities/cart_entity.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/providers/usecase_providers.dart';
-
-// Temporary DummyJSON user used until real authenticated user/session cart exists.
-const int temporaryDummyJsonCartUserId = 1;
 
 final cartControllerProvider = NotifierProvider<CartController, CartState>(
   CartController.new,
 );
+
+const int _publicApiFallbackCartUserId = 1;
 
 class CartState {
   const CartState({
@@ -139,6 +139,24 @@ class CartController extends Notifier<CartState> {
     state = state.copyWith(
       isLoading: false,
       errorMessage: result.message ?? 'Unable to load user cart.',
+    );
+  }
+
+  int currentCartOwnerId() {
+    final currentUserId = ref.read(authControllerProvider).currentUser?.id;
+    return int.tryParse(currentUserId ?? '') ?? _publicApiFallbackCartUserId;
+  }
+
+  Future<void> loadCurrentUserCart() {
+    return loadUserCart(currentCartOwnerId());
+  }
+
+  Future<void> addToCurrentUserCart({
+    required List<Map<String, dynamic>> products,
+  }) {
+    return addToCart(
+      userId: currentCartOwnerId(),
+      products: products,
     );
   }
 

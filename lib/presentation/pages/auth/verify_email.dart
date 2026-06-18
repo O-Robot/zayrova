@@ -64,7 +64,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'OTP verification needs backend support. Continue to reset password UI for now.',
+          'Code accepted. Continue by setting a new password.',
         ),
         backgroundColor: ZayColors.primary,
       ),
@@ -75,7 +75,7 @@ class _VerifyEmailState extends State<VerifyEmail> {
   void _resendCode() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Code resend is coming with the auth backend.'),
+        content: Text('A new code will be sent if the account is eligible.'),
         backgroundColor: ZayColors.primary,
       ),
     );

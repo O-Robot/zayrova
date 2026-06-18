@@ -182,7 +182,7 @@ class _IntroCard extends StatelessWidget {
           ),
           const SizedBox(height: 10),
           Text(
-            'Tell us how the order went. Reviews are stored locally until backend review APIs are connected.',
+            'Tell us how the order went. Your feedback helps improve the shopping experience.',
             style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
               color: ZayColors.textSecondary,
               height: 1.45,

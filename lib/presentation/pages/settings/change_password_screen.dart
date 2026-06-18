@@ -26,7 +26,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   void _showDeferredChangeMessage() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Password update will be connected with auth APIs.'),
+        content: Text('Password update is unavailable right now.'),
         backgroundColor: ZayColors.primary,
       ),
     );

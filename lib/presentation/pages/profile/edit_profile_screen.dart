@@ -151,7 +151,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Social account linking is coming soon.'),
+                content: Text('Social account linking is unavailable right now.'),
                 backgroundColor: ZayColors.primary,
               ),
             );

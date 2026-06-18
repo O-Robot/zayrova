@@ -14,19 +14,19 @@ class LegalPoliciesScreen extends StatelessWidget {
         _LegalSection(
           title: 'Terms',
           body:
-              'These terms describe how customers may use Zayrova commerce experiences, manage account details, browse products, and place orders. Availability, pricing, and checkout services may change as the template is connected to a production backend.',
+              'These terms describe how customers may use Zayrova commerce experiences, manage account details, browse products, and place orders. Availability, pricing, and checkout services may change over time.',
         ),
         const SizedBox(height: 22),
         _LegalSection(
           title: 'Changes to the Service and/or Terms:',
           body:
-              'Zayrova may update screens, features, payment options, profile settings, and legal text as the product moves from template foundation to a real backend-powered application. Continued use of the app after changes means the updated terms apply.',
+              'Zayrova may update screens, features, payment options, profile settings, and legal text as the service evolves. Continued use of the app after changes means the updated terms apply.',
         ),
         const SizedBox(height: 22),
         _LegalSection(
           title: 'Privacy',
           body:
-              'Profile, address, payment method, order, and notification data should be handled through secure services when backend integrations are connected. This template currently keeps some checkout setup data locally until API persistence is implemented.',
+              'Profile, address, payment method, order, and notification data should be handled with care and protected through appropriate account and payment safeguards.',
         ),
       ],
     );

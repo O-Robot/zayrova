@@ -17,7 +17,7 @@ class _LocationAccessState extends State<LocationAccess> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'Location permission is coming soon. Enter your location manually for now.',
+          'Location access is unavailable right now. Enter your location manually.',
         ),
       ),
     );

@@ -33,7 +33,7 @@ class _SignInState extends ConsumerState<SignIn> {
     final pass = password.text;
 
     if (username.isEmpty || pass.isEmpty) {
-      setState(() => formError = 'Enter your DummyJSON username and password.');
+      setState(() => formError = 'Enter your username and password.');
       return;
     }
 
@@ -69,12 +69,12 @@ class _SignInState extends ConsumerState<SignIn> {
       children: [
         const AuthHeader(
           title: 'Login Account',
-          subtitle: 'Use a DummyJSON username and password to continue',
+          subtitle: 'Use your account username and password to continue',
         ),
         const SizedBox(height: 38),
         AuthField(
           label: 'Username',
-          hint: 'Enter your DummyJSON username',
+          hint: 'Enter your username',
           controller: email,
           icon: Icons.person_outline,
           keyboardType: TextInputType.text,

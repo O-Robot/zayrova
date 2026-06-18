@@ -27,9 +27,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   }
 
   Future<void> _loadCart() {
-    return ref
-        .read(cartControllerProvider.notifier)
-        .loadUserCart(temporaryDummyJsonCartUserId);
+    return ref.read(cartControllerProvider.notifier).loadCurrentUserCart();
   }
 
   Future<void> _updateItemQuantity(Cart cart, CartItem item, int quantity) {

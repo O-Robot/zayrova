@@ -125,7 +125,7 @@ class SettingsScreen extends ConsumerWidget {
           onTap: () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Language settings are not available yet.'),
+                content: Text('Language settings are unavailable right now.'),
               ),
             );
           },

@@ -51,7 +51,7 @@ class _SignUpState extends State<SignUp> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text(
-          'Account registration needs a backend endpoint before it can create users.',
+          'Account creation is unavailable right now. Please sign in with an existing account.',
         ),
         backgroundColor: ZayColors.primary,
       ),

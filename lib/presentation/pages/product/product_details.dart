@@ -70,8 +70,7 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
     }
 
     setState(() => _isAddingToCart = true);
-    await ref.read(cartControllerProvider.notifier).addToCart(
-      userId: temporaryDummyJsonCartUserId,
+    await ref.read(cartControllerProvider.notifier).addToCurrentUserCart(
       products: [
         {'id': productId, 'quantity': _quantity},
       ],

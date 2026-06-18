@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zayrova/config/checkout_constants.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/address_entity.dart';
@@ -26,8 +27,6 @@ class CheckoutScreen extends ConsumerStatefulWidget {
 }
 
 class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
-  static const double _deliveryFeePlaceholder = 0;
-
   @override
   void initState() {
     super.initState();
@@ -40,15 +39,11 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       return;
     }
 
-    await ref
-        .read(cartControllerProvider.notifier)
-        .loadUserCart(temporaryDummyJsonCartUserId);
+    await ref.read(cartControllerProvider.notifier).loadCurrentUserCart();
   }
 
   Future<void> _reloadCart() {
-    return ref
-        .read(cartControllerProvider.notifier)
-        .loadUserCart(temporaryDummyJsonCartUserId);
+    return ref.read(cartControllerProvider.notifier).loadCurrentUserCart();
   }
 
   Future<void> _placeOrder({
@@ -75,7 +70,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           cart: cart,
           shippingAddress: selectedAddress,
           paymentMethod: selectedPaymentMethod,
-          deliveryFee: _deliveryFeePlaceholder,
+          deliveryFee: CheckoutConstants.standardDeliveryFee,
         );
 
     if (!mounted) {
@@ -122,7 +117,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 cart: cart,
                 selectedAddress: selectedAddress,
                 selectedPaymentMethod: selectedPaymentMethod,
-                deliveryFee: _deliveryFeePlaceholder,
+                deliveryFee: CheckoutConstants.standardDeliveryFee,
                 onRetry: _reloadCart,
                 isPlacingOrder: orderState.isLoading,
                 onPlaceOrder: (checkoutCart) => _placeOrder(

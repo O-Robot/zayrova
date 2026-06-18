@@ -31,22 +31,24 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
   }
 
   Future<void> _loadOrder() async {
-    final id = int.tryParse(widget.orderId ?? '');
-    if (id == null) {
+    final orderId = widget.orderId;
+    if (orderId == null || orderId.isEmpty) {
       return;
     }
 
     final selectedOrder = ref.read(orderControllerProvider).selectedOrder;
-    if (selectedOrder?.id == widget.orderId) {
+    if (selectedOrder?.id == orderId || selectedOrder?.orderNumber == orderId) {
       return;
     }
 
-    await ref.read(orderControllerProvider.notifier).loadOrderById(id);
+    await ref
+        .read(orderControllerProvider.notifier)
+        .loadOrderByIdentifier(orderId);
   }
 
   @override
   Widget build(BuildContext context) {
-    final id = int.tryParse(widget.orderId ?? '');
+    final hasOrderId = widget.orderId != null && widget.orderId!.isNotEmpty;
     final state = ref.watch(orderControllerProvider);
 
     return Scaffold(
@@ -56,7 +58,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
           children: [
             const OrderHeader(title: 'Order Detail'),
             Expanded(
-              child: id == null
+              child: !hasOrderId
                   ? const EmptyStateWidget(
                       icon: Icons.receipt_long_outlined,
                       title: 'Missing order',

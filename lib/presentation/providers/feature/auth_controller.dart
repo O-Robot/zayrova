@@ -144,7 +144,7 @@ class AuthController extends Notifier<AuthState> {
 
     state = state.copyWith(isLoading: true, clearError: true);
 
-    // Temporary local/session profile update until profile mutation APIs exist.
+    // Local/session profile update until remote profile mutations are available.
     await Future<void>.delayed(const Duration(milliseconds: 250));
     await _persistProfile(profile);
 
