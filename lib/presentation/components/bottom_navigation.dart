@@ -50,11 +50,18 @@ class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 15),
+      padding: const EdgeInsets.only(bottom: 25, left: 10, right: 10, top: 15),
       decoration: BoxDecoration(
-        color: ZayColors.primary,
-        borderRadius: BorderRadius.circular(60),
+        color: ZayColors.white,
+        // border: Border(top: const BorderSide(color: ZayColors.textSecondary)),
+        boxShadow: [
+          BoxShadow(
+            color: ZayColors.textSecondary.withValues(alpha: 0.15),
+            offset: const Offset(0, -5),
+            blurRadius: 10,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -75,23 +82,18 @@ class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
                   },
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
+
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color:
-                              isActive ? ZayColors.white : Colors.transparent,
-                          shape: BoxShape.circle,
+                      SvgPicture.asset(
+                        item.icon,
+                        colorFilter: ColorFilter.mode(
+                          isActive
+                              ? ZayColors.primary
+                              : ZayColors.textSecondary.withAlpha(80),
+                          BlendMode.srcIn,
                         ),
-                        child: SvgPicture.asset(
-                          item.icon,
-                          colorFilter: ColorFilter.mode(
-                            isActive ? ZayColors.primary : ZayColors.white,
-                            BlendMode.srcIn,
-                          ),
-                          width: 24,
-                          height: 24,
-                        ),
+                        width: 22,
+                        height: 22,
                       ),
                       const SizedBox(height: 4),
                       Text(
@@ -100,7 +102,10 @@ class _BottomNavigationState extends State<BottomNavigation> with RouteAware {
                         overflow: TextOverflow.ellipsis,
                         style: ZayTheme.lightTheme.textTheme.displaySmall
                             ?.copyWith(
-                              color: ZayColors.white,
+                              color:
+                                  isActive
+                                      ? ZayColors.primary
+                                      : ZayColors.textSecondary,
                               fontWeight:
                                   isActive ? FontWeight.w600 : FontWeight.w400,
                             ),
