@@ -27,15 +27,17 @@ class AuthScaffold extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: MediaQuery.sizeOf(context).height -
+              minHeight:
+                  MediaQuery.sizeOf(context).height -
                   MediaQuery.paddingOf(context).vertical -
                   52,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: centerContent
-                  ? MainAxisAlignment.center
-                  : MainAxisAlignment.start,
+              mainAxisAlignment:
+                  centerContent
+                      ? MainAxisAlignment.center
+                      : MainAxisAlignment.start,
               children: [
                 if (showBackButton) ...[
                   const AuthBackButton(),
@@ -65,11 +67,7 @@ class AuthBackButton extends StatelessWidget {
         height: 42,
         child: Align(
           alignment: Alignment.centerLeft,
-          child: Icon(
-            Icons.arrow_back,
-            color: ZayColors.textPrimary,
-            size: 26,
-          ),
+          child: Icon(Icons.arrow_back, color: ZayColors.textPrimary, size: 26),
         ),
       ),
     );
@@ -77,11 +75,7 @@ class AuthBackButton extends StatelessWidget {
 }
 
 class AuthCenteredHeader extends StatelessWidget {
-  const AuthCenteredHeader({
-    super.key,
-    required this.title,
-    this.subtitle,
-  });
+  const AuthCenteredHeader({super.key, required this.title, this.subtitle});
 
   final String title;
   final String? subtitle;
@@ -117,11 +111,7 @@ class AuthCenteredHeader extends StatelessWidget {
 }
 
 class AuthHeader extends StatelessWidget {
-  const AuthHeader({
-    super.key,
-    required this.title,
-    required this.subtitle,
-  });
+  const AuthHeader({super.key, required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;
@@ -203,23 +193,27 @@ class AuthField extends StatelessWidget {
               color: const Color(0xFFA8B0C6),
               fontWeight: FontWeight.w500,
             ),
-            prefixIcon: icon == null
-                ? null
-                : Icon(icon, color: ZayColors.primary, size: 24),
-            suffixIcon: trailingIcon == null
-                ? null
-                : IconButton(
-                    onPressed: onTrailingTap,
-                    icon: Icon(
-                      trailingIcon,
-                      color: const Color(0xFFA8B0C6),
-                      size: 24,
+            prefixIcon:
+                icon == null
+                    ? null
+                    : Icon(icon, color: ZayColors.primary, size: 24),
+            suffixIcon:
+                trailingIcon == null
+                    ? null
+                    : IconButton(
+                      onPressed: onTrailingTap,
+                      icon: Icon(
+                        trailingIcon,
+                        color: const Color(0xFFA8B0C6),
+                        size: 24,
+                      ),
                     ),
-                  ),
             filled: true,
             fillColor: const Color(0xFFFBFBFD),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 18,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: const BorderSide(color: Color(0xFFF0F1F6)),
@@ -279,19 +273,22 @@ class AuthSocialButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap ??
+      onTap:
+          onTap ??
           () {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Social authentication is unavailable right now.'),
+                content: Text(
+                  'Social authentication is unavailable right now.',
+                ),
                 backgroundColor: ZayColors.primary,
               ),
             );
           },
       borderRadius: BorderRadius.circular(30),
       child: Container(
-        width: double.infinity,
-        height: 58,
+        width: 60,
+        height: 60,
         decoration: BoxDecoration(
           color: ZayColors.white,
           borderRadius: BorderRadius.circular(30),
@@ -299,17 +296,7 @@ class AuthSocialButton extends StatelessWidget {
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            SvgPicture.asset(assetPath, width: 26, height: 26),
-            const SizedBox(width: 14),
-            Text(
-              text,
-              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                color: ZayColors.textPrimary,
-                fontWeight: FontWeight.w800,
-              ),
-            ),
-          ],
+          children: [SvgPicture.asset(assetPath)],
         ),
       ),
     );

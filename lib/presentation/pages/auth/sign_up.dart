@@ -32,7 +32,8 @@ class _SignUpState extends State<SignUp> {
   }
 
   void _createAccount() {
-    final hasRequiredFields = firstName.text.trim().isNotEmpty &&
+    final hasRequiredFields =
+        firstName.text.trim().isNotEmpty &&
         lastName.text.trim().isNotEmpty &&
         email.text.trim().isNotEmpty &&
         password.text.isNotEmpty;
@@ -43,7 +44,9 @@ class _SignUpState extends State<SignUp> {
     }
 
     if (!acceptsTerms) {
-      setState(() => formError = 'Accept the terms and conditions to continue.');
+      setState(
+        () => formError = 'Accept the terms and conditions to continue.',
+      );
       return;
     }
 
@@ -64,7 +67,7 @@ class _SignUpState extends State<SignUp> {
       children: [
         const AuthHeader(
           title: 'Create Account',
-          subtitle: 'Start learning with create your account',
+          subtitle: 'Fill in all information to create your account',
         ),
         const SizedBox(height: 38),
         Row(
@@ -100,8 +103,8 @@ class _SignUpState extends State<SignUp> {
         ),
         const SizedBox(height: 26),
         AuthField(
-          label: 'Email or Phone Number',
-          hint: 'Enter your email or phone number',
+          label: 'Email',
+          hint: 'Enter your email',
           controller: email,
           icon: Icons.mail_outline,
           keyboardType: TextInputType.emailAddress,
@@ -147,18 +150,16 @@ class _SignUpState extends State<SignUp> {
                   children: [
                     TextSpan(
                       text: 'Agree with ',
-                      style:
-                          ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                        color: ZayColors.textSecondary,
-                      ),
+                      style: ZayTheme.lightTheme.textTheme.displayMedium
+                          ?.copyWith(color: ZayColors.textSecondary),
                     ),
                     TextSpan(
                       text: 'Terms & Conditions',
-                      style:
-                          ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                        color: ZayColors.primary,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: ZayTheme.lightTheme.textTheme.displayMedium
+                          ?.copyWith(
+                            color: ZayColors.primary,
+                            fontWeight: FontWeight.w800,
+                          ),
                     ),
                   ],
                 ),
@@ -177,23 +178,32 @@ class _SignUpState extends State<SignUp> {
           ),
         ],
         const SizedBox(height: 30),
-        AuthPrimaryButton(
-          action: _createAccount,
-          text: 'Create Account',
-        ),
+        AuthPrimaryButton(action: _createAccount, text: 'Create Account'),
         const SizedBox(height: 24),
         const AuthDividerLabel(text: 'Or using other method'),
         const SizedBox(height: 22),
-        AuthSocialButton(
-          assetPath: ZayAssets.googleIcon,
-          text: 'Sign Up with Google',
+
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AuthSocialButton(
+              assetPath: ZayAssets.googleIcon,
+              text: 'Sign In with Google',
+            ),
+            const SizedBox(width: 16),
+
+            AuthSocialButton(
+              assetPath: ZayAssets.facebookIcon,
+              text: 'Sign In with Facebook',
+            ),
+            const SizedBox(width: 16),
+            AuthSocialButton(
+              assetPath: ZayAssets.appleIcon,
+              text: 'Sign In with Apple',
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-        AuthSocialButton(
-          assetPath: ZayAssets.facebookIcon,
-          text: 'Sign Up with Facebook',
-        ),
-        const SizedBox(height: 34),
+        const SizedBox(height: 22),
         AuthFooterLink(
           prefix: 'Already have an account? ',
           actionText: 'Sign In',

@@ -39,10 +39,9 @@ class _SignInState extends ConsumerState<SignIn> {
 
     setState(() => formError = null);
 
-    await ref.read(authControllerProvider.notifier).login(
-          username: username,
-          password: pass,
-        );
+    await ref
+        .read(authControllerProvider.notifier)
+        .login(username: username, password: pass);
 
     if (!mounted) {
       return;
@@ -68,13 +67,15 @@ class _SignInState extends ConsumerState<SignIn> {
     return AuthScaffold(
       children: [
         const AuthHeader(
-          title: 'Login Account',
-          subtitle: 'Use your account username and password to continue',
+          title: 'Login',
+          subtitle: "Hi! Welcome back, you've been missed",
         ),
         const SizedBox(height: 38),
         AuthField(
           label: 'Username',
           hint: 'Enter your username',
+          // Username: emilys
+          // Password: emilyspass
           controller: email,
           icon: Icons.person_outline,
           keyboardType: TextInputType.text,
@@ -108,7 +109,7 @@ class _SignInState extends ConsumerState<SignIn> {
             onPressed: () => ZayRouter.goto(ZayRoutes.forgotPassword),
             style: TextButton.styleFrom(
               foregroundColor: ZayColors.primary,
-              padding: EdgeInsets.zero,
+              padding: EdgeInsets.only(left: 10, right: 10),
             ),
             child: Text(
               'Forgot Password?',
@@ -136,18 +137,30 @@ class _SignInState extends ConsumerState<SignIn> {
           isLoading: authState.isLoading,
         ),
         const SizedBox(height: 24),
-        const AuthDividerLabel(text: 'Or using other method'),
+        const AuthDividerLabel(text: 'Or sign in with'),
         const SizedBox(height: 22),
-        AuthSocialButton(
-          assetPath: ZayAssets.googleIcon,
-          text: 'Sign In with Google',
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            AuthSocialButton(
+              assetPath: ZayAssets.googleIcon,
+              text: 'Sign In with Google',
+            ),
+            const SizedBox(width: 16),
+
+            AuthSocialButton(
+              assetPath: ZayAssets.facebookIcon,
+              text: 'Sign In with Facebook',
+            ),
+            const SizedBox(width: 16),
+            AuthSocialButton(
+              assetPath: ZayAssets.appleIcon,
+              text: 'Sign In with Apple',
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
-        AuthSocialButton(
-          assetPath: ZayAssets.facebookIcon,
-          text: 'Sign In with Facebook',
-        ),
-        const SizedBox(height: 34),
+        const SizedBox(height: 22),
+
         AuthFooterLink(
           prefix: "Don't have an account? ",
           actionText: 'Sign Up',

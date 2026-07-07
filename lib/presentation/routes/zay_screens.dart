@@ -137,10 +137,7 @@ class ZayScreens {
       case ZayRoutes.orders:
         return _page(ZayRoutes.orders, const OrdersScreen());
       case ZayRoutes.orderHistory:
-        return _page(
-          ZayRoutes.orderHistory,
-          const OrdersScreen(initialTab: 1),
-        );
+        return _page(ZayRoutes.orderHistory, const OrdersScreen(initialTab: 1));
       case ZayRoutes.orderDetails:
         return _page(
           ZayRoutes.orderDetails,
@@ -154,16 +151,12 @@ class ZayScreens {
       case ZayRoutes.orderReview:
         return _page(
           ZayRoutes.orderReview,
-          OrderReviewScreen(
-            orderId: data is Map ? data['orderId']?.toString() : null,
-          ),
+          OrderReviewScreen(orderId: data['orderId']?.toString()),
         );
       case ZayRoutes.orderRating:
         return _page(
           ZayRoutes.orderRating,
-          OrderRatingScreen(
-            orderId: data is Map ? data['orderId']?.toString() : null,
-          ),
+          OrderRatingScreen(orderId: data['orderId']?.toString()),
         );
       case ZayRoutes.profile:
         return _page(ZayRoutes.profile, const ProfileScreen());
