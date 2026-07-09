@@ -11,6 +11,7 @@ class ZayColors {
   static const Color textSecondary = Color(0xFF9B9B9B);
   static const Color inputBorder = Color(0xFFCDCBCB);
   static const Color transparent = Colors.transparent;
+  static const Color red = Colors.red;
   static const LinearGradient gradient = LinearGradient(
     colors: [primary, Color(0xFFA09036), secondary],
     stops: [0.0, 0.76, 1.0],

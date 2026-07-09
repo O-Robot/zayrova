@@ -107,20 +107,25 @@ class _HomeHeader extends StatelessWidget {
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundColor: ZayColors.cancel,
-                backgroundImage:
-                    avatarUrl == null || avatarUrl!.isEmpty
-                        ? null
-                        : NetworkImage(avatarUrl!),
-                child: avatarUrl == null || avatarUrl!.isEmpty
-                    ? const Icon(
-                        Icons.person,
-                        color: ZayColors.textSecondary,
-                        size: 32,
-                      )
-                    : null,
+              SizedBox(
+                width: 50,
+                height: 50,
+                child: CircleAvatar(
+                  radius: 30,
+                  backgroundColor: ZayColors.cancel,
+                  backgroundImage:
+                      avatarUrl == null || avatarUrl!.isEmpty
+                          ? null
+                          : NetworkImage(avatarUrl!),
+                  child:
+                      avatarUrl == null || avatarUrl!.isEmpty
+                          ? const Icon(
+                            Icons.person,
+                            color: ZayColors.textSecondary,
+                            size: 30,
+                          )
+                          : null,
+                ),
               ),
               const SizedBox(width: 14),
               Expanded(
@@ -129,15 +134,16 @@ class _HomeHeader extends StatelessWidget {
                   children: [
                     Text(
                       'Hi, ${_firstName(greetingName)}',
-                      style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
-                        color: ZayColors.textPrimary,
-                        fontWeight: FontWeight.w800,
-                      ),
+                      style: ZayTheme.lightTheme.textTheme.displayLarge
+                          ?.copyWith(
+                            color: ZayColors.textPrimary,
+                            fontWeight: FontWeight.w900,
+                          ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       "Let's go shopping",
-                      style: ZayTheme.lightTheme.textTheme.displayMedium
+                      style: ZayTheme.lightTheme.textTheme.displaySmall
                           ?.copyWith(color: ZayColors.textSecondary),
                     ),
                   ],
@@ -147,21 +153,18 @@ class _HomeHeader extends StatelessWidget {
                 onTap: () => ZayRouter.goto(ZayRoutes.search),
                 child: SvgPicture.asset(
                   ZayIcons.searchIcon,
-                  width: 28,
-                  height: 28,
+                  width: 24,
+                  height: 24,
                 ),
               ),
-              const SizedBox(width: 18),
+              const SizedBox(width: 10),
               _NotificationButton(
                 onTap: () => ZayRouter.goto(ZayRoutes.notifications),
               ),
             ],
           ),
           const SizedBox(height: 42),
-          _HomeTabs(
-            selectedTab: selectedTab,
-            onTabChanged: onTabChanged,
-          ),
+          _HomeTabs(selectedTab: selectedTab, onTabChanged: onTabChanged),
         ],
       ),
     );
@@ -178,10 +181,7 @@ class _HomeHeader extends StatelessWidget {
 }
 
 class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
-    required this.child,
-    required this.onTap,
-  });
+  const _HeaderIconButton({required this.child, required this.onTap});
 
   final Widget child;
   final VoidCallback onTap;
@@ -191,11 +191,7 @@ class _HeaderIconButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: SizedBox(
-        width: 36,
-        height: 36,
-        child: Center(child: child),
-      ),
+      child: SizedBox(width: 36, height: 36, child: Center(child: child)),
     );
   }
 }
@@ -213,9 +209,9 @@ class _NotificationButton extends StatelessWidget {
         clipBehavior: Clip.none,
         children: [
           const Icon(
-            Icons.notifications_none_rounded,
+            Icons.notifications_outlined,
             color: ZayColors.textPrimary,
-            size: 32,
+            size: 30,
           ),
           Positioned(
             top: 2,
@@ -236,10 +232,7 @@ class _NotificationButton extends StatelessWidget {
 }
 
 class _HomeTabs extends StatelessWidget {
-  const _HomeTabs({
-    required this.selectedTab,
-    required this.onTabChanged,
-  });
+  const _HomeTabs({required this.selectedTab, required this.onTabChanged});
 
   final int selectedTab;
   final ValueChanged<int> onTabChanged;
@@ -289,16 +282,15 @@ class _HomeTabButton extends StatelessWidget {
           Text(
             label,
             style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
-              color:
-                  isActive ? ZayColors.textPrimary : ZayColors.textSecondary,
-              fontWeight: FontWeight.w700,
+              color: isActive ? ZayColors.textPrimary : ZayColors.textSecondary,
+              fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: 10),
           AnimatedContainer(
             duration: const Duration(milliseconds: 180),
-            height: 3,
-            width: 96,
+            height: 2,
+            width: 110,
             decoration: BoxDecoration(
               color: isActive ? ZayColors.primary : ZayColors.transparent,
               borderRadius: BorderRadius.circular(8),
@@ -359,9 +351,7 @@ class _HomeBody extends StatelessWidget {
                 onRetry: onRetry,
               ),
             if (selectedTab == 0)
-              _HomeProductsView(
-                products: state.products,
-              )
+              _HomeProductsView(products: state.products)
             else
               _HomeCategoryView(
                 categories: state.categories,
@@ -375,9 +365,7 @@ class _HomeBody extends StatelessWidget {
 }
 
 class _HomeProductsView extends StatelessWidget {
-  const _HomeProductsView({
-    required this.products,
-  });
+  const _HomeProductsView({required this.products});
 
   final List<Product> products;
 
@@ -520,27 +508,29 @@ class _HomeProductGrid extends StatelessWidget {
         return Wrap(
           spacing: spacing,
           runSpacing: 28,
-          children: products.map((product) {
-            return Consumer(
-              builder: (context, ref, _) {
-                final wishlist = ref.watch(wishlistControllerProvider);
+          children:
+              products.map((product) {
+                return Consumer(
+                  builder: (context, ref, _) {
+                    final wishlist = ref.watch(wishlistControllerProvider);
 
-                return _HomeProductCard(
-                  product: product,
-                  width: cardWidth,
-                  isFavorite: wishlist.contains(product.id),
-                  onFavoriteToggle: () {
-                    ref
-                        .read(wishlistControllerProvider.notifier)
-                        .toggleProduct(product);
+                    return _HomeProductCard(
+                      product: product,
+                      width: cardWidth,
+                      isFavorite: wishlist.contains(product.id),
+                      onFavoriteToggle: () {
+                        ref
+                            .read(wishlistControllerProvider.notifier)
+                            .toggleProduct(product);
+                      },
+                      onTap:
+                          () => ZayRouter.goto(ZayRoutes.productDetails, {
+                            'productId': product.id,
+                          }),
+                    );
                   },
-                  onTap: () => ZayRouter.goto(ZayRoutes.productDetails, {
-                    'productId': product.id,
-                  }),
                 );
-              },
-            );
-          }).toList(),
+              }).toList(),
         );
       },
     );
@@ -564,9 +554,10 @@ class _HomeProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtitle = product.brand?.isNotEmpty == true
-        ? product.brand!
-        : product.categoryName ?? '';
+    final subtitle =
+        product.brand?.isNotEmpty == true
+            ? product.brand!
+            : product.categoryName ?? '';
 
     return GestureDetector(
       onTap: onTap,
@@ -579,9 +570,15 @@ class _HomeProductCard extends StatelessWidget {
               child: Stack(
                 children: [
                   Positioned.fill(
-                    child: ZayNetworkImage(
-                      imageUrl: _productImage(product),
-                      borderRadius: BorderRadius.circular(14),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: ZayColors.textSecondary.withAlpha(20),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: ZayNetworkImage(
+                        imageUrl: _productImage(product),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
                   ),
                   Positioned(
@@ -598,9 +595,7 @@ class _HomeProductCard extends StatelessWidget {
                         ),
                         child: Icon(
                           isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: isFavorite
-                              ? ZayColors.secondary
-                              : ZayColors.white,
+                          color: isFavorite ? ZayColors.red : ZayColors.white,
                           size: 22,
                         ),
                       ),
@@ -615,13 +610,13 @@ class _HomeProductCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
                 color: ZayColors.textPrimary,
-                fontWeight: FontWeight.w800,
+                fontWeight: FontWeight.w600,
               ),
             ),
             if (subtitle.isNotEmpty) ...[
-              const SizedBox(height: 7),
+              const SizedBox(height: 3),
               Text(
                 subtitle,
                 maxLines: 1,
@@ -629,15 +624,15 @@ class _HomeProductCard extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
                   color: ZayColors.textSecondary,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ],
-            const SizedBox(height: 7),
+            const SizedBox(height: 3),
             Text(
               '${_currencySymbol(product.currencyCode)}${product.price.toStringAsFixed(2)}',
               textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+              style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
                 color: ZayColors.textPrimary,
                 fontWeight: FontWeight.w800,
               ),
@@ -650,10 +645,7 @@ class _HomeProductCard extends StatelessWidget {
 }
 
 class _HomeCategoryView extends StatelessWidget {
-  const _HomeCategoryView({
-    required this.categories,
-    required this.products,
-  });
+  const _HomeCategoryView({required this.categories, required this.products});
 
   final List<Category> categories;
   final List<Product> products;
@@ -677,9 +669,10 @@ class _HomeCategoryView extends StatelessWidget {
         ...categories.asMap().entries.map((entry) {
           final index = entry.key;
           final category = entry.value;
-          final categoryProducts = products
-              .where((product) => _matchesCategory(product, category))
-              .toList();
+          final categoryProducts =
+              products
+                  .where((product) => _matchesCategory(product, category))
+                  .toList();
           final imageProduct =
               categoryProducts.isNotEmpty ? categoryProducts.first : null;
           final count = category.productCount ?? categoryProducts.length;
@@ -690,13 +683,15 @@ class _HomeCategoryView extends StatelessWidget {
               title: category.name,
               count: count,
               imageUrl: category.imageUrl ?? _productImage(imageProduct),
-              textAlignment: index.isEven
-                  ? _CategoryCardTextAlignment.right
-                  : _CategoryCardTextAlignment.left,
-              onTap: () => ZayRouter.goto(ZayRoutes.category, {
-                'categorySlug': category.slug ?? category.id,
-                'categoryName': category.name,
-              }),
+              textAlignment:
+                  index.isEven
+                      ? _CategoryCardTextAlignment.right
+                      : _CategoryCardTextAlignment.left,
+              onTap:
+                  () => ZayRouter.goto(ZayRoutes.category, {
+                    'categorySlug': category.slug ?? category.id,
+                    'categoryName': category.name,
+                  }),
             ),
           );
         }),
@@ -741,10 +736,7 @@ class _CategoryHeroCard extends StatelessWidget {
             Positioned.fill(
               child: Opacity(
                 opacity: 0.58,
-                child: ZayNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                ),
+                child: ZayNetworkImage(imageUrl: imageUrl, fit: BoxFit.cover),
               ),
             ),
             Positioned.fill(
@@ -786,11 +778,7 @@ class _CategoryHeroCard extends StatelessWidget {
 }
 
 class _SectionHeader extends StatelessWidget {
-  const _SectionHeader({
-    required this.title,
-    this.actionText,
-    this.onAction,
-  });
+  const _SectionHeader({required this.title, this.actionText, this.onAction});
 
   final String title;
   final String? actionText;
@@ -805,7 +793,7 @@ class _SectionHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
+          style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
             color: ZayColors.textPrimary,
             fontWeight: FontWeight.w900,
           ),
@@ -815,7 +803,7 @@ class _SectionHeader extends StatelessWidget {
             onTap: onAction,
             child: Text(
               actionText,
-              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+              style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
                 color: ZayColors.primary,
                 fontWeight: FontWeight.w800,
               ),
@@ -827,10 +815,7 @@ class _SectionHeader extends StatelessWidget {
 }
 
 class _InlineErrorState extends StatelessWidget {
-  const _InlineErrorState({
-    required this.message,
-    required this.onRetry,
-  });
+  const _InlineErrorState({required this.message, required this.onRetry});
 
   final String message;
   final Future<void> Function() onRetry;
@@ -851,15 +836,17 @@ class _InlineErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: ZayTheme.lightTheme.textTheme.displayMedium
-                  ?.copyWith(color: ZayColors.textPrimary),
+              style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                color: ZayColors.textPrimary,
+              ),
             ),
             TextButton(
               onPressed: () => onRetry(),
               child: Text(
                 'Retry',
-                style: ZayTheme.lightTheme.textTheme.displayMedium
-                    ?.copyWith(color: ZayColors.primary),
+                style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                  color: ZayColors.primary,
+                ),
               ),
             ),
           ],
@@ -879,10 +866,7 @@ class _HomeLoadingState extends StatelessWidget {
 }
 
 class _HomeErrorState extends StatelessWidget {
-  const _HomeErrorState({
-    required this.message,
-    required this.onRetry,
-  });
+  const _HomeErrorState({required this.message, required this.onRetry});
 
   final String message;
   final Future<void> Function() onRetry;
@@ -922,8 +906,9 @@ class _InlineEmptyState extends StatelessWidget {
       child: Text(
         message,
         textAlign: TextAlign.center,
-        style: ZayTheme.lightTheme.textTheme.displayMedium
-            ?.copyWith(color: ZayColors.textSecondary),
+        style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+          color: ZayColors.textSecondary,
+        ),
       ),
     );
   }
@@ -943,22 +928,18 @@ String? _productImage(Product? product) {
 }
 
 bool _matchesCategory(Product product, Category category) {
-  final keys = [
-    category.id,
-    category.slug,
-    category.name,
-  ]
-      .whereType<String>()
-      .map((value) => value.toLowerCase())
-      .toSet();
+  final keys =
+      [
+        category.id,
+        category.slug,
+        category.name,
+      ].whereType<String>().map((value) => value.toLowerCase()).toSet();
 
-  final productKeys = [
-    product.categoryId,
-    product.categoryName,
-  ]
-      .whereType<String>()
-      .map((value) => value.toLowerCase())
-      .toSet();
+  final productKeys =
+      [
+        product.categoryId,
+        product.categoryName,
+      ].whereType<String>().map((value) => value.toLowerCase()).toSet();
 
   return productKeys.any(keys.contains);
 }
