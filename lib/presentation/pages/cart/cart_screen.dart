@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/cart_entity.dart';
@@ -47,9 +48,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
   }
 
   Future<void> _removeItem(Cart cart, CartItem item) {
-    final remainingItems = cart.items
-        .where((cartItem) => cartItem.id != item.id)
-        .toList();
+    final remainingItems =
+        cart.items.where((cartItem) => cartItem.id != item.id).toList();
 
     if (remainingItems.isEmpty) {
       final cartId = int.tryParse(cart.id);
@@ -69,27 +69,26 @@ class _CartScreenState extends ConsumerState<CartScreen> {
       return;
     }
 
-    final products = items
-        .map((item) {
-          final productId = int.tryParse(item.product.id);
-          if (productId == null) {
-            return null;
-          }
-          return {'id': productId, 'quantity': item.quantity};
-        })
-        .whereType<Map<String, dynamic>>()
-        .toList();
+    final products =
+        items
+            .map((item) {
+              final productId = int.tryParse(item.product.id);
+              if (productId == null) {
+                return null;
+              }
+              return {'id': productId, 'quantity': item.quantity};
+            })
+            .whereType<Map<String, dynamic>>()
+            .toList();
 
     if (products.isEmpty) {
       _showCartMessage('Unable to update this cart item.');
       return;
     }
 
-    await ref.read(cartControllerProvider.notifier).updateCart(
-      cartId: cartId,
-      products: products,
-      merge: false,
-    );
+    await ref
+        .read(cartControllerProvider.notifier)
+        .updateCart(cartId: cartId, products: products, merge: false);
 
     final cartState = ref.read(cartControllerProvider);
     if (cartState.hasError) {
@@ -103,10 +102,7 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: ZayColors.primary,
-      ),
+      SnackBar(content: Text(message), backgroundColor: ZayColors.primary),
     );
   }
 
@@ -189,22 +185,6 @@ class _CartHeader extends StatelessWidget {
               ),
             ),
           ),
-          GestureDetector(
-            onTap: () => ZayRouter.goto(ZayRoutes.cart),
-            behavior: HitTestBehavior.opaque,
-            child: const SizedBox(
-              width: 42,
-              height: 42,
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Icon(
-                  Icons.shopping_bag_outlined,
-                  color: ZayColors.textPrimary,
-                  size: 28,
-                ),
-              ),
-            ),
-          ),
         ],
       ),
     );
@@ -246,9 +226,9 @@ class _CartBody extends StatelessWidget {
 
     final currentCart = cart;
 
-    if (currentCart == null || currentCart.isEmpty) {
+    if (currentCart == null || currentCart.items.isEmpty) {
       return const EmptyStateWidget(
-        icon: Icons.shopping_cart_outlined,
+        assetIcon: ZayIcons.orderIcon,
         title: 'Cart is empty',
         message: 'Your cart is empty.',
       );
@@ -287,10 +267,7 @@ class _CartBody extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: _CartSummarySheet(
-            cart: currentCart,
-            onCheckout: onCheckout,
-          ),
+          child: _CartSummarySheet(cart: currentCart, onCheckout: onCheckout),
         ),
       ],
     );
@@ -315,8 +292,11 @@ class _CartItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = item.product;
-    final colorText = item.selectedColor ??
-        (product.availableColors.isNotEmpty ? product.availableColors.first : null);
+    final colorText =
+        item.selectedColor ??
+        (product.availableColors.isNotEmpty
+            ? product.availableColors.first
+            : null);
 
     return Column(
       children: [
@@ -326,16 +306,17 @@ class _CartItemTile extends StatelessWidget {
             _SelectionBox(isSelected: item.isSelected),
             const SizedBox(width: 14),
             GestureDetector(
-              onTap: () => ZayRouter.goto(ZayRoutes.productDetails, {
-                'productId': product.id,
-              }),
+              onTap:
+                  () => ZayRouter.goto(ZayRoutes.productDetails, {
+                    'productId': product.id,
+                  }),
               child: SizedBox(
                 width: 104,
                 height: 104,
                 child: ZayNetworkImage(
                   imageUrl: product.thumbnailUrl,
                   borderRadius: BorderRadius.circular(12),
-                  placeholderIcon: Icons.shopping_bag_outlined,
+                  placeholderAssetIcon: ZayIcons.cartIcon,
                 ),
               ),
             ),
@@ -356,10 +337,10 @@ class _CartItemTile extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                             style: ZayTheme.lightTheme.textTheme.displayLarge
                                 ?.copyWith(
-                              color: ZayColors.textPrimary,
-                              fontWeight: FontWeight.w800,
-                              height: 1.25,
-                            ),
+                                  color: ZayColors.textPrimary,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.25,
+                                ),
                           ),
                         ),
                         const SizedBox(width: 6),
@@ -395,9 +376,9 @@ class _CartItemTile extends StatelessWidget {
                               '${_currencySymbol(item.currencyCode ?? product.currencyCode)}${item.subtotal.toStringAsFixed(2)}',
                               style: ZayTheme.lightTheme.textTheme.titleLarge
                                   ?.copyWith(
-                                color: ZayColors.textPrimary,
-                                fontWeight: FontWeight.w900,
-                              ),
+                                    color: ZayColors.textPrimary,
+                                    fontWeight: FontWeight.w900,
+                                  ),
                             ),
                           ),
                         ),
@@ -434,9 +415,10 @@ class _SelectionBox extends StatelessWidget {
           width: 2,
         ),
       ),
-      child: isSelected
-          ? const Icon(Icons.check, color: ZayColors.white, size: 20)
-          : null,
+      child:
+          isSelected
+              ? const Icon(Icons.check, color: ZayColors.white, size: 20)
+              : null,
     );
   }
 }
@@ -526,10 +508,7 @@ class _CartQuantitySelector extends StatelessWidget {
 }
 
 class _CartQuantityButton extends StatelessWidget {
-  const _CartQuantityButton({
-    required this.icon,
-    this.onTap,
-  });
+  const _CartQuantityButton({required this.icon, this.onTap});
 
   final IconData icon;
   final VoidCallback? onTap;
@@ -548,7 +527,8 @@ class _CartQuantityButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 19,
-          color: onTap == null ? ZayColors.textSecondary : ZayColors.textPrimary,
+          color:
+              onTap == null ? ZayColors.textSecondary : ZayColors.textPrimary,
         ),
       ),
     );
@@ -556,10 +536,7 @@ class _CartQuantityButton extends StatelessWidget {
 }
 
 class _RemoveButton extends StatelessWidget {
-  const _RemoveButton({
-    required this.isUpdating,
-    required this.onRemove,
-  });
+  const _RemoveButton({required this.isUpdating, required this.onRemove});
 
   final bool isUpdating;
   final VoidCallback onRemove;
@@ -586,18 +563,19 @@ class _RemoveButton extends StatelessWidget {
 }
 
 class _CartSummarySheet extends StatelessWidget {
-  const _CartSummarySheet({
-    required this.cart,
-    required this.onCheckout,
-  });
+  const _CartSummarySheet({required this.cart, required this.onCheckout});
 
   final Cart cart;
   final VoidCallback onCheckout;
 
   @override
   Widget build(BuildContext context) {
-    final discount = (cart.total - cart.discountedTotal).clamp(0, double.infinity);
-    final payableTotal = cart.discountedTotal > 0 ? cart.discountedTotal : cart.total;
+    final discount = (cart.total - cart.discountedTotal).clamp(
+      0,
+      double.infinity,
+    );
+    final payableTotal =
+        cart.discountedTotal > 0 ? cart.discountedTotal : cart.total;
 
     return Container(
       width: double.infinity,
@@ -631,7 +609,8 @@ class _CartSummarySheet extends StatelessWidget {
             const SizedBox(height: 26),
             _SummaryLine(
               label: 'Subtotal',
-              value: '${_currencySymbol('USD')}${cart.total.toStringAsFixed(2)}',
+              value:
+                  '${_currencySymbol('USD')}${cart.total.toStringAsFixed(2)}',
             ),
             const SizedBox(height: 20),
             _SummaryLine(
@@ -734,9 +713,10 @@ class _SummaryLine extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = isEmphasized
-        ? ZayTheme.lightTheme.textTheme.bodyLarge
-        : ZayTheme.lightTheme.textTheme.displayLarge;
+    final style =
+        isEmphasized
+            ? ZayTheme.lightTheme.textTheme.bodyLarge
+            : ZayTheme.lightTheme.textTheme.displayLarge;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -793,10 +773,7 @@ class _DashedDivider extends StatelessWidget {
 }
 
 class _InlineCartError extends StatelessWidget {
-  const _InlineCartError({
-    required this.message,
-    required this.onRetry,
-  });
+  const _InlineCartError({required this.message, required this.onRetry});
 
   final String message;
   final Future<void> Function() onRetry;

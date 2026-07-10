@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
@@ -134,15 +135,20 @@ class ProfileActionRow extends StatelessWidget {
   const ProfileActionRow({
     super.key,
     required this.title,
-    required this.icon,
+    this.icon,
+    this.assetIcon,
     this.subtitle,
     this.trailingText,
     this.onTap,
     this.isDestructive = false,
-  });
+  }) : assert(
+         icon != null || assetIcon != null,
+         'Either icon or assetIcon must be provided.',
+       );
 
   final String title;
-  final IconData icon;
+  final IconData? icon;
+  final String? assetIcon;
   final String? subtitle;
   final String? trailingText;
   final VoidCallback? onTap;
@@ -171,7 +177,22 @@ class ProfileActionRow extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Icon(icon, color: isDestructive ? color : ZayColors.textPrimary),
+            assetIcon != null
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: SvgPicture.asset(
+                      assetIcon!,
+                      colorFilter: ColorFilter.mode(
+                        isDestructive ? color : ZayColors.textPrimary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    color: isDestructive ? color : ZayColors.textPrimary,
+                  ),
             const SizedBox(width: 18),
             Expanded(
               child: Column(

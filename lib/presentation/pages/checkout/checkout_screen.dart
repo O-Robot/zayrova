@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/config/checkout_constants.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/address_entity.dart';
@@ -66,7 +67,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
       return;
     }
 
-    final order = await ref.read(orderControllerProvider.notifier).createOrderFromCheckout(
+    final order = await ref
+        .read(orderControllerProvider.notifier)
+        .createOrderFromCheckout(
           cart: cart,
           shippingAddress: selectedAddress,
           paymentMethod: selectedPaymentMethod,
@@ -79,7 +82,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
     if (order == null) {
       final message =
-          ref.read(orderControllerProvider).errorMessage ?? 'Unable to create order.';
+          ref.read(orderControllerProvider).errorMessage ??
+          'Unable to create order.';
       _showCheckoutMessage(message);
       return;
     }
@@ -100,7 +104,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   Widget build(BuildContext context) {
     final cartState = ref.watch(cartControllerProvider);
     final cart = cartState.userCart;
-    final selectedAddress = ref.watch(addressControllerProvider).selectedAddress;
+    final selectedAddress =
+        ref.watch(addressControllerProvider).selectedAddress;
     final selectedPaymentMethod =
         ref.watch(paymentMethodControllerProvider).selectedMethod;
     final orderState = ref.watch(orderControllerProvider);
@@ -120,11 +125,12 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                 deliveryFee: CheckoutConstants.standardDeliveryFee,
                 onRetry: _reloadCart,
                 isPlacingOrder: orderState.isLoading,
-                onPlaceOrder: (checkoutCart) => _placeOrder(
-                  cart: checkoutCart,
-                  selectedAddress: selectedAddress,
-                  selectedPaymentMethod: selectedPaymentMethod,
-                ),
+                onPlaceOrder:
+                    (checkoutCart) => _placeOrder(
+                      cart: checkoutCart,
+                      selectedAddress: selectedAddress,
+                      selectedPaymentMethod: selectedPaymentMethod,
+                    ),
               ),
             ),
           ],
@@ -282,9 +288,10 @@ class _AddressSection extends StatelessWidget {
         _SectionTitleRow(
           title: 'Address',
           actionText: hasAddress ? 'Edit' : 'Add',
-          onAction: () => ZayRouter.goto(
-            hasAddress ? ZayRoutes.address : ZayRoutes.addAddress,
-          ),
+          onAction:
+              () => ZayRouter.goto(
+                hasAddress ? ZayRoutes.address : ZayRoutes.addAddress,
+              ),
         ),
         const SizedBox(height: 22),
         Row(
@@ -293,9 +300,10 @@ class _AddressSection extends StatelessWidget {
             const _MapPreview(),
             const SizedBox(width: 22),
             Expanded(
-              child: hasAddress
-                  ? _SelectedAddressDetails(address: address!)
-                  : const _MissingAddressDetails(),
+              child:
+                  hasAddress
+                      ? _SelectedAddressDetails(address: address!)
+                      : const _MissingAddressDetails(),
             ),
           ],
         ),
@@ -348,15 +356,17 @@ class _MapPreview extends StatelessWidget {
 class _MapPreviewPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    final roadPaint = Paint()
-      ..color = ZayColors.white.withAlpha(230)
-      ..strokeWidth = 5
-      ..strokeCap = StrokeCap.round;
+    final roadPaint =
+        Paint()
+          ..color = ZayColors.white.withAlpha(230)
+          ..strokeWidth = 5
+          ..strokeCap = StrokeCap.round;
 
-    final accentPaint = Paint()
-      ..color = ZayColors.accent.withAlpha(120)
-      ..strokeWidth = 18
-      ..strokeCap = StrokeCap.round;
+    final accentPaint =
+        Paint()
+          ..color = ZayColors.accent.withAlpha(120)
+          ..strokeWidth = 18
+          ..strokeCap = StrokeCap.round;
 
     canvas.drawLine(
       Offset(size.width * .02, size.height * .82),
@@ -492,15 +502,17 @@ class _CheckoutProductRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = item.product;
-    final colorText = item.selectedColor ??
+    final colorText =
+        item.selectedColor ??
         (product.availableColors.isNotEmpty
             ? product.availableColors.first
             : null);
 
     return GestureDetector(
-      onTap: () => ZayRouter.goto(ZayRoutes.productDetails, {
-        'productId': product.id,
-      }),
+      onTap:
+          () => ZayRouter.goto(ZayRoutes.productDetails, {
+            'productId': product.id,
+          }),
       behavior: HitTestBehavior.opaque,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -510,7 +522,7 @@ class _CheckoutProductRow extends StatelessWidget {
             width: 78,
             height: 78,
             borderRadius: BorderRadius.circular(12),
-            placeholderIcon: Icons.shopping_bag_outlined,
+            placeholderAssetIcon: ZayIcons.cartIcon,
           ),
           const SizedBox(width: 18),
           Expanded(
@@ -597,22 +609,22 @@ class _PaymentMethodSection extends StatelessWidget {
                         _paymentTitle(method),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                          color: ZayColors.textPrimary,
-                          fontWeight: FontWeight.w800,
-                        ),
+                        style: ZayTheme.lightTheme.textTheme.displayLarge
+                            ?.copyWith(
+                              color: ZayColors.textPrimary,
+                              fontWeight: FontWeight.w800,
+                            ),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         _paymentSubtitle(method),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                          color: ZayColors.textSecondary,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        style: ZayTheme.lightTheme.textTheme.displayMedium
+                            ?.copyWith(
+                              color: ZayColors.textSecondary,
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
                     ],
                   ),
@@ -648,12 +660,13 @@ class _PaymentBrandMark extends StatelessWidget {
         shape: BoxShape.circle,
       ),
       child: Center(
-        child: isCard
-            ? const _CardCircles()
-            : const Icon(
-                Icons.account_balance_wallet_outlined,
-                color: ZayColors.primary,
-              ),
+        child:
+            isCard
+                ? const _CardCircles()
+                : const Icon(
+                  Icons.account_balance_wallet_outlined,
+                  color: ZayColors.primary,
+                ),
       ),
     );
   }
@@ -700,10 +713,7 @@ class _CardCircles extends StatelessWidget {
 }
 
 class _OrderSummarySection extends StatelessWidget {
-  const _OrderSummarySection({
-    required this.cart,
-    required this.deliveryFee,
-  });
+  const _OrderSummarySection({required this.cart, required this.deliveryFee});
 
   final Cart cart;
   final double deliveryFee;
@@ -721,10 +731,7 @@ class _OrderSummarySection extends StatelessWidget {
         const SizedBox(height: 12),
         _SummaryRow(label: 'Discount', value: '-${_formatCurrency(discount)}'),
         const SizedBox(height: 12),
-        _SummaryRow(
-          label: 'Delivery fee',
-          value: _formatCurrency(deliveryFee),
-        ),
+        _SummaryRow(label: 'Delivery fee', value: _formatCurrency(deliveryFee)),
         const SizedBox(height: 18),
         const Divider(height: 1, color: ZayColors.inputBorder),
         const SizedBox(height: 18),
@@ -751,9 +758,10 @@ class _SummaryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = isEmphasized
-        ? ZayTheme.lightTheme.textTheme.bodyLarge
-        : ZayTheme.lightTheme.textTheme.displayLarge;
+    final style =
+        isEmphasized
+            ? ZayTheme.lightTheme.textTheme.bodyLarge
+            : ZayTheme.lightTheme.textTheme.displayLarge;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -762,9 +770,10 @@ class _SummaryRow extends StatelessWidget {
           child: Text(
             label,
             style: style?.copyWith(
-              color: isEmphasized
-                  ? ZayColors.textSecondary
-                  : ZayColors.textSecondary,
+              color:
+                  isEmphasized
+                      ? ZayColors.textSecondary
+                      : ZayColors.textSecondary,
               fontWeight: isEmphasized ? FontWeight.w800 : FontWeight.w600,
             ),
           ),
@@ -890,10 +899,7 @@ class _SectionTitleRow extends StatelessWidget {
 }
 
 class _InlineCheckoutError extends StatelessWidget {
-  const _InlineCheckoutError({
-    required this.message,
-    required this.onRetry,
-  });
+  const _InlineCheckoutError({required this.message, required this.onRetry});
 
   final String message;
   final Future<void> Function() onRetry;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/order_entity.dart';
@@ -56,18 +57,16 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            const OrderHeader(title: 'Order Detail'),
+            const OrderHeader(title: 'Order Details'),
             Expanded(
-              child: !hasOrderId
-                  ? const EmptyStateWidget(
-                      icon: Icons.receipt_long_outlined,
-                      title: 'Missing order',
-                      message: 'This order could not be opened.',
-                    )
-                  : _OrderDetailsBody(
-                      state: state,
-                      onRetry: _loadOrder,
-                    ),
+              child:
+                  !hasOrderId
+                      ? const EmptyStateWidget(
+                        icon: Icons.receipt_long_outlined,
+                        title: 'Missing order',
+                        message: 'This order could not be opened.',
+                      )
+                      : _OrderDetailsBody(state: state, onRetry: _loadOrder),
             ),
           ],
         ),
@@ -77,10 +76,7 @@ class _OrderDetailsScreenState extends ConsumerState<OrderDetailsScreen> {
 }
 
 class _OrderDetailsBody extends StatelessWidget {
-  const _OrderDetailsBody({
-    required this.state,
-    required this.onRetry,
-  });
+  const _OrderDetailsBody({required this.state, required this.onRetry});
 
   final OrderState state;
   final Future<void> Function() onRetry;
@@ -133,9 +129,10 @@ class _OrderDetailsBody extends StatelessWidget {
           _TotalsPanel(order: order),
           const SizedBox(height: 28),
           ZayButton.primary(
-            action: () => ZayRouter.goto(ZayRoutes.orderTracking, {
-              'orderId': order.id,
-            }),
+            action:
+                () => ZayRouter.goto(ZayRoutes.orderTracking, {
+                  'orderId': order.id,
+                }),
             text: 'Track Order',
             fullWidth: true,
           ),
@@ -211,13 +208,20 @@ class _DetailOrderItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        ZayNetworkImage(
-          imageUrl: item.product.thumbnailUrl,
-          width: 72,
-          height: 72,
-          borderRadius: BorderRadius.circular(12),
-          placeholderIcon: Icons.shopping_bag_outlined,
+        Container(
+          decoration: BoxDecoration(
+            color: ZayColors.textSecondary.withAlpha(20),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: ZayNetworkImage(
+            imageUrl: item.product.thumbnailUrl,
+            width: 72,
+            height: 72,
+            borderRadius: BorderRadius.circular(10),
+            placeholderAssetIcon: ZayIcons.cartIcon,
+          ),
         ),
+
         const SizedBox(width: 16),
         Expanded(
           child: Column(
@@ -261,10 +265,9 @@ class _TotalsPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final subtotal = order.subtotal ?? order.items.fold<double>(
-      0,
-      (sum, item) => sum + item.subtotal,
-    );
+    final subtotal =
+        order.subtotal ??
+        order.items.fold<double>(0, (sum, item) => sum + item.subtotal);
     final deliveryFee = order.deliveryFee ?? 0;
     final discount = order.discountAmount ?? 0;
 
@@ -310,9 +313,10 @@ class _TotalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = isEmphasized
-        ? ZayTheme.lightTheme.textTheme.bodyLarge
-        : ZayTheme.lightTheme.textTheme.displayMedium;
+    final style =
+        isEmphasized
+            ? ZayTheme.lightTheme.textTheme.bodyLarge
+            : ZayTheme.lightTheme.textTheme.displayMedium;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

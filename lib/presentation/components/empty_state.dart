@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
@@ -6,15 +7,20 @@ import 'package:zayrova/presentation/widgets/button.dart';
 class ZayEmptyState extends StatelessWidget {
   const ZayEmptyState({
     super.key,
-    required this.icon,
+    this.icon,
+    this.assetIcon,
     required this.title,
     required this.message,
     this.actionText,
     this.onAction,
     this.padding = const EdgeInsets.all(24),
-  });
+  }) : assert(
+         icon != null || assetIcon != null,
+         'Either icon or assetIcon must be provided.',
+       );
 
-  final IconData icon;
+  final IconData? icon;
+  final String? assetIcon;
   final String title;
   final String message;
   final String? actionText;
@@ -39,7 +45,19 @@ class ZayEmptyState extends StatelessWidget {
                 color: ZayColors.primary.withAlpha(18),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: ZayColors.primary, size: 34),
+              child:
+                  assetIcon != null
+                      ? Padding(
+                          padding: const EdgeInsets.all(15),
+                          child: SvgPicture.asset(
+                            assetIcon!,
+                            colorFilter: const ColorFilter.mode(
+                              ZayColors.primary,
+                              BlendMode.srcIn,
+                            ),
+                          ),
+                        )
+                      : Icon(icon, color: ZayColors.primary, size: 34),
             ),
             const SizedBox(height: 16),
             Text(
@@ -76,7 +94,8 @@ class ZayEmptyState extends StatelessWidget {
 class EmptyStateWidget extends ZayEmptyState {
   const EmptyStateWidget({
     super.key,
-    required super.icon,
+    super.icon,
+    super.assetIcon,
     required super.title,
     required super.message,
     super.actionText,

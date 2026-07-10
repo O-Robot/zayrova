@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/user_profile_entity.dart';
@@ -123,7 +124,7 @@ class _ProfileBody extends StatelessWidget {
                 const SizedBox(height: 14),
                 ProfileActionRow(
                   title: 'My Order',
-                  icon: Icons.shopping_bag_outlined,
+                  assetIcon: ZayIcons.orderIcon,
                   onTap: () => ZayRouter.goto(ZayRoutes.orders),
                 ),
                 const SizedBox(height: 14),

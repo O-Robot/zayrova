@@ -12,6 +12,9 @@ class ZayApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Zayrova',
       theme: ZayTheme.lightTheme,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        scrollbars: false,
+      ),
       initialRoute: ZayRoutes.splash,
       navigatorKey: navigator,
       onGenerateRoute: ZayRouter.generateRoute,

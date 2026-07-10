@@ -5,6 +5,7 @@ import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
+import 'package:zayrova/presentation/components/cart_header_button.dart';
 import 'package:zayrova/presentation/components/empty_state.dart';
 import 'package:zayrova/presentation/components/error_state.dart';
 import 'package:zayrova/presentation/components/loading_state.dart';
@@ -91,10 +92,7 @@ class _AllProductsScreenState extends ConsumerState<AllProductsScreen> {
 }
 
 class _CatalogHeader extends StatelessWidget {
-  const _CatalogHeader({
-    required this.onSearch,
-    required this.onFilter,
-  });
+  const _CatalogHeader({required this.onSearch, required this.onFilter});
 
   final VoidCallback onSearch;
   final VoidCallback onFilter;
@@ -214,39 +212,46 @@ class _CatalogSortChips extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Row(
-        children: _CatalogSortOption.values.map((sort) {
-          final selected = sort == selectedSort;
+        children:
+            _CatalogSortOption.values.map((sort) {
+              final selected = sort == selectedSort;
 
-          return Padding(
-            padding: const EdgeInsets.only(right: 12),
-            child: GestureDetector(
-              onTap: () => onChanged(sort),
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 160),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 22,
-                  vertical: 12,
-                ),
-                decoration: BoxDecoration(
-                  color: selected ? ZayColors.primary : ZayColors.white,
-                  border: Border.all(
-                    color:
-                        selected ? ZayColors.primary : ZayColors.inputBorder,
+              return Padding(
+                padding: const EdgeInsets.only(right: 12),
+                child: GestureDetector(
+                  onTap: () => onChanged(sort),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 160),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 22,
+                      vertical: 12,
+                    ),
+                    decoration: BoxDecoration(
+                      color: selected ? ZayColors.primary : ZayColors.white,
+                      border: Border.all(
+                        color:
+                            selected
+                                ? ZayColors.primary
+                                : ZayColors.inputBorder,
+                      ),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Text(
+                      sort.label,
+                      style: ZayTheme.lightTheme.textTheme.displayLarge
+                          ?.copyWith(
+                            color:
+                                selected
+                                    ? ZayColors.white
+                                    : ZayColors.textSecondary,
+                            fontWeight:
+                                selected ? FontWeight.w700 : FontWeight.w500,
+                          ),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(
-                  sort.label,
-                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                    color:
-                        selected ? ZayColors.white : ZayColors.textSecondary,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+              );
+            }).toList(),
       ),
     );
   }
@@ -283,9 +288,10 @@ class _CatalogBody extends StatelessWidget {
       return EmptyStateWidget(
         icon: Icons.inventory_2_outlined,
         title: hasActiveFilters ? 'No matching products' : 'No products found',
-        message: hasActiveFilters
-            ? 'Try adjusting or resetting your filters.'
-            : 'There are no products available right now.',
+        message:
+            hasActiveFilters
+                ? 'Try adjusting or resetting your filters.'
+                : 'There are no products available right now.',
         actionText: 'Retry',
         onAction: () => onRetry(),
       );
@@ -324,18 +330,14 @@ class _CatalogSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Container(
-          width: 76,
-          height: 76,
+        CartHeaderButton(
+          dimension: 76,
+          iconPadding: const EdgeInsets.all(21),
+          iconColor: ZayColors.primary,
           decoration: BoxDecoration(
             color: ZayColors.cancel,
             shape: BoxShape.circle,
             border: Border.all(color: ZayColors.inputBorder.withAlpha(80)),
-          ),
-          child: const Icon(
-            Icons.shopping_bag_outlined,
-            color: ZayColors.primary,
-            size: 34,
           ),
         ),
         const SizedBox(width: 18),
@@ -388,28 +390,30 @@ class _CatalogProductGrid extends StatelessWidget {
         return Wrap(
           spacing: spacing,
           runSpacing: 28,
-          children: products.map((product) {
-            return Consumer(
-              builder: (context, ref, _) {
-                final wishlist = ref.watch(wishlistControllerProvider);
+          children:
+              products.map((product) {
+                return Consumer(
+                  builder: (context, ref, _) {
+                    final wishlist = ref.watch(wishlistControllerProvider);
 
-                return ProductCard.fromProduct(
-                  product: product,
-                  width: cardWidth,
-                  variant: ProductCardVariant.compact,
-                  isFavorite: wishlist.contains(product.id),
-                  action: () => ZayRouter.goto(ZayRoutes.productDetails, {
-                    'productId': product.id,
-                  }),
-                  onFavoriteToggle: () {
-                    ref
-                        .read(wishlistControllerProvider.notifier)
-                        .toggleProduct(product);
+                    return ProductCard.fromProduct(
+                      product: product,
+                      width: cardWidth,
+                      variant: ProductCardVariant.compact,
+                      isFavorite: wishlist.contains(product.id),
+                      action:
+                          () => ZayRouter.goto(ZayRoutes.productDetails, {
+                            'productId': product.id,
+                          }),
+                      onFavoriteToggle: () {
+                        ref
+                            .read(wishlistControllerProvider.notifier)
+                            .toggleProduct(product);
+                      },
+                    );
                   },
                 );
-              },
-            );
-          }).toList(),
+              }).toList(),
         );
       },
     );
@@ -417,10 +421,7 @@ class _CatalogProductGrid extends StatelessWidget {
 }
 
 class _InlineCatalogError extends StatelessWidget {
-  const _InlineCatalogError({
-    required this.message,
-    required this.onRetry,
-  });
+  const _InlineCatalogError({required this.message, required this.onRetry});
 
   final String message;
   final Future<void> Function() onRetry;

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/presentation/components/cart_header_button.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
 import 'package:zayrova/presentation/components/empty_state.dart';
 import 'package:zayrova/presentation/components/error_state.dart';
@@ -70,11 +73,13 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
     }
 
     setState(() => _isAddingToCart = true);
-    await ref.read(cartControllerProvider.notifier).addToCurrentUserCart(
-      products: [
-        {'id': productId, 'quantity': _quantity},
-      ],
-    );
+    await ref
+        .read(cartControllerProvider.notifier)
+        .addToCurrentUserCart(
+          products: [
+            {'id': productId, 'quantity': _quantity},
+          ],
+        );
 
     if (!mounted) {
       return;
@@ -92,10 +97,7 @@ class _ProductDetailsState extends ConsumerState<ProductDetails> {
 
   void _showCartSnackBar(String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: ZayColors.primary,
-      ),
+      SnackBar(content: Text(message), backgroundColor: ZayColors.primary),
     );
   }
 
@@ -280,7 +282,7 @@ class _ProductHero extends StatelessWidget {
             child: ZayNetworkImage(
               imageUrl: imageUrl,
               fit: BoxFit.cover,
-              placeholderIcon: Icons.shopping_bag_outlined,
+              placeholderAssetIcon: ZayIcons.cartIcon,
             ),
           ),
           if (images.length > 1)
@@ -336,22 +338,7 @@ class _ProductTopBar extends StatelessWidget {
                 ),
               ),
             ),
-            GestureDetector(
-              onTap: () => ZayRouter.goto(ZayRoutes.cart),
-              behavior: HitTestBehavior.opaque,
-              child: const SizedBox(
-                width: 42,
-                height: 42,
-                child: Align(
-                  alignment: Alignment.centerRight,
-                  child: Icon(
-                    Icons.shopping_bag_outlined,
-                    color: ZayColors.textPrimary,
-                    size: 28,
-                  ),
-                ),
-              ),
-            ),
+            const CartHeaderButton(),
           ],
         ),
       ),
@@ -561,9 +548,10 @@ class _ProductDescription extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           AnimatedCrossFade(
-            crossFadeState: isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
+            crossFadeState:
+                isExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 200),
             firstChild: Text(
               description,
@@ -608,9 +596,10 @@ class _StoreMeta extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = product.brand?.isNotEmpty == true
-        ? product.brand!
-        : product.categoryName ?? '';
+    final title =
+        product.brand?.isNotEmpty == true
+            ? product.brand!
+            : product.categoryName ?? '';
     final category = product.categoryName;
 
     if (title.isEmpty && category == null && product.stockQuantity == null) {
@@ -729,9 +718,14 @@ class _ColorSelector extends StatelessWidget {
                     width: isSelected ? 3 : 1,
                   ),
                 ),
-                child: isSelected
-                    ? const Icon(Icons.check, color: ZayColors.white, size: 26)
-                    : null,
+                child:
+                    isSelected
+                        ? const Icon(
+                          Icons.check,
+                          color: ZayColors.white,
+                          size: 26,
+                        )
+                        : null,
               ),
             );
           }),
@@ -857,10 +851,7 @@ class _QuantitySection extends StatelessWidget {
             ],
           ),
         ),
-        _QuantitySelector(
-          quantity: quantity,
-          onChanged: onChanged,
-        ),
+        _QuantitySelector(quantity: quantity, onChanged: onChanged),
       ],
     );
   }
@@ -912,7 +903,7 @@ class _ProductThumbnailList extends StatelessWidget {
               child: ZayNetworkImage(
                 imageUrl: images[index],
                 borderRadius: BorderRadius.circular(14),
-                placeholderIcon: Icons.shopping_bag_outlined,
+                placeholderAssetIcon: ZayIcons.cartIcon,
               ),
             ),
           );
@@ -984,28 +975,34 @@ class _BottomActionBar extends StatelessWidget {
                 child: ElevatedButton.icon(
                   onPressed: isAddingToCart ? null : onAddToCart,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isAddingToCart
-                        ? ZayColors.primary.withAlpha(80)
-                        : ZayColors.primary,
+                    backgroundColor:
+                        isAddingToCart
+                            ? ZayColors.primary.withAlpha(80)
+                            : ZayColors.primary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(28),
                     ),
                     elevation: 0,
                   ),
-                  icon: isAddingToCart
-                      ? const SizedBox(
-                          width: 18,
-                          height: 18,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            color: ZayColors.white,
+                  icon:
+                      isAddingToCart
+                          ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: ZayColors.white,
+                            ),
+                          )
+                          : SvgPicture.asset(
+                            ZayIcons.cartIcon,
+                            width: 24,
+                            height: 24,
+                            colorFilter: const ColorFilter.mode(
+                              ZayColors.white,
+                              BlendMode.srcIn,
+                            ),
                           ),
-                        )
-                      : const Icon(
-                          Icons.shopping_bag_outlined,
-                          color: ZayColors.white,
-                          size: 24,
-                        ),
                   label: Text(
                     isAddingToCart ? 'Adding...' : 'Add to Cart',
                     style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
@@ -1024,10 +1021,7 @@ class _BottomActionBar extends StatelessWidget {
 }
 
 class _QuantitySelector extends StatelessWidget {
-  const _QuantitySelector({
-    required this.quantity,
-    required this.onChanged,
-  });
+  const _QuantitySelector({required this.quantity, required this.onChanged});
 
   final int quantity;
   final ValueChanged<int> onChanged;
@@ -1097,9 +1091,10 @@ class _QuantityButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 20,
-          color: !enabled
-              ? ZayColors.textSecondary
-              : isPrimary
+          color:
+              !enabled
+                  ? ZayColors.textSecondary
+                  : isPrimary
                   ? ZayColors.white
                   : ZayColors.textPrimary,
         ),

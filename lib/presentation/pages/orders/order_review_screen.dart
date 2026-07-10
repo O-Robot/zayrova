@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/order_entity.dart';
@@ -69,18 +70,19 @@ class _OrderReviewScreenState extends ConsumerState<OrderReviewScreen> {
           children: [
             const OrderHeader(title: 'Order Review'),
             Expanded(
-              child: orderId == null || orderId.isEmpty
-                  ? const EmptyStateWidget(
-                      icon: Icons.rate_review_outlined,
-                      title: 'Missing order',
-                      message: 'This order cannot be reviewed.',
-                    )
-                  : _OrderReviewBody(
-                      state: state,
-                      orderId: orderId,
-                      storedReview: _storedReview,
-                      onRetry: _loadOrder,
-                    ),
+              child:
+                  orderId == null || orderId.isEmpty
+                      ? const EmptyStateWidget(
+                        icon: Icons.rate_review_outlined,
+                        title: 'Missing order',
+                        message: 'This order cannot be reviewed.',
+                      )
+                      : _OrderReviewBody(
+                        state: state,
+                        orderId: orderId,
+                        storedReview: _storedReview,
+                        onRetry: _loadOrder,
+                      ),
             ),
           ],
         ),
@@ -116,7 +118,8 @@ class _OrderReviewBody extends StatelessWidget {
       );
     }
 
-    final order = state.selectedOrder?.id == orderId ? state.selectedOrder : null;
+    final order =
+        state.selectedOrder?.id == orderId ? state.selectedOrder : null;
     if (order == null) {
       return EmptyStateWidget(
         icon: Icons.receipt_long_outlined,
@@ -212,9 +215,10 @@ class _DeliveryInfo extends StatelessWidget {
         children: [
           _InfoLine(
             label: 'Address',
-            value: address?.formattedAddress.isNotEmpty == true
-                ? address!.formattedAddress
-                : 'Not available',
+            value:
+                address?.formattedAddress.isNotEmpty == true
+                    ? address!.formattedAddress
+                    : 'Not available',
           ),
           if (estimated != null) ...[
             const SizedBox(height: 8),
@@ -236,12 +240,13 @@ class _PurchasedItems extends StatelessWidget {
     return _SectionCard(
       title: 'Purchased Items',
       child: Column(
-        children: order.items.map((item) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 14),
-            child: _ReviewOrderItem(item: item),
-          );
-        }).toList(),
+        children:
+            order.items.map((item) {
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: _ReviewOrderItem(item: item),
+              );
+            }).toList(),
       ),
     );
   }
@@ -261,7 +266,7 @@ class _ReviewOrderItem extends StatelessWidget {
           width: 64,
           height: 64,
           borderRadius: BorderRadius.circular(12),
-          placeholderIcon: Icons.shopping_bag_outlined,
+          placeholderAssetIcon: ZayIcons.cartIcon,
         ),
         const SizedBox(width: 14),
         Expanded(
@@ -300,10 +305,7 @@ class _ReviewOrderItem extends StatelessWidget {
 }
 
 class _ReviewEntryPoint extends StatelessWidget {
-  const _ReviewEntryPoint({
-    required this.order,
-    required this.storedReview,
-  });
+  const _ReviewEntryPoint({required this.order, required this.storedReview});
 
   final Order order;
   final StoredOrderReview? storedReview;
@@ -347,9 +349,10 @@ class _ReviewEntryPoint extends StatelessWidget {
             const SizedBox(height: 18),
           ],
           ZayButton.primary(
-            action: () => ZayRouter.goto(ZayRoutes.orderRating, {
-              'orderId': order.id,
-            }),
+            action:
+                () => ZayRouter.goto(ZayRoutes.orderRating, {
+                  'orderId': order.id,
+                }),
             text: storedReview == null ? 'Rate Order' : 'Update Review',
             fullWidth: true,
           ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/colors.dart';
 
 class ZayNetworkImage extends StatelessWidget {
@@ -10,14 +11,19 @@ class ZayNetworkImage extends StatelessWidget {
     this.height,
     this.borderRadius = BorderRadius.zero,
     this.placeholderIcon = Icons.broken_image,
-  });
+    this.placeholderAssetIcon,
+  }) : assert(
+         placeholderIcon != null || placeholderAssetIcon != null,
+         'Either placeholderIcon or placeholderAssetIcon must be provided.',
+       );
 
   final String? imageUrl;
   final BoxFit fit;
   final double? width;
   final double? height;
   final BorderRadius borderRadius;
-  final IconData placeholderIcon;
+  final IconData? placeholderIcon;
+  final String? placeholderAssetIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +35,10 @@ class ZayNetworkImage extends StatelessWidget {
         width: width,
         height: height,
         child: imageUrl == null || imageUrl.isEmpty
-            ? _ImageFallback(icon: placeholderIcon)
+            ? _ImageFallback(
+                icon: placeholderIcon,
+                assetIcon: placeholderAssetIcon,
+              )
             : Image.network(
                 imageUrl,
                 fit: fit,
@@ -48,7 +57,10 @@ class ZayNetworkImage extends StatelessWidget {
                   );
                 },
                 errorBuilder: (_, __, ___) {
-                  return _ImageFallback(icon: placeholderIcon);
+                  return _ImageFallback(
+                    icon: placeholderIcon,
+                    assetIcon: placeholderAssetIcon,
+                  );
                 },
               ),
       ),
@@ -57,20 +69,37 @@ class ZayNetworkImage extends StatelessWidget {
 }
 
 class _ImageFallback extends StatelessWidget {
-  const _ImageFallback({required this.icon});
+  const _ImageFallback({this.icon, this.assetIcon})
+    : assert(
+        icon != null || assetIcon != null,
+        'Either icon or assetIcon must be provided.',
+      );
 
-  final IconData icon;
+  final IconData? icon;
+  final String? assetIcon;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       color: ZayColors.cancel,
       child: Center(
-        child: Icon(
-          icon,
-          color: ZayColors.textSecondary,
-          size: 32,
-        ),
+        child:
+            assetIcon != null
+                ? Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: SvgPicture.asset(
+                      assetIcon!,
+                      colorFilter: const ColorFilter.mode(
+                        ZayColors.textSecondary,
+                        BlendMode.srcIn,
+                      ),
+                    ),
+                  )
+                : Icon(
+                    icon,
+                    color: ZayColors.textSecondary,
+                    size: 32,
+                  ),
       ),
     );
   }

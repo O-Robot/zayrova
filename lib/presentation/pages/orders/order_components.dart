@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
+import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/domain/entities/order_entity.dart';
 import 'package:zayrova/domain/entities/order_item_entity.dart';
+import 'package:zayrova/presentation/components/cart_header_button.dart';
 import 'package:zayrova/presentation/components/zay_network_image.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
@@ -28,20 +30,21 @@ class OrderHeader extends StatelessWidget {
           SizedBox(
             width: 42,
             height: 42,
-            child: showBack
-                ? GestureDetector(
-                    onTap: () => ZayRouter.goBack(),
-                    behavior: HitTestBehavior.opaque,
-                    child: const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: ZayColors.textPrimary,
-                        size: 24,
+            child:
+                showBack
+                    ? GestureDetector(
+                      onTap: () => ZayRouter.goBack(),
+                      behavior: HitTestBehavior.opaque,
+                      child: const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: ZayColors.textPrimary,
+                          size: 20,
+                        ),
                       ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
+                    )
+                    : const SizedBox.shrink(),
           ),
           Expanded(
             child: Text(
@@ -56,12 +59,7 @@ class OrderHeader extends StatelessWidget {
           SizedBox(
             width: 42,
             height: 42,
-            child: trailing ??
-                const Icon(
-                  Icons.shopping_bag_outlined,
-                  color: ZayColors.textPrimary,
-                  size: 28,
-                ),
+            child: trailing ?? const CartHeaderButton(),
           ),
         ],
       ),
@@ -84,12 +82,12 @@ class OrderTabs extends StatelessWidget {
     return Row(
       children: [
         _OrderTab(
-          label: 'My Order',
+          label: 'Ongoing',
           isSelected: selectedIndex == 0,
           onTap: () => onChanged(0),
         ),
         _OrderTab(
-          label: 'History',
+          label: 'Completed',
           isSelected: selectedIndex == 1,
           onTap: () => onChanged(1),
         ),
@@ -121,8 +119,10 @@ class _OrderTab extends StatelessWidget {
               label,
               style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
                 color:
-                    isSelected ? ZayColors.textPrimary : ZayColors.textSecondary,
-                fontWeight: FontWeight.w800,
+                    isSelected
+                        ? ZayColors.textPrimary
+                        : ZayColors.textSecondary,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
               ),
             ),
             const SizedBox(height: 18),
@@ -173,8 +173,14 @@ class OrderCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _OrderItemImage(item: item),
-              const SizedBox(width: 16),
+              Container(
+                decoration: BoxDecoration(
+                  color: ZayColors.textSecondary.withAlpha(20),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: _OrderItemImage(item: item),
+              ),
+              const SizedBox(width: 5),
               Expanded(child: _OrderCardInfo(order: order, item: item)),
               const SizedBox(width: 12),
               SizedBox(
@@ -189,11 +195,11 @@ class OrderCard extends StatelessWidget {
                       alignment: Alignment.centerRight,
                       child: Text(
                         formatCurrency(order.totalAmount, order.currencyCode),
-                        style:
-                            ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
-                          color: ZayColors.textPrimary,
-                          fontWeight: FontWeight.w900,
-                        ),
+                        style: ZayTheme.lightTheme.textTheme.displayLarge
+                            ?.copyWith(
+                              color: ZayColors.textPrimary,
+                              fontWeight: FontWeight.w900,
+                            ),
                       ),
                     ),
                   ],
@@ -241,7 +247,7 @@ class _OrderItemImage extends StatelessWidget {
       width: 84,
       height: 84,
       borderRadius: BorderRadius.circular(12),
-      placeholderIcon: Icons.shopping_bag_outlined,
+      placeholderAssetIcon: ZayIcons.orderIcon,
     );
   }
 }
@@ -254,7 +260,8 @@ class _OrderCardInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = item?.product.title ??
+    final title =
+        item?.product.title ??
         order.orderNumber ??
         'Order ${order.id.isEmpty ? '' : '#${order.id}'}';
     final colorText = item?.selectedColor;
@@ -267,9 +274,9 @@ class _OrderCardInfo extends StatelessWidget {
           title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
-          style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+          style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
             color: ZayColors.textPrimary,
-            fontWeight: FontWeight.w900,
+            fontWeight: FontWeight.w700,
             height: 1.2,
           ),
         ),
@@ -280,15 +287,15 @@ class _OrderCardInfo extends StatelessWidget {
               : 'Color: $colorText',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+          style: ZayTheme.lightTheme.textTheme.displaySmall?.copyWith(
             color: ZayColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 3),
         Text(
           'Qty: $quantity',
-          style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+          style: ZayTheme.lightTheme.textTheme.displaySmall?.copyWith(
             color: ZayColors.textSecondary,
             fontWeight: FontWeight.w600,
           ),
@@ -308,24 +315,25 @@ class OrderStatusChip extends StatelessWidget {
     final isComplete = status == OrderStatus.delivered;
     final isCancelled =
         status == OrderStatus.cancelled || status == OrderStatus.refunded;
-    final color = isComplete
-        ? const Color(0xFF10C76F)
-        : isCancelled
+    final color =
+        isComplete
+            ? const Color(0xFF10C76F)
+            : isCancelled
             ? const Color(0xFFE53935)
             : const Color(0xFF35AFC1);
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
         color: ZayColors.white,
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color, width: 1.5),
+        border: Border.all(color: color, width: 1.2),
       ),
       child: Text(
         orderStatusLabel(status),
-        style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+        style: ZayTheme.lightTheme.textTheme.displaySmall?.copyWith(
           color: color,
-          fontWeight: FontWeight.w900,
+          fontWeight: FontWeight.w700,
         ),
       ),
     );
@@ -344,13 +352,18 @@ String orderStatusLabel(OrderStatus status) {
     case OrderStatus.confirmed:
     case OrderStatus.processing:
     case OrderStatus.shipped:
-      return 'On Progress';
+      return 'In Progress';
   }
 }
 
 String formatCurrency(double value, String currencyCode) {
   final symbol = currencyCode.toUpperCase() == 'USD' ? r'$' : '$currencyCode ';
-  return '$symbol ${value.toStringAsFixed(2)}';
+  final parts = value.toStringAsFixed(2).split('.');
+  final wholeNumber = parts[0].replaceAllMapped(
+    RegExp(r'\B(?=(\d{3})+(?!\d))'),
+    (_) => ',',
+  );
+  return '$symbol $wholeNumber.${parts[1]}';
 }
 
 String formatOrderDate(DateTime value) {

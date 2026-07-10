@@ -47,7 +47,7 @@ class _OrdersScreenState extends ConsumerState<OrdersScreen> {
         child: Column(
           children: [
             const OrderHeader(title: 'My Order', showBack: false),
-            const SizedBox(height: 42),
+            const SizedBox(height: 22),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 42),
               child: OrderTabs(
@@ -102,9 +102,10 @@ class _OrdersBody extends StatelessWidget {
       return EmptyStateWidget(
         icon: Icons.local_shipping_outlined,
         title: isHistory ? 'No order history' : 'No active orders',
-        message: isHistory
-            ? 'Completed and cancelled orders will appear here.'
-            : 'Orders you place will appear here while they are in progress.',
+        message:
+            isHistory
+                ? 'Completed and cancelled orders will appear here.'
+                : 'Orders you place will appear here while they are in progress.',
         actionText: 'Refresh',
         onAction: () => onRetry(),
       );
@@ -122,22 +123,25 @@ class _OrdersBody extends StatelessWidget {
 
           return OrderCard(
             order: order,
-            primaryActionText: canReview
-                ? 'Review'
-                : isHistory
+            primaryActionText:
+                canReview
+                    ? 'Review'
+                    : isHistory
                     ? 'Detail'
-                    : 'Tracking',
-            onDetail: () => ZayRouter.goto(ZayRoutes.orderDetails, {
-              'orderId': order.id,
-            }),
-            onPrimaryAction: () => ZayRouter.goto(
-              canReview
-                  ? ZayRoutes.orderReview
-                  : isHistory
+                    : 'Track',
+            onDetail:
+                () => ZayRouter.goto(ZayRoutes.orderDetails, {
+                  'orderId': order.id,
+                }),
+            onPrimaryAction:
+                () => ZayRouter.goto(
+                  canReview
+                      ? ZayRoutes.orderReview
+                      : isHistory
                       ? ZayRoutes.orderDetails
                       : ZayRoutes.orderTracking,
-              {'orderId': order.id},
-            ),
+                  {'orderId': order.id},
+                ),
           );
         },
         separatorBuilder: (_, __) => const SizedBox(height: 24),
