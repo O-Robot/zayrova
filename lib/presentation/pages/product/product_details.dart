@@ -15,7 +15,6 @@ import 'package:zayrova/presentation/providers/feature/cart_controller.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
 import 'package:zayrova/presentation/routes/zay_router.dart';
-import 'package:zayrova/presentation/routes/zay_routes.dart';
 
 class ProductDetails extends ConsumerStatefulWidget {
   const ProductDetails({super.key, this.productId});

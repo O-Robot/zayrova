@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/order_entity.dart';
+import 'package:zayrova/features/tracking/models/tracking_model.dart';
+import 'package:zayrova/features/tracking/tracking_provider.dart';
+import 'package:zayrova/features/tracking/widgets/courier_card.dart';
+import 'package:zayrova/features/tracking/widgets/delivery_progress.dart';
+import 'package:zayrova/features/tracking/widgets/tracking_map.dart';
 import 'package:zayrova/presentation/components/empty_state.dart';
 import 'package:zayrova/presentation/components/error_state.dart';
 import 'package:zayrova/presentation/components/loading_state.dart';
+import 'package:zayrova/presentation/providers/feature/address_controller.dart';
+import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/providers/feature/order_controller.dart';
+import 'package:zayrova/presentation/routes/zay_router.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
 
 class OrderTrackingScreen extends ConsumerStatefulWidget {
@@ -47,8 +54,8 @@ class _OrderTrackingScreenState extends ConsumerState<OrderTrackingScreen> {
       backgroundColor: ZayColors.white,
       body:
           !hasOrderId
-              ? const SafeArea(
-                child: EmptyStateWidget(
+              ? SafeArea(
+                child: const EmptyStateWidget(
                   icon: Icons.local_shipping_outlined,
                   title: 'Missing order',
                   message: 'This order cannot be tracked.',
@@ -70,12 +77,45 @@ class _TrackingBody extends StatefulWidget {
 }
 
 class _TrackingBodyState extends State<_TrackingBody> {
-  static const double _minSheetSize = 0.40;
   static const double _initialSheetSize = 0.60;
-  static const double _maxSheetSize = 0.88;
+  static const double _maxSheetSize = 0.90;
 
-  final DraggableScrollableController _sheetController =
-      DraggableScrollableController();
+  late double _sheetSize = _initialSheetSize;
+  bool _isDragging = false;
+
+  void _updateSheetSize(double nextSize, double minSheetSize) {
+    setState(() {
+      _isDragging = true;
+      _sheetSize = nextSize.clamp(minSheetSize, _maxSheetSize);
+    });
+  }
+
+  void _snapSheet(double velocity, double minSheetSize) {
+    final snapPoints = [minSheetSize, _initialSheetSize, _maxSheetSize];
+
+    double target;
+    if (velocity <= -250) {
+      target = _maxSheetSize;
+    } else if (velocity >= 250) {
+      target = minSheetSize;
+    } else {
+      target = snapPoints.first;
+      var minDistance = (_sheetSize - target).abs();
+
+      for (final point in snapPoints.skip(1)) {
+        final distance = (_sheetSize - point).abs();
+        if (distance < minDistance) {
+          target = point;
+          minDistance = distance;
+        }
+      }
+    }
+
+    setState(() {
+      _isDragging = false;
+      _sheetSize = target.clamp(minSheetSize, _maxSheetSize);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,174 +123,167 @@ class _TrackingBodyState extends State<_TrackingBody> {
     final onRetry = widget.onRetry;
 
     if (state.isLoading && state.trackedOrder == null) {
-      return const LoadingStateWidget(message: 'Loading tracking...');
+      return const SafeArea(
+        child: LoadingStateWidget(message: 'Loading tracking...'),
+      );
     }
 
     if (state.hasError && state.trackedOrder == null) {
-      return ErrorStateWidget(
-        title: 'Tracking unavailable',
-        message: state.errorMessage ?? 'Unable to track this order.',
-        onRetry: () => onRetry(),
+      return SafeArea(
+        child: ErrorStateWidget(
+          title: 'Tracking unavailable',
+          message: state.errorMessage ?? 'Unable to track this order.',
+          onRetry: () => onRetry(),
+        ),
       );
     }
 
     final order = state.trackedOrder;
     if (order == null) {
-      return const EmptyStateWidget(
-        icon: Icons.local_shipping_outlined,
-        title: 'No tracking found',
-        message: 'Tracking information is not available for this order.',
+      return const SafeArea(
+        child: EmptyStateWidget(
+          icon: Icons.local_shipping_outlined,
+          title: 'No tracking found',
+          message: 'Tracking information is not available for this order.',
+        ),
       );
     }
 
-    return Stack(
-      children: [
-        const Positioned.fill(child: _TrackingMap()),
-        _TrackingHeader(title: 'Order Tracking'),
-        DraggableScrollableSheet(
-          controller: _sheetController,
-          initialChildSize: _initialSheetSize,
-          minChildSize: _minSheetSize,
-          maxChildSize: _maxSheetSize,
-          snap: true,
-          snapSizes: const [_minSheetSize, _initialSheetSize, _maxSheetSize],
-          builder: (context, scrollController) {
-            return _TrackingSheet(
-              order: order,
-              scrollController: scrollController,
-              sheetController: _sheetController,
-              minSheetSize: _minSheetSize,
-              initialSheetSize: _initialSheetSize,
-              maxSheetSize: _maxSheetSize,
-            );
-          },
-        ),
-      ],
-    );
-  }
-}
+    return Consumer(
+      builder: (context, ref, child) {
+        final savedAddress =
+            ref.watch(addressControllerProvider).selectedAddress;
+        final profileAddress =
+            ref.watch(authControllerProvider).currentUser?.defaultAddress;
+        final trackingRequest = (
+          order: order,
+          fallbackAddress: savedAddress ?? profileAddress,
+        );
+        final tracking = ref.watch(trackingModelProvider(trackingRequest));
 
-class _TrackingMap extends StatelessWidget {
-  const _TrackingMap();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        Stack(
-          children: [
-            Positioned.fill(
-              child: Image.asset(
-                ZayAssets.orderTrackingMap,
-                fit: BoxFit.cover,
-                alignment: Alignment.topCenter,
+        return tracking.when(
+          loading:
+              () => const SafeArea(
+                child: LoadingStateWidget(
+                  message: 'Preparing live tracking...',
+                ),
               ),
-            ),
-            Positioned.fill(
-              child: DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.white.withAlpha(20),
-                      Colors.transparent,
-                      Colors.white.withAlpha(22),
-                    ],
+          error:
+              (error, _) => SafeArea(
+                child: ErrorStateWidget(
+                  title: 'Map unavailable',
+                  message: 'Unable to prepare tracking map right now.',
+                  onRetry: () => ref.refresh(
+                    trackingModelProvider(trackingRequest),
                   ),
                 ),
               ),
-            ),
-            Positioned(
-              left: 18,
-              top: 118,
-              child: _MapPin(
-                icon: Icons.circle,
-                color: ZayColors.white,
-                borderColor: ZayColors.primary,
+          data:
+              (trackingData) => _TrackingScaffold(
+                order: order,
+                tracking: trackingData,
+                sheetSize: _sheetSize,
+                initialSheetSize: _initialSheetSize,
+                maxSheetSize: _maxSheetSize,
+                isDragging: _isDragging,
+                onDragUpdate: _updateSheetSize,
+                onDragEnd: _snapSheet,
               ),
-            ),
-            Positioned(
-              left: 40,
-              top: 158,
-              child: SizedBox(
-                width: 186,
-                height: 180,
-                child: CustomPaint(painter: _TrackingRoutePainter()),
-              ),
-            ),
-            Positioned(
-              left: 126,
-              bottom: 78,
-              child: _MapPin(
-                icon: Icons.local_shipping_outlined,
-                color: ZayColors.primary,
-                borderColor: ZayColors.primary,
-              ),
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 }
 
-class _MapPin extends StatelessWidget {
-  const _MapPin({
-    required this.icon,
-    required this.color,
-    required this.borderColor,
+class _TrackingScaffold extends StatelessWidget {
+  const _TrackingScaffold({
+    required this.order,
+    required this.tracking,
+    required this.sheetSize,
+    required this.initialSheetSize,
+    required this.maxSheetSize,
+    required this.isDragging,
+    required this.onDragUpdate,
+    required this.onDragEnd,
   });
 
-  final IconData icon;
-  final Color color;
-  final Color borderColor;
+  final Order order;
+  final TrackingModel tracking;
+  final double sheetSize;
+  final double initialSheetSize;
+  final double maxSheetSize;
+  final bool isDragging;
+  final void Function(double nextSize, double minSheetSize) onDragUpdate;
+  final void Function(double velocity, double minSheetSize) onDragEnd;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 58,
-      height: 58,
-      decoration: BoxDecoration(
-        color: color,
-        shape: BoxShape.circle,
-        border: Border.all(color: borderColor, width: 6),
-      ),
-      child: Icon(
-        icon,
-        color: color == ZayColors.primary ? ZayColors.white : ZayColors.primary,
-        size: 22,
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bottomInset = MediaQuery.of(context).padding.bottom;
+        const progressPreviewHeight = 92.0;
+        final minSheetHeight =
+            18 +
+            19 +
+            26 +
+            112 +
+            24 +
+            56 +
+            16 +
+            progressPreviewHeight +
+            bottomInset;
+        final minSheetSize = (minSheetHeight / constraints.maxHeight).clamp(
+          0.42,
+          0.54,
+        );
+        final effectiveSheetSize = sheetSize.clamp(minSheetSize, maxSheetSize);
+
+        return Stack(
+          children: [
+            Positioned.fill(child: TrackingMap(tracking: tracking)),
+            const _TrackingHeader(title: 'Order Tracking'),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: TweenAnimationBuilder<double>(
+                tween: Tween<double>(
+                  begin: effectiveSheetSize,
+                  end: effectiveSheetSize,
+                ),
+                duration:
+                    isDragging
+                        ? Duration.zero
+                        : const Duration(milliseconds: 320),
+                curve: Curves.easeOutBack,
+                builder: (context, animatedSize, child) {
+                  return FractionallySizedBox(
+                    heightFactor: animatedSize,
+                    widthFactor: 1,
+                    alignment: Alignment.bottomCenter,
+                    child: child,
+                  );
+                },
+                child: _TrackingSheet(
+                  order: order,
+                  tracking: tracking,
+                  sheetSize: effectiveSheetSize,
+                  minSheetSize: minSheetSize,
+                  initialSheetSize: initialSheetSize,
+                  maxSheetSize: maxSheetSize,
+                  onDragUpdate: (delta) {
+                    onDragUpdate(
+                      effectiveSheetSize - (delta / constraints.maxHeight),
+                      minSheetSize,
+                    );
+                  },
+                  onDragEnd: (velocity) => onDragEnd(velocity, minSheetSize),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
-}
-
-class _TrackingRoutePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final routePaint =
-        Paint()
-          ..color = ZayColors.primary
-          ..strokeWidth = 5
-          ..style = PaintingStyle.stroke
-          ..strokeCap = StrokeCap.round
-          ..strokeJoin = StrokeJoin.round;
-
-    final path =
-        Path()
-          ..moveTo(18, 8)
-          ..lineTo(18, 98)
-          ..lineTo(92, 98)
-          ..lineTo(92, 136)
-          ..lineTo(132, 136)
-          ..lineTo(132, size.height - 18);
-
-    canvas.drawPath(path, routePaint);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _TrackingHeader extends StatelessWidget {
@@ -262,12 +295,14 @@ class _TrackingHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final topInset = MediaQuery.of(context).padding.top;
 
-    return Padding(
-      padding: EdgeInsets.fromLTRB(24, topInset + 10, 24, 0),
+    return Positioned(
+      top: topInset + 10,
+      left: 24,
+      right: 24,
       child: Row(
         children: [
           GestureDetector(
-            onTap: () => Navigator.of(context).maybePop(),
+            onTap: ZayRouter.goBack,
             behavior: HitTestBehavior.opaque,
             child: const SizedBox(
               width: 42,
@@ -277,7 +312,7 @@ class _TrackingHeader extends StatelessWidget {
                 child: Icon(
                   Icons.arrow_back,
                   color: ZayColors.textPrimary,
-                  size: 28,
+                  size: 24,
                 ),
               ),
             ),
@@ -302,19 +337,23 @@ class _TrackingHeader extends StatelessWidget {
 class _TrackingSheet extends StatelessWidget {
   const _TrackingSheet({
     required this.order,
-    required this.scrollController,
-    required this.sheetController,
+    required this.tracking,
+    required this.sheetSize,
     required this.minSheetSize,
     required this.initialSheetSize,
     required this.maxSheetSize,
+    required this.onDragUpdate,
+    required this.onDragEnd,
   });
 
   final Order order;
-  final ScrollController scrollController;
-  final DraggableScrollableController sheetController;
+  final TrackingModel tracking;
+  final double sheetSize;
   final double minSheetSize;
   final double initialSheetSize;
   final double maxSheetSize;
+  final ValueChanged<double> onDragUpdate;
+  final ValueChanged<double> onDragEnd;
 
   @override
   Widget build(BuildContext context) {
@@ -331,32 +370,23 @@ class _TrackingSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _SheetDragHandle(
-              controller: sheetController,
+              sheetSize: sheetSize,
               minSheetSize: minSheetSize,
               initialSheetSize: initialSheetSize,
               maxSheetSize: maxSheetSize,
+              onDragUpdate: onDragUpdate,
+              onDragEnd: onDragEnd,
             ),
             const SizedBox(height: 26),
-            const _CourierCard(),
-            const SizedBox(height: 32),
-            Text(
-              'Progress of your Order',
-              style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                color: ZayColors.textPrimary,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(height: 18),
+            CourierCard(tracking: tracking),
+            const SizedBox(height: 24),
             Expanded(
-              child: ListView(
-                controller: scrollController,
-                padding: const EdgeInsets.only(bottom: 12),
-                children: [
-                  _TrackingTimeline(order: order),
-                ],
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 20),
+                child: DeliveryProgress(tracking: tracking),
               ),
             ),
-            const SizedBox(height: 12),
             ZayButton.outline(
               action: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -374,7 +404,6 @@ class _TrackingSheet extends StatelessWidget {
               isDisabled: order.status == OrderStatus.delivered,
               fullWidth: true,
             ),
-            const SizedBox(height: 12),
           ],
         ),
       ),
@@ -384,292 +413,47 @@ class _TrackingSheet extends StatelessWidget {
 
 class _SheetDragHandle extends StatelessWidget {
   const _SheetDragHandle({
-    required this.controller,
+    required this.sheetSize,
     required this.minSheetSize,
     required this.initialSheetSize,
     required this.maxSheetSize,
+    required this.onDragUpdate,
+    required this.onDragEnd,
   });
 
-  final DraggableScrollableController controller;
+  final double sheetSize;
   final double minSheetSize;
   final double initialSheetSize;
   final double maxSheetSize;
+  final ValueChanged<double> onDragUpdate;
+  final ValueChanged<double> onDragEnd;
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    Future<void> animateTo(double size) {
-      return controller.animateTo(
-        size,
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOutCubic,
-      );
-    }
-
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onVerticalDragUpdate: (details) {
-        final currentSize = controller.isAttached ? controller.size : initialSheetSize;
-        final nextSize = (currentSize - (details.delta.dy / screenHeight)).clamp(
-          minSheetSize,
-          maxSheetSize,
-        );
-        controller.jumpTo(nextSize);
+      onTap: () {
+        if (sheetSize < (initialSheetSize + maxSheetSize) / 2) {
+          onDragEnd(-300);
+          return;
+        }
+        onDragEnd(300);
       },
-      onVerticalDragEnd: (details) {
-        final currentSize = controller.isAttached ? controller.size : initialSheetSize;
-        final velocity = details.primaryVelocity ?? 0;
-
-        if (velocity <= -250) {
-          animateTo(maxSheetSize);
-          return;
-        }
-
-        if (velocity >= 250) {
-          animateTo(minSheetSize);
-          return;
-        }
-
-        if (currentSize >= (initialSheetSize + maxSheetSize) / 2) {
-          animateTo(maxSheetSize);
-          return;
-        }
-
-        if (currentSize <= (minSheetSize + initialSheetSize) / 2) {
-          animateTo(minSheetSize);
-          return;
-        }
-
-        animateTo(initialSheetSize);
-      },
-      child: Center(
-        child: Container(
-          width: 62,
-          height: 7,
-          decoration: BoxDecoration(
-            color: ZayColors.cancel,
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _CourierCard extends StatelessWidget {
-  const _CourierCard();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEDEEF4)),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
+      onVerticalDragUpdate: (details) => onDragUpdate(details.delta.dy),
+      onVerticalDragEnd: (details) => onDragEnd(details.primaryVelocity ?? 0),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Center(
+          child: Container(
+            width: 62,
+            height: 7,
             decoration: BoxDecoration(
               color: ZayColors.cancel,
-              borderRadius: BorderRadius.circular(18),
-              image: const DecorationImage(
-                image: AssetImage(ZayIllustrations.getStarted),
-                fit: BoxFit.cover,
-              ),
+              borderRadius: BorderRadius.circular(20),
             ),
           ),
-          const SizedBox(width: 18),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Alexander Jr',
-                  style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                    color: ZayColors.textPrimary,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Delivery partner',
-                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                    color: ZayColors.textSecondary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          _CircleAction(icon: Icons.language),
-          const SizedBox(width: 12),
-          _CircleAction(icon: Icons.call_outlined),
-        ],
-      ),
-    );
-  }
-}
-
-class _CircleAction extends StatelessWidget {
-  const _CircleAction({required this.icon});
-
-  final IconData icon;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 54,
-      height: 54,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: const Color(0xFFEDEEF4)),
-      ),
-      child: Icon(icon, color: ZayColors.textSecondary),
-    );
-  }
-}
-
-class _TrackingTimeline extends StatelessWidget {
-  const _TrackingTimeline({required this.order});
-
-  final Order order;
-
-  @override
-  Widget build(BuildContext context) {
-    final delivered = order.status == OrderStatus.delivered;
-    final inTransit =
-        order.status == OrderStatus.processing ||
-        order.status == OrderStatus.shipped ||
-        delivered;
-
-    final steps = [
-      _TimelineStep(
-        title:
-            order.items.isNotEmpty
-                ? order.items.first.product.title
-                : 'Upbox Bag',
-        subtitle: 'Shop',
-        timeLabel: _formatTrackingTime(order.createdAt),
-        icon: Icons.storefront_outlined,
-        isComplete: true,
-      ),
-      _TimelineStep(
-        title: 'On the way',
-        subtitle: 'Delivery',
-        timeLabel: _formatTrackingTime(order.updatedAt ?? order.createdAt),
-        icon: Icons.pedal_bike_outlined,
-        isComplete: inTransit,
-      ),
-      _TimelineStep(
-        title:
-            order.shippingAddress?.formattedAddress.isNotEmpty == true
-                ? order.shippingAddress!.formattedAddress
-                : 'Delivery address pending',
-        subtitle: 'Houser',
-        timeLabel: _formatTrackingTime(
-          order.estimatedDeliveryAt ?? order.updatedAt ?? order.createdAt,
         ),
-        icon: Icons.location_on_outlined,
-        isComplete: delivered,
-      ),
-    ];
-
-    return Column(
-      children: List.generate(steps.length, (index) {
-        final step = steps[index];
-        return _TimelineTile(step: step, isLast: index == steps.length - 1);
-      }),
-    );
-  }
-}
-
-class _TimelineStep {
-  const _TimelineStep({
-    required this.title,
-    required this.subtitle,
-    required this.timeLabel,
-    required this.icon,
-    required this.isComplete,
-  });
-
-  final String title;
-  final String subtitle;
-  final String timeLabel;
-  final IconData icon;
-  final bool isComplete;
-}
-
-class _TimelineTile extends StatelessWidget {
-  const _TimelineTile({required this.step, required this.isLast});
-
-  final _TimelineStep step;
-  final bool isLast;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = step.isComplete ? ZayColors.primary : const Color(0xFFF1F2F6);
-    final iconColor = step.isComplete ? ZayColors.white : ZayColors.textPrimary;
-    final lineColor =
-        step.isComplete ? ZayColors.primary : const Color(0xFFE4E7EF);
-
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Column(
-            children: [
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                child: Icon(step.icon, color: iconColor),
-              ),
-              if (!isLast)
-                Expanded(child: Container(width: 3, color: lineColor)),
-            ],
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 6, bottom: 26),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    step.title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
-                      color: ZayColors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${step.subtitle}  •  ${step.timeLabel}',
-                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                      color: ZayColors.textSecondary,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
       ),
     );
   }
-}
-
-String _formatTrackingTime(DateTime value) {
-  final hour = value.hour % 12 == 0 ? 12 : value.hour % 12;
-  final minute = value.minute.toString().padLeft(2, '0');
-  final period = value.hour >= 12 ? 'PM' : 'AM';
-  return '$hour:$minute $period';
 }

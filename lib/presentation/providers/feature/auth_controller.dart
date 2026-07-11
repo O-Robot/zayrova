@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/utils/local_storage.dart';
+import 'package:zayrova/domain/entities/address_entity.dart';
 import 'package:zayrova/domain/entities/user_profile_entity.dart';
 import 'package:zayrova/presentation/providers/usecase_providers.dart';
 
@@ -184,6 +185,8 @@ class AuthController extends Notifier<AuthState> {
       'avatarUrl': profile.avatarUrl,
       'dateOfBirth': profile.dateOfBirth?.toIso8601String(),
       'gender': profile.gender,
+      'defaultAddress': _addressToMap(profile.defaultAddress),
+      'addresses': profile.addresses.map(_addressToMap).toList(),
       'isEmailVerified': profile.isEmailVerified,
       'isPhoneVerified': profile.isPhoneVerified,
     };
@@ -191,6 +194,12 @@ class AuthController extends Notifier<AuthState> {
 
   UserProfile _profileFromMap(Map<dynamic, dynamic> data) {
     final dateOfBirth = _stringValue(data['dateOfBirth']);
+    final defaultAddress = _addressFromMap(data['defaultAddress']);
+    final storedAddresses = data['addresses'];
+    final addresses =
+        storedAddresses is List
+            ? storedAddresses.map(_addressFromMap).whereType<Address>().toList()
+            : <Address>[];
 
     return UserProfile(
       id: _stringValue(data['id']) ?? 'local-user',
@@ -202,9 +211,66 @@ class AuthController extends Notifier<AuthState> {
       avatarUrl: _stringValue(data['avatarUrl']),
       dateOfBirth: dateOfBirth == null ? null : DateTime.tryParse(dateOfBirth),
       gender: _stringValue(data['gender']),
+      defaultAddress: defaultAddress,
+      addresses:
+          addresses.isNotEmpty
+              ? addresses
+              : defaultAddress == null
+              ? const []
+              : [defaultAddress],
       isEmailVerified: data['isEmailVerified'] == true,
       isPhoneVerified: data['isPhoneVerified'] == true,
     );
+  }
+
+  Map<String, dynamic>? _addressToMap(Address? address) {
+    if (address == null) return null;
+
+    return {
+      'id': address.id,
+      'label': address.label,
+      'recipientName': address.recipientName,
+      'addressLine1': address.addressLine1,
+      'addressLine2': address.addressLine2,
+      'city': address.city,
+      'state': address.state,
+      'postalCode': address.postalCode,
+      'country': address.country,
+      'phoneNumber': address.phoneNumber,
+      'latitude': address.latitude,
+      'longitude': address.longitude,
+      'isDefault': address.isDefault,
+    };
+  }
+
+  Address? _addressFromMap(dynamic value) {
+    if (value is! Map) return null;
+
+    final addressLine1 = _stringValue(value['addressLine1']);
+    final city = _stringValue(value['city']);
+    final country = _stringValue(value['country']);
+    if (addressLine1 == null || city == null || country == null) return null;
+
+    return Address(
+      id: _stringValue(value['id']) ?? 'default',
+      label: _stringValue(value['label']) ?? 'Home',
+      recipientName: _stringValue(value['recipientName']),
+      addressLine1: addressLine1,
+      addressLine2: _stringValue(value['addressLine2']),
+      city: city,
+      state: _stringValue(value['state']),
+      postalCode: _stringValue(value['postalCode']),
+      country: country,
+      phoneNumber: _stringValue(value['phoneNumber']),
+      latitude: _doubleValue(value['latitude']),
+      longitude: _doubleValue(value['longitude']),
+      isDefault: value['isDefault'] == true,
+    );
+  }
+
+  double? _doubleValue(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '');
   }
 
   String? _stringValue(dynamic value) {
