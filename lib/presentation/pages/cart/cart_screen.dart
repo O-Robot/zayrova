@@ -107,6 +107,25 @@ class _CartScreenState extends ConsumerState<CartScreen> {
     );
   }
 
+  Future<void> _openCartSummarySheet(Cart cart) {
+    return showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      isDismissible: true,
+      enableDrag: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return _CartSummarySheet(
+          cart: cart,
+          onCheckout: () {
+            Navigator.of(context).pop();
+            ZayRouter.goto(ZayRoutes.checkout);
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cartState = ref.watch(cartControllerProvider);
@@ -141,7 +160,8 @@ class _CartScreenState extends ConsumerState<CartScreen> {
                     _removeItem(cart, item);
                   }
                 },
-                onCheckout: () => ZayRouter.goto(ZayRoutes.checkout),
+                onCheckout:
+                    () => cart == null ? null : _openCartSummarySheet(cart),
               ),
             ),
           ],
@@ -209,7 +229,7 @@ class _CartBody extends StatelessWidget {
   final ValueChanged<CartItem> onIncrease;
   final ValueChanged<CartItem> onDecrease;
   final ValueChanged<CartItem> onRemove;
-  final VoidCallback onCheckout;
+  final VoidCallback? onCheckout;
 
   @override
   Widget build(BuildContext context) {
@@ -242,7 +262,7 @@ class _CartBody extends StatelessWidget {
           onRefresh: onRetry,
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(24, 0, 24, 340),
+            padding: const EdgeInsets.fromLTRB(24, 0, 24, 128),
             child: Column(
               children: [
                 if (state.hasError)
@@ -268,9 +288,57 @@ class _CartBody extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.bottomCenter,
-          child: _CartSummarySheet(cart: currentCart, onCheckout: onCheckout),
+          child: _ProceedToCheckoutBar(onTap: onCheckout),
         ),
       ],
+    );
+  }
+}
+
+class _ProceedToCheckoutBar extends StatelessWidget {
+  const _ProceedToCheckoutBar({required this.onTap});
+
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(24, 14, 24, 22),
+      decoration: BoxDecoration(
+        color: ZayColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(10),
+            blurRadius: 18,
+            offset: const Offset(0, -6),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: SizedBox(
+          width: double.infinity,
+          height: 58,
+          child: ElevatedButton(
+            onPressed: onTap,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: ZayColors.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+              elevation: 0,
+            ),
+            child: Text(
+              'Proceed to checkout',
+              style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+                color: ZayColors.white,
+                fontWeight: FontWeight.w800,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

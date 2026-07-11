@@ -511,20 +511,26 @@ class _CheckoutProductRow extends StatelessWidget {
             : null);
 
     return GestureDetector(
-      onTap:
-          () => ZayRouter.goto(ZayRoutes.productDetails, {
-            'productId': product.id,
-          }),
-      behavior: HitTestBehavior.opaque,
+      // onTap:
+      //     () => ZayRouter.goto(ZayRoutes.productDetails, {
+      //       'productId': product.id,
+      //     }),
+      // behavior: HitTestBehavior.opaque,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ZayNetworkImage(
-            imageUrl: product.thumbnailUrl,
-            width: 78,
-            height: 78,
-            borderRadius: BorderRadius.circular(12),
-            placeholderAssetIcon: ZayIcons.cartIcon,
+          Container(
+            decoration: BoxDecoration(
+              color: ZayColors.textSecondary.withAlpha(20),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ZayNetworkImage(
+              imageUrl: product.thumbnailUrl,
+              width: 78,
+              height: 78,
+              borderRadius: BorderRadius.circular(12),
+              placeholderAssetIcon: ZayIcons.cartIcon,
+            ),
           ),
           const SizedBox(width: 18),
           Expanded(

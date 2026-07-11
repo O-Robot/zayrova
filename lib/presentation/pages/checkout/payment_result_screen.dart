@@ -6,11 +6,7 @@ import 'package:zayrova/presentation/routes/zay_routes.dart';
 import 'package:zayrova/presentation/widgets/button.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
-  const PaymentSuccessScreen({
-    super.key,
-    this.orderId,
-    this.orderReference,
-  });
+  const PaymentSuccessScreen({super.key, this.orderId, this.orderReference});
 
   final String? orderId;
   final String? orderReference;
@@ -23,18 +19,19 @@ class PaymentSuccessScreen extends StatelessWidget {
       title: 'Order Successful',
       message:
           'Your order has been created and will be packed for delivery. You can view it from your orders.',
-      referenceLabel: reference == null || reference.isEmpty
-          ? 'Order reference will appear in My Orders'
-          : 'Order reference: $reference',
+      referenceLabel:
+          reference == null || reference.isEmpty
+              ? 'Order reference will appear in My Orders'
+              : 'Order reference: $reference',
       visual: const _PaymentResultVisual.success(),
       primaryText: 'View Order',
       secondaryText: 'Continue Shopping',
-      primaryRoute: orderId == null || orderId!.isEmpty
-          ? ZayRoutes.orders
-          : ZayRoutes.orderDetails,
-      primaryParameters: orderId == null || orderId!.isEmpty
-          ? null
-          : {'orderId': orderId},
+      primaryRoute:
+          orderId == null || orderId!.isEmpty
+              ? ZayRoutes.orders
+              : ZayRoutes.orderDetails,
+      primaryParameters:
+          orderId == null || orderId!.isEmpty ? null : {'orderId': orderId},
       secondaryRoute: ZayRoutes.home,
     );
   }
@@ -96,7 +93,7 @@ class _PaymentResultScaffold extends StatelessWidget {
                 child: Container(
                   width: double.infinity,
                   constraints: const BoxConstraints(minHeight: 560),
-                  padding: const EdgeInsets.fromLTRB(24, 28, 24, 28),
+                  padding: const EdgeInsets.fromLTRB(22, 26, 22, 26),
                   decoration: const BoxDecoration(
                     color: ZayColors.white,
                     borderRadius: BorderRadius.vertical(
@@ -114,40 +111,41 @@ class _PaymentResultScaffold extends StatelessWidget {
                             borderRadius: BorderRadius.circular(20),
                           ),
                         ),
-                        const SizedBox(height: 70),
+                        const SizedBox(height: 50),
                         visual,
-                        const SizedBox(height: 42),
+                        const SizedBox(height: 22),
                         Text(
                           title,
                           textAlign: TextAlign.center,
                           style: ZayTheme.lightTheme.textTheme.titleLarge
                               ?.copyWith(
-                            color: ZayColors.textPrimary,
-                            fontWeight: FontWeight.w900,
-                          ),
+                                color: ZayColors.textPrimary,
+                                fontWeight: FontWeight.w900,
+                              ),
                         ),
                         const SizedBox(height: 18),
                         Text(
                           message,
                           textAlign: TextAlign.center,
-                          style: ZayTheme.lightTheme.textTheme.displayLarge
+                          style: ZayTheme.lightTheme.textTheme.displayMedium
                               ?.copyWith(
-                            color: ZayColors.textSecondary,
-                            height: 1.65,
-                            fontWeight: FontWeight.w500,
-                          ),
+                                color: ZayColors.textSecondary,
+                                height: 1.65,
+                                fontWeight: FontWeight.w500,
+                              ),
                         ),
-                        const SizedBox(height: 22),
+                        const SizedBox(height: 12),
                         if (referenceLabel != null) ...[
                           _ReferencePill(label: referenceLabel!),
-                          const SizedBox(height: 58),
+                          const SizedBox(height: 48),
                         ] else
-                          const SizedBox(height: 58),
+                          const SizedBox(height: 48),
                         ZayButton.primary(
-                          action: () => ZayRouter.goto(
-                            primaryRoute,
-                            primaryParameters,
-                          ),
+                          action:
+                              () => ZayRouter.goto(
+                                primaryRoute,
+                                primaryParameters,
+                              ),
                           text: primaryText,
                           fullWidth: true,
                         ),
@@ -214,16 +212,16 @@ class _PaymentResultHeader extends StatelessWidget {
 
 class _PaymentResultVisual extends StatelessWidget {
   const _PaymentResultVisual.success()
-      : icon = Icons.check,
-        iconColor = ZayColors.white,
-        backgroundColor = const Color(0xFF12D86E),
-        haloColor = const Color(0xFFDDFBEA);
+    : icon = Icons.check,
+      iconColor = ZayColors.white,
+      backgroundColor = const Color(0xFF12D86E),
+      haloColor = const Color(0xFFDDFBEA);
 
   const _PaymentResultVisual.failed()
-      : icon = Icons.close,
-        iconColor = ZayColors.white,
-        backgroundColor = const Color(0xFFE53935),
-        haloColor = const Color(0xFFFFE5E5);
+    : icon = Icons.close,
+      iconColor = ZayColors.white,
+      backgroundColor = const Color(0xFFE53935),
+      haloColor = const Color(0xFFFFE5E5);
 
   final IconData icon;
   final Color iconColor;
@@ -235,10 +233,7 @@ class _PaymentResultVisual extends StatelessWidget {
     return Container(
       width: 176,
       height: 176,
-      decoration: BoxDecoration(
-        color: haloColor,
-        shape: BoxShape.circle,
-      ),
+      decoration: BoxDecoration(color: haloColor, shape: BoxShape.circle),
       child: Center(
         child: Container(
           width: 116,

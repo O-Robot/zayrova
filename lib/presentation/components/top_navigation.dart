@@ -12,28 +12,28 @@ class TopNavigation extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         GestureDetector(
-          onTap: () {
-            ZayRouter.goBack();
-          },
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: ZayColors.textSecondary),
-            ),
-            child: const Icon(
-              Icons.chevron_left,
-              color: ZayColors.textSecondary,
+          onTap: () => ZayRouter.goBack(),
+          behavior: HitTestBehavior.opaque,
+          child: const SizedBox(
+            width: 42,
+            height: 42,
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Icon(
+                Icons.chevron_left,
+                color: ZayColors.textPrimary,
+                size: 36,
+              ),
             ),
           ),
         ),
         Expanded(
-          child: Center(
-            child: Text(
-              text,
-              style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                color: ZayColors.textPrimary,
-              ),
+          child: Text(
+            text,
+            textAlign: TextAlign.center,
+            style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
+              color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w800,
             ),
           ),
         ),

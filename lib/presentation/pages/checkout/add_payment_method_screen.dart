@@ -26,6 +26,7 @@ class _AddPaymentMethodScreenState
   final _expiryYearController = TextEditingController();
   final _cvvController = TextEditingController();
   bool _isDefault = false;
+  bool _showCvv = false;
 
   @override
   void dispose() {
@@ -162,13 +163,17 @@ class _AddPaymentMethodScreenState
               const SizedBox(height: 24),
               _PaymentTextField(
                 label: 'Card Holder Name',
+                hint: 'Enter card holder name',
                 controller: _cardHolderController,
+                icon: Icons.person_outline,
                 validator: _required,
                 textInputAction: TextInputAction.next,
               ),
               _PaymentTextField(
                 label: 'Card Number',
+                hint: 'Enter card number',
                 controller: _cardNumberController,
+                icon: Icons.credit_card_outlined,
                 validator: _validateCardNumber,
                 keyboardType: TextInputType.number,
                 textInputAction: TextInputAction.next,
@@ -182,7 +187,9 @@ class _AddPaymentMethodScreenState
                   Expanded(
                     child: _PaymentTextField(
                       label: 'Expiry Month',
+                      hint: 'MM',
                       controller: _expiryMonthController,
+                      icon: Icons.calendar_today_outlined,
                       validator: _validateExpiryMonth,
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
@@ -196,7 +203,9 @@ class _AddPaymentMethodScreenState
                   Expanded(
                     child: _PaymentTextField(
                       label: 'Expiry Year',
+                      hint: 'YY',
                       controller: _expiryYearController,
+                      icon: Icons.event_outlined,
                       validator: _validateExpiryYear,
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
@@ -210,10 +219,17 @@ class _AddPaymentMethodScreenState
               ),
               _PaymentTextField(
                 label: 'CVV',
+                hint: 'Enter CVV',
                 controller: _cvvController,
+                icon: Icons.lock_outline,
                 validator: _validateCvv,
                 keyboardType: TextInputType.number,
-                obscureText: true,
+                obscureText: !_showCvv,
+                trailingIcon:
+                    _showCvv ? Icons.visibility_off : Icons.visibility,
+                onTrailingTap: () {
+                  setState(() => _showCvv = !_showCvv);
+                },
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(4),
@@ -244,21 +260,29 @@ class _AddPaymentMethodScreenState
 class _PaymentTextField extends StatelessWidget {
   const _PaymentTextField({
     required this.label,
+    required this.hint,
     required this.controller,
+    required this.icon,
     this.validator,
     this.keyboardType = TextInputType.text,
     this.textInputAction,
     this.inputFormatters,
     this.obscureText = false,
+    this.trailingIcon,
+    this.onTrailingTap,
   });
 
   final String label;
+  final String hint;
   final TextEditingController controller;
+  final IconData icon;
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
   final TextInputAction? textInputAction;
   final List<TextInputFormatter>? inputFormatters;
   final bool obscureText;
+  final IconData? trailingIcon;
+  final VoidCallback? onTrailingTap;
 
   @override
   Widget build(BuildContext context) {
@@ -267,8 +291,14 @@ class _PaymentTextField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: ZayTheme.lightTheme.textTheme.displayMedium),
-          const SizedBox(height: 6),
+          Text(
+            label,
+            style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+              color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 12),
           TextFormField(
             controller: controller,
             validator: validator,
@@ -276,32 +306,51 @@ class _PaymentTextField extends StatelessWidget {
             textInputAction: textInputAction,
             inputFormatters: inputFormatters,
             obscureText: obscureText,
-            style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
               color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w600,
             ),
             decoration: InputDecoration(
-              hintText: label,
+              hintText: hint,
               hintStyle: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                color: ZayColors.textSecondary,
+                color: const Color(0xFFA8B0C6),
+                fontWeight: FontWeight.w500,
               ),
+              prefixIcon: Icon(icon, color: ZayColors.primary, size: 24),
+              suffixIcon:
+                  trailingIcon == null
+                      ? null
+                      : IconButton(
+                        onPressed: onTrailingTap,
+                        icon: Icon(
+                          trailingIcon,
+                          color: const Color(0xFFA8B0C6),
+                          size: 24,
+                        ),
+                      ),
+              filled: true,
+              fillColor: const Color(0xFFFBFBFD),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
+                horizontal: 18,
+                vertical: 18,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: ZayColors.inputBorder),
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFF0F1F6)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: ZayColors.primary),
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(
+                  color: ZayColors.primary,
+                  width: 1.2,
+                ),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: ZayColors.secondary),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: ZayColors.secondary),
               ),
             ),

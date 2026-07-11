@@ -16,15 +16,60 @@ class AddAddressScreen extends ConsumerStatefulWidget {
 }
 
 class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
+  static const Map<String, List<String>> _countryStates = {
+    'United States': ['California', 'Florida', 'Georgia', 'New York', 'Texas'],
+    'Nigeria': [
+      'Abia',
+      'Abuja FCT',
+      'Adamawa',
+      'Akwa Ibom',
+      'Anambra',
+      'Bauchi',
+      'Bayelsa',
+      'Benue',
+      'Borno',
+      'Cross River',
+      'Delta',
+      'Edo',
+      'Ekiti',
+      'Enugu',
+      'Gombe',
+      'Imo',
+      'Kaduna',
+      'Kano',
+      'Katsina',
+      'Kogi',
+      'Kwara',
+      'Lagos',
+      'Nasarawa',
+      'Niger',
+      'Ogun',
+      'Ondo',
+      'Osun',
+      'Oyo',
+      'Plateau',
+      'Rivers',
+    ],
+    'Ghana': ['Ashanti', 'Greater Accra', 'Northern', 'Upper East', 'Volta'],
+    'Kenya': ['Mombasa', 'Kiambu', 'Kisumu', 'Nakuru', 'Nairobi'],
+    'South Africa': [
+      'Eastern Cape',
+      'Gauteng',
+      'KwaZulu-Natal',
+      'Limpopo',
+      'Western Cape',
+    ],
+  };
+
   final _formKey = GlobalKey<FormState>();
   final _fullNameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressLine1Controller = TextEditingController();
   final _addressLine2Controller = TextEditingController();
   final _cityController = TextEditingController();
-  final _stateController = TextEditingController();
-  final _countryController = TextEditingController();
   final _postalCodeController = TextEditingController();
+  String? _selectedCountry;
+  String? _selectedState;
   bool _isDefault = false;
 
   @override
@@ -34,8 +79,6 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
     _addressLine1Controller.dispose();
     _addressLine2Controller.dispose();
     _cityController.dispose();
-    _stateController.dispose();
-    _countryController.dispose();
     _postalCodeController.dispose();
     super.dispose();
   }
@@ -53,8 +96,8 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
       addressLine1: _addressLine1Controller.text.trim(),
       addressLine2: _emptyToNull(_addressLine2Controller.text),
       city: _cityController.text.trim(),
-      state: _stateController.text.trim(),
-      country: _countryController.text.trim(),
+      state: _selectedState?.trim(),
+      country: (_selectedCountry ?? '').trim(),
       postalCode: _emptyToNull(_postalCodeController.text),
       isDefault: _isDefault,
     );
@@ -77,8 +120,21 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
     return null;
   }
 
+  String? _requiredSelection(String? value) {
+    if (value == null || value.trim().isEmpty) {
+      return 'Required';
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final stateOptions =
+        _selectedCountry == null
+            ? const <String>[]
+            : _countryStates[_selectedCountry] ?? const <String>[];
+
     return Scaffold(
       backgroundColor: ZayColors.white,
       body: SafeArea(
@@ -91,49 +147,84 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
               const SizedBox(height: 24),
               _AddressTextField(
                 label: 'Full Name',
+                hint: 'Enter your full name',
                 controller: _fullNameController,
+                icon: Icons.person_outline,
                 validator: _required,
                 textInputAction: TextInputAction.next,
               ),
               _AddressTextField(
                 label: 'Phone Number',
+                hint: 'Enter your phone number',
                 controller: _phoneController,
+                icon: Icons.phone_outlined,
                 validator: _required,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
               ),
               _AddressTextField(
                 label: 'Address Line 1',
+                hint: 'House number and street',
                 controller: _addressLine1Controller,
+                icon: Icons.home_outlined,
                 validator: _required,
                 textInputAction: TextInputAction.next,
               ),
               _AddressTextField(
                 label: 'Address Line 2',
+                hint: 'Apartment, suite, landmark',
                 controller: _addressLine2Controller,
+                icon: Icons.location_on_outlined,
                 textInputAction: TextInputAction.next,
               ),
               _AddressTextField(
                 label: 'City',
+                hint: 'Enter your city',
                 controller: _cityController,
+                icon: Icons.location_city_outlined,
                 validator: _required,
                 textInputAction: TextInputAction.next,
               ),
-              _AddressTextField(
-                label: 'State',
-                controller: _stateController,
-                validator: _required,
-                textInputAction: TextInputAction.next,
-              ),
-              _AddressTextField(
+              _AddressDropdownField(
                 label: 'Country',
-                controller: _countryController,
-                validator: _required,
-                textInputAction: TextInputAction.next,
+                hint: 'Select your country',
+                icon: Icons.public_outlined,
+                value: _selectedCountry,
+                items: _countryStates.keys.toList(),
+                validator: _requiredSelection,
+                onChanged: (value) {
+                  setState(() {
+                    final nextStates =
+                        value == null
+                            ? const <String>[]
+                            : _countryStates[value] ?? const <String>[];
+                    _selectedCountry = value;
+                    if (!nextStates.contains(_selectedState)) {
+                      _selectedState = null;
+                    }
+                  });
+                },
+              ),
+              _AddressDropdownField(
+                label: 'State',
+                hint:
+                    _selectedCountry == null
+                        ? 'Select country first'
+                        : 'Select your state',
+                icon: Icons.map_outlined,
+                value: _selectedState,
+                items: stateOptions,
+                enabled: _selectedCountry != null,
+                validator: _requiredSelection,
+                onChanged: (value) {
+                  setState(() => _selectedState = value);
+                },
               ),
               _AddressTextField(
                 label: 'Postal Code',
+                hint: 'Enter postal code',
                 controller: _postalCodeController,
+                icon: Icons.markunread_mailbox_outlined,
                 keyboardType: TextInputType.streetAddress,
               ),
               const SizedBox(height: 4),
@@ -161,14 +252,18 @@ class _AddAddressScreenState extends ConsumerState<AddAddressScreen> {
 class _AddressTextField extends StatelessWidget {
   const _AddressTextField({
     required this.label,
+    required this.hint,
     required this.controller,
+    required this.icon,
     this.validator,
     this.keyboardType = TextInputType.text,
     this.textInputAction,
   });
 
   final String label;
+  final String hint;
   final TextEditingController controller;
+  final IconData icon;
   final FormFieldValidator<String>? validator;
   final TextInputType keyboardType;
   final TextInputAction? textInputAction;
@@ -180,39 +275,53 @@ class _AddressTextField extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: ZayTheme.lightTheme.textTheme.displayMedium),
-          const SizedBox(height: 6),
+          Text(
+            label,
+            style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+              color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 12),
           TextFormField(
             controller: controller,
             validator: validator,
             keyboardType: keyboardType,
             textInputAction: textInputAction,
-            style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
               color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w600,
             ),
             decoration: InputDecoration(
-              hintText: label,
+              hintText: hint,
               hintStyle: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                color: ZayColors.textSecondary,
+                color: const Color(0xFFA8B0C6),
+                fontWeight: FontWeight.w500,
               ),
+              prefixIcon: Icon(icon, color: ZayColors.primary, size: 24),
+              filled: true,
+              fillColor: const Color(0xFFFBFBFD),
               contentPadding: const EdgeInsets.symmetric(
-                horizontal: 12,
-                vertical: 14,
+                horizontal: 18,
+                vertical: 18,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: ZayColors.inputBorder),
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFF0F1F6)),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: ZayColors.primary),
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(
+                  color: ZayColors.primary,
+                  width: 1.2,
+                ),
               ),
               errorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: ZayColors.secondary),
               ),
               focusedErrorBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(16),
                 borderSide: const BorderSide(color: ZayColors.secondary),
               ),
             ),
@@ -223,11 +332,114 @@ class _AddressTextField extends StatelessWidget {
   }
 }
 
-class _DefaultAddressToggle extends StatelessWidget {
-  const _DefaultAddressToggle({
-    required this.value,
+class _AddressDropdownField extends StatelessWidget {
+  const _AddressDropdownField({
+    required this.label,
+    required this.hint,
+    required this.icon,
+    required this.items,
     required this.onChanged,
+    this.value,
+    this.validator,
+    this.enabled = true,
   });
+
+  final String label;
+  final String hint;
+  final IconData icon;
+  final List<String> items;
+  final String? value;
+  final ValueChanged<String?> onChanged;
+  final FormFieldValidator<String>? validator;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+              color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 12),
+          DropdownButtonFormField<String>(
+            value: items.contains(value) ? value : null,
+            validator: enabled ? validator : null,
+            onChanged: enabled ? onChanged : null,
+            icon: const Icon(
+              Icons.keyboard_arrow_down_rounded,
+              color: Color(0xFFA8B0C6),
+            ),
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+              color: ZayColors.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
+                color: const Color(0xFFA8B0C6),
+                fontWeight: FontWeight.w500,
+              ),
+              prefixIcon: Icon(
+                icon,
+                color: enabled ? ZayColors.primary : const Color(0xFFA8B0C6),
+                size: 24,
+              ),
+              filled: true,
+              fillColor:
+                  enabled ? const Color(0xFFFBFBFD) : const Color(0xFFF4F5F8),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 18,
+                vertical: 18,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFF0F1F6)),
+              ),
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: Color(0xFFF0F1F6)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(
+                  color: ZayColors.primary,
+                  width: 1.2,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: ZayColors.secondary),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: const BorderSide(color: ZayColors.secondary),
+              ),
+            ),
+            items:
+                items
+                    .map(
+                      (item) => DropdownMenuItem<String>(
+                        value: item,
+                        child: Text(item, overflow: TextOverflow.ellipsis),
+                      ),
+                    )
+                    .toList(),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DefaultAddressToggle extends StatelessWidget {
+  const _DefaultAddressToggle({required this.value, required this.onChanged});
 
   final bool value;
   final ValueChanged<bool> onChanged;
