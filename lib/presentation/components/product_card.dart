@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/core/constants/currency.dart';
 import 'package:zayrova/core/constants/extensions.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
@@ -103,7 +104,7 @@ class ProductCard extends StatelessWidget {
       rating: product.rating ?? 0,
       action: action,
       width: width,
-      currencyCode: _currencySymbol(product.currencyCode),
+      currencyCode: currencySymbol(product.currencyCode),
       showRating: product.rating != null,
       discountLabel: discountLabel,
       variant: variant,
@@ -376,14 +377,5 @@ class _DiscountBadge extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-String _currencySymbol(String currencyCode) {
-  switch (currencyCode.toUpperCase()) {
-    case 'USD':
-      return r'$';
-    default:
-      return '$currencyCode ';
   }
 }

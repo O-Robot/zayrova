@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zayrova/core/constants/colors.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/core/constants/assets.dart';
+import 'package:zayrova/core/constants/currency.dart';
 import 'package:zayrova/domain/entities/order_entity.dart';
 import 'package:zayrova/domain/entities/order_item_entity.dart';
 import 'package:zayrova/presentation/components/cart_header_button.dart';
@@ -354,16 +355,6 @@ String orderStatusLabel(OrderStatus status) {
     case OrderStatus.shipped:
       return 'In Progress';
   }
-}
-
-String formatCurrency(double value, String currencyCode) {
-  final symbol = currencyCode.toUpperCase() == 'USD' ? r'$' : '$currencyCode ';
-  final parts = value.toStringAsFixed(2).split('.');
-  final wholeNumber = parts[0].replaceAllMapped(
-    RegExp(r'\B(?=(\d{3})+(?!\d))'),
-    (_) => ',',
-  );
-  return '$symbol $wholeNumber.${parts[1]}';
 }
 
 String formatOrderDate(DateTime value) {

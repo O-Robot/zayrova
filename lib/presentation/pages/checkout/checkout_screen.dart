@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/config/checkout_constants.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/core/constants/currency.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/address_entity.dart';
 import 'package:zayrova/domain/entities/cart_entity.dart';
@@ -264,6 +265,7 @@ class _CheckoutBody extends StatelessWidget {
           alignment: Alignment.bottomCenter,
           child: _CheckoutActionBar(
             total: payableTotal,
+            currencyCode: _cartCurrencyCode(checkoutCart),
             isLoading: isPlacingOrder,
             onCheckout: () => onPlaceOrder(checkoutCart),
           ),
@@ -556,7 +558,10 @@ class _CheckoutProductRow extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Text(
-            '${_currencySymbol(item.currencyCode ?? product.currencyCode)}${item.subtotal.toStringAsFixed(2)}',
+            formatCurrency(
+              item.subtotal,
+              item.currencyCode ?? product.currencyCode,
+            ),
             style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
               color: ZayColors.textPrimary,
               fontWeight: FontWeight.w900,
@@ -724,20 +729,30 @@ class _OrderSummarySection extends StatelessWidget {
         cart.discountedTotal > 0 && cart.discountedTotal < cart.total;
     final discount = hasDiscount ? cart.total - cart.discountedTotal : 0.0;
     final total = _payableTotal(cart, deliveryFee);
+    final currencyCode = _cartCurrencyCode(cart);
 
     return Column(
       children: [
-        _SummaryRow(label: 'Subtotal', value: _formatCurrency(cart.total)),
+        _SummaryRow(
+          label: 'Subtotal',
+          value: formatCurrency(cart.total, currencyCode),
+        ),
         const SizedBox(height: 12),
-        _SummaryRow(label: 'Discount', value: '-${_formatCurrency(discount)}'),
+        _SummaryRow(
+          label: 'Discount',
+          value: '-${formatCurrency(discount, currencyCode)}',
+        ),
         const SizedBox(height: 12),
-        _SummaryRow(label: 'Delivery fee', value: _formatCurrency(deliveryFee)),
+        _SummaryRow(
+          label: 'Delivery fee',
+          value: formatCurrency(deliveryFee, currencyCode),
+        ),
         const SizedBox(height: 18),
         const Divider(height: 1, color: ZayColors.inputBorder),
         const SizedBox(height: 18),
         _SummaryRow(
           label: 'Total amount',
-          value: _formatCurrency(total),
+          value: formatCurrency(total, currencyCode),
           isEmphasized: true,
         ),
       ],
@@ -794,11 +809,13 @@ class _SummaryRow extends StatelessWidget {
 class _CheckoutActionBar extends StatelessWidget {
   const _CheckoutActionBar({
     required this.total,
+    required this.currencyCode,
     required this.isLoading,
     required this.onCheckout,
   });
 
   final double total;
+  final String currencyCode;
   final bool isLoading;
   final VoidCallback onCheckout;
 
@@ -833,7 +850,7 @@ class _CheckoutActionBar extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  _formatCurrency(total),
+                  formatCurrency(total, currencyCode),
                   style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
                     color: ZayColors.textPrimary,
                     fontWeight: FontWeight.w900,
@@ -967,13 +984,11 @@ double _payableTotal(Cart cart, double deliveryFee) {
   return (hasDiscount ? cart.discountedTotal : cart.total) + deliveryFee;
 }
 
-String _formatCurrency(double value) => '\$${value.toStringAsFixed(2)}';
-
-String _currencySymbol(String currencyCode) {
-  switch (currencyCode.toUpperCase()) {
-    case 'USD':
-      return r'$';
-    default:
-      return '$currencyCode ';
+String _cartCurrencyCode(Cart cart) {
+  if (cart.items.isEmpty) {
+    return 'USD';
   }
+
+  final item = cart.items.first;
+  return item.currencyCode ?? item.product.currencyCode;
 }

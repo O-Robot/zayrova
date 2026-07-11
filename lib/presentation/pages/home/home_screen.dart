@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/core/constants/currency.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/domain/entities/category_entity.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
@@ -630,7 +631,7 @@ class _HomeProductCard extends StatelessWidget {
             ],
             const SizedBox(height: 3),
             Text(
-              '${_currencySymbol(product.currencyCode)}${product.price.toStringAsFixed(2)}',
+              formatCurrency(product.price, product.currencyCode),
               textAlign: TextAlign.center,
               style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
                 color: ZayColors.textPrimary,
@@ -942,13 +943,4 @@ bool _matchesCategory(Product product, Category category) {
       ].whereType<String>().map((value) => value.toLowerCase()).toSet();
 
   return productKeys.any(keys.contains);
-}
-
-String _currencySymbol(String currencyCode) {
-  switch (currencyCode.toUpperCase()) {
-    case 'USD':
-      return r'$';
-    default:
-      return '$currencyCode ';
-  }
 }

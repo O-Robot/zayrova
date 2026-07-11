@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/core/constants/currency.dart';
 import 'package:zayrova/core/themes/zay_theme.dart';
 import 'package:zayrova/presentation/components/cart_header_button.dart';
 import 'package:zayrova/domain/entities/product_entity.dart';
@@ -959,7 +960,7 @@ class _BottomActionBar extends StatelessWidget {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '${_currencySymbol(product.currencyCode)}${total.toStringAsFixed(2)}',
+                    formatCurrency(total, product.currencyCode),
                     style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
                       color: ZayColors.textPrimary,
                       fontWeight: FontWeight.w900,
@@ -1214,13 +1215,4 @@ Color? _parseColor(String value) {
   }
 
   return null;
-}
-
-String _currencySymbol(String currencyCode) {
-  switch (currencyCode.toUpperCase()) {
-    case 'USD':
-      return r'$';
-    default:
-      return '$currencyCode ';
-  }
 }
