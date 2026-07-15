@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -196,7 +198,6 @@ class _ProductDetailsContent extends StatelessWidget {
     final images = _productImages(product);
     final activeImageIndex =
         selectedImageIndex >= images.length ? 0 : selectedImageIndex;
-    final activeImage = images.isNotEmpty ? images[activeImageIndex] : null;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F4F4),
@@ -212,7 +213,6 @@ class _ProductDetailsContent extends StatelessWidget {
             slivers: [
               SliverToBoxAdapter(
                 child: _ProductHero(
-                  imageUrl: activeImage,
                   images: images,
                   selectedImageIndex: activeImageIndex,
                   onImageSelected: onImageSelected,
@@ -261,39 +261,144 @@ class _ProductDetailsContent extends StatelessWidget {
 
 class _ProductHero extends StatelessWidget {
   const _ProductHero({
-    required this.imageUrl,
     required this.images,
     required this.selectedImageIndex,
     required this.onImageSelected,
   });
 
-  final String? imageUrl;
   final List<String> images;
   final int selectedImageIndex;
   final ValueChanged<int> onImageSelected;
 
   @override
   Widget build(BuildContext context) {
+    return _ProductHeroCarousel(
+      images: images,
+      selectedImageIndex: selectedImageIndex,
+      onImageSelected: onImageSelected,
+    );
+  }
+}
+
+class _ProductHeroCarousel extends StatefulWidget {
+  const _ProductHeroCarousel({
+    required this.images,
+    required this.selectedImageIndex,
+    required this.onImageSelected,
+  });
+
+  final List<String> images;
+  final int selectedImageIndex;
+  final ValueChanged<int> onImageSelected;
+
+  @override
+  State<_ProductHeroCarousel> createState() => _ProductHeroCarouselState();
+}
+
+class _ProductHeroCarouselState extends State<_ProductHeroCarousel> {
+  late final PageController _pageController;
+  Timer? _autoSlideTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: widget.selectedImageIndex);
+    _configureAutoSlide();
+  }
+
+  @override
+  void didUpdateWidget(covariant _ProductHeroCarousel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    if (widget.images.length != oldWidget.images.length) {
+      _configureAutoSlide();
+    }
+
+    if (widget.selectedImageIndex != oldWidget.selectedImageIndex &&
+        widget.selectedImageIndex != _currentPage) {
+      _pageController.animateToPage(
+        widget.selectedImageIndex,
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
+      );
+    }
+  }
+
+  int get _currentPage {
+    final page = _pageController.hasClients ? _pageController.page : null;
+    return page?.round() ?? widget.selectedImageIndex;
+  }
+
+  void _configureAutoSlide() {
+    _autoSlideTimer?.cancel();
+
+    if (widget.images.length < 2) {
+      return;
+    }
+
+    _autoSlideTimer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!_pageController.hasClients || widget.images.length < 2) {
+        return;
+      }
+
+      final nextPage = (_currentPage + 1) % widget.images.length;
+      _pageController.animateToPage(
+        nextPage,
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _autoSlideTimer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final hasMultipleImages = widget.images.length > 1;
+
     return SizedBox(
       height: 520,
       child: Stack(
         children: [
           Positioned.fill(
-            child: ZayNetworkImage(
-              imageUrl: imageUrl,
-              fit: BoxFit.cover,
-              placeholderAssetIcon: ZayIcons.cartIcon,
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: widget.images.isEmpty ? 1 : widget.images.length,
+              onPageChanged: widget.onImageSelected,
+              itemBuilder: (context, index) {
+                final imageUrl =
+                    widget.images.isEmpty ? null : widget.images[index];
+
+                return ZayNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  placeholderAssetIcon: ZayIcons.cartIcon,
+                );
+              },
             ),
           ),
-          if (images.length > 1)
+          if (hasMultipleImages)
             Positioned(
               left: 24,
               right: 24,
               bottom: 36,
-              child: _ProductThumbnailList(
-                images: images,
-                selectedImageIndex: selectedImageIndex,
-                onImageSelected: onImageSelected,
+              child: _ProductCarouselIndicators(
+                padding: 20,
+                imageCount: widget.images.length,
+                selectedImageIndex: widget.selectedImageIndex,
+                onImageSelected: (index) {
+                  widget.onImageSelected(index);
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 280),
+                    curve: Curves.easeOutCubic,
+                  );
+                },
               ),
             ),
         ],
@@ -330,7 +435,7 @@ class _ProductTopBar extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                'Detail Product',
+                'Product Detail',
                 textAlign: TextAlign.center,
                 style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
                   color: ZayColors.textPrimary,
@@ -857,57 +962,55 @@ class _QuantitySection extends StatelessWidget {
   }
 }
 
-class _ProductThumbnailList extends StatelessWidget {
-  const _ProductThumbnailList({
-    required this.images,
+class _ProductCarouselIndicators extends StatelessWidget {
+  const _ProductCarouselIndicators({
+    this.padding = 0,
+    required this.imageCount,
     required this.selectedImageIndex,
     required this.onImageSelected,
   });
 
-  final List<String> images;
+  final double padding;
+  final int imageCount;
   final int selectedImageIndex;
   final ValueChanged<int> onImageSelected;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 72,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: images.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 10),
-        itemBuilder: (context, index) {
+    return Padding(
+      padding: EdgeInsets.all(padding),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(imageCount, (index) {
           final isSelected = selectedImageIndex == index;
 
           return GestureDetector(
             onTap: () => onImageSelected(index),
-            child: Container(
-              width: 72,
-              height: 72,
-              padding: const EdgeInsets.all(4),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              curve: Curves.easeOut,
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: isSelected ? 24 : 8,
+              height: 8,
               decoration: BoxDecoration(
-                color: ZayColors.white,
-                border: Border.all(
-                  color: isSelected ? ZayColors.primary : ZayColors.white,
-                  width: isSelected ? 2 : 1,
-                ),
-                borderRadius: BorderRadius.circular(18),
+                color:
+                    isSelected ? ZayColors.white : Colors.white.withAlpha(140),
+                border:
+                    isSelected
+                        ? null
+                        : Border.all(color: Colors.white.withAlpha(70)),
+                borderRadius: BorderRadius.circular(999),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withAlpha(20),
-                    blurRadius: 12,
-                    offset: const Offset(0, 6),
+                    color: Colors.black.withAlpha(30),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
                   ),
                 ],
               ),
-              child: ZayNetworkImage(
-                imageUrl: images[index],
-                borderRadius: BorderRadius.circular(14),
-                placeholderAssetIcon: ZayIcons.cartIcon,
-              ),
             ),
           );
-        },
+        }),
       ),
     );
   }
@@ -930,91 +1033,88 @@ class _BottomActionBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = product.price * quantity;
 
-    return SafeArea(
-      top: false,
-      child: Container(
-        padding: const EdgeInsets.fromLTRB(24, 14, 24, 18),
-        decoration: BoxDecoration(
-          color: ZayColors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withAlpha(18),
-              blurRadius: 18,
-              offset: const Offset(0, -8),
+    return Container(
+      padding: const EdgeInsets.fromLTRB(28, 14, 28, 18),
+      decoration: BoxDecoration(
+        color: ZayColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha(18),
+            blurRadius: 18,
+            offset: const Offset(0, -8),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Price',
+                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                    color: ZayColors.textSecondary,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  formatCurrency(total, product.currencyCode),
+                  style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
+                    color: ZayColors.textPrimary,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Price',
-                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                      color: ZayColors.textSecondary,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    formatCurrency(total, product.currencyCode),
-                    style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
-                      color: ZayColors.textPrimary,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 18),
-            Flexible(
-              child: SizedBox(
-                height: 58,
-                child: ElevatedButton.icon(
-                  onPressed: isAddingToCart ? null : onAddToCart,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        isAddingToCart
-                            ? ZayColors.primary.withAlpha(80)
-                            : ZayColors.primary,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(28),
-                    ),
-                    elevation: 0,
-                  ),
-                  icon:
+          ),
+          const SizedBox(width: 15),
+          Flexible(
+            child: SizedBox(
+              height: 48,
+              child: ElevatedButton.icon(
+                onPressed: isAddingToCart ? null : onAddToCart,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor:
                       isAddingToCart
-                          ? const SizedBox(
-                            width: 18,
-                            height: 18,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: ZayColors.white,
-                            ),
-                          )
-                          : SvgPicture.asset(
-                            ZayIcons.cartIcon,
-                            width: 24,
-                            height: 24,
-                            colorFilter: const ColorFilter.mode(
-                              ZayColors.white,
-                              BlendMode.srcIn,
-                            ),
+                          ? ZayColors.primary.withAlpha(80)
+                          : ZayColors.primary,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(28),
+                  ),
+                  elevation: 0,
+                ),
+                icon:
+                    isAddingToCart
+                        ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: ZayColors.white,
                           ),
-                  label: Text(
-                    isAddingToCart ? 'Adding...' : 'Add to Cart',
-                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
-                      color: ZayColors.white,
-                      fontWeight: FontWeight.w800,
-                    ),
+                        )
+                        : SvgPicture.asset(
+                          ZayIcons.cartIcon,
+                          width: 24,
+                          height: 24,
+                          colorFilter: const ColorFilter.mode(
+                            ZayColors.white,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                label: Text(
+                  isAddingToCart ? 'Adding...' : 'Add to Cart',
+                  style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                    color: ZayColors.white,
+                    fontWeight: FontWeight.w800,
                   ),
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -1153,7 +1253,7 @@ class _PlainTopBar extends StatelessWidget {
         Expanded(
           child: Center(
             child: Text(
-              'Detail Product',
+              'Product Detail',
               style: ZayTheme.lightTheme.textTheme.bodyLarge?.copyWith(
                 color: ZayColors.textPrimary,
                 fontWeight: FontWeight.w800,

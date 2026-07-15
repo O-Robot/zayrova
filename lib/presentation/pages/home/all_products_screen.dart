@@ -330,17 +330,20 @@ class _CatalogSummary extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        CartHeaderButton(
-          dimension: 76,
-          iconPadding: const EdgeInsets.all(21),
-          iconColor: ZayColors.primary,
+        Container(
           decoration: BoxDecoration(
-            color: ZayColors.cancel,
-            shape: BoxShape.circle,
-            border: Border.all(color: ZayColors.inputBorder.withAlpha(80)),
+            color: ZayColors.textSecondary.withAlpha(60),
+            borderRadius: BorderRadius.circular(50),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: SvgPicture.asset(
+            ZayIcons.orderIcon,
+            colorFilter: ColorFilter.mode(ZayColors.primary, BlendMode.srcIn),
+            width: 28,
+            height: 28,
           ),
         ),
-        const SizedBox(width: 18),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

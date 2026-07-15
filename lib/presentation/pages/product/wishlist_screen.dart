@@ -256,10 +256,10 @@ class _FavoriteSortChips extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 22),
               decoration: BoxDecoration(
-                color: selected ? const Color(0xFF5549C8) : ZayColors.white,
+                color: selected ? ZayColors.primary : ZayColors.white,
                 border: Border.all(
                   color: selected
-                      ? const Color(0xFF5549C8)
+                      ? ZayColors.primary
                       : ZayColors.inputBorder.withAlpha(150),
                 ),
                 borderRadius: BorderRadius.circular(12),
@@ -320,21 +320,25 @@ class _FavoriteBody extends StatelessWidget {
           const spacing = 18.0;
           final cardWidth = (constraints.maxWidth - spacing) / 2;
 
-          return Wrap(
-            spacing: spacing,
-            runSpacing: 28,
-            children: products.map((product) {
-              return ProductCard.fromProduct(
-                product: product,
-                width: cardWidth,
-                variant: ProductCardVariant.compact,
-                isFavorite: true,
-                action: () => ZayRouter.goto(ZayRoutes.productDetails, {
-                  'productId': product.id,
-                }),
-                onFavoriteToggle: () => onRemove(product),
-              );
-            }).toList(),
+          return Align(
+            alignment: Alignment.topLeft,
+            child: Wrap(
+              alignment: WrapAlignment.start,
+              spacing: spacing,
+              runSpacing: 28,
+              children: products.map((product) {
+                return ProductCard.fromProduct(
+                  product: product,
+                  width: cardWidth,
+                  variant: ProductCardVariant.compact,
+                  isFavorite: true,
+                  action: () => ZayRouter.goto(ZayRoutes.productDetails, {
+                    'productId': product.id,
+                  }),
+                  onFavoriteToggle: () => onRemove(product),
+                );
+              }).toList(),
+            ),
           );
         },
       ),
