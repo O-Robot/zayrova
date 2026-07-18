@@ -156,10 +156,10 @@ class _MessagesBody extends StatelessWidget {
         children: [
           Text(
             'Activities',
-            style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
               color: ZayColors.textPrimary,
               fontWeight: FontWeight.w900,
-              fontSize: 28,
+              fontSize: 20,
             ),
           ),
           const SizedBox(height: 24),
@@ -181,10 +181,10 @@ class _MessagesBody extends StatelessWidget {
           const SizedBox(height: 34),
           Text(
             'Messages',
-            style: ZayTheme.lightTheme.textTheme.titleLarge?.copyWith(
+            style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
               color: ZayColors.textPrimary,
               fontWeight: FontWeight.w900,
-              fontSize: 28,
+              fontSize: 20,
             ),
           ),
           const SizedBox(height: 12),

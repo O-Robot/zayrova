@@ -78,8 +78,9 @@ class MessageSearchBar extends StatelessWidget {
               decoration: InputDecoration(
                 hintText: 'Search something...',
                 border: InputBorder.none,
-                hintStyle: ZayTheme.lightTheme.textTheme.displayLarge
-                    ?.copyWith(color: ZayColors.textSecondary),
+                hintStyle: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
+                  color: ZayColors.textSecondary,
+                ),
               ),
               style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
                 color: ZayColors.textPrimary,
@@ -120,7 +121,7 @@ class ConversationAvatar extends StatelessWidget {
       height: size,
       padding: EdgeInsets.all(borderWidth),
       decoration: const BoxDecoration(
-        color: Color(0xFF5549C8),
+        color: ZayColors.primary,
         shape: BoxShape.circle,
       ),
       child: Container(
@@ -203,8 +204,8 @@ class ConversationTile extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ConversationAvatar(title: conversation.title, size: 74),
-            const SizedBox(width: 18),
+            ConversationAvatar(title: conversation.title, size: 64),
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,19 +214,17 @@ class ConversationTile extends StatelessWidget {
                     conversation.title,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: ZayTheme.lightTheme.textTheme.displayLarge
-                        ?.copyWith(
+                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
                       color: ZayColors.textPrimary,
                       fontWeight: FontWeight.w900,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 5),
                   Text(
                     lastMessage?.body ?? 'No messages yet.',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: ZayTheme.lightTheme.textTheme.displayLarge
-                        ?.copyWith(
+                    style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
                       color: ZayColors.textSecondary,
                       height: 1.45,
                       fontWeight: FontWeight.w500,
@@ -234,7 +233,7 @@ class ConversationTile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 14),
+            const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -252,20 +251,20 @@ class ConversationTile extends StatelessWidget {
                 if (unreadCount > 0) ...[
                   const SizedBox(height: 16),
                   Container(
-                    width: 42,
-                    height: 42,
+                    width: 23,
+                    height: 23,
                     decoration: const BoxDecoration(
-                      color: Color(0xFF5549C8),
+                      color: ZayColors.red,
                       shape: BoxShape.circle,
                     ),
                     child: Center(
                       child: Text(
                         unreadCount > 9 ? '9+' : unreadCount.toString(),
-                        style: ZayTheme.lightTheme.textTheme.displayLarge
+                        style: ZayTheme.lightTheme.textTheme.displaySmall
                             ?.copyWith(
-                          color: ZayColors.white,
-                          fontWeight: FontWeight.w800,
-                        ),
+                              color: ZayColors.white,
+                              fontWeight: FontWeight.w800,
+                            ),
                       ),
                     ),
                   ),
@@ -319,7 +318,7 @@ class MessageBubble extends StatelessWidget {
               margin: const EdgeInsets.only(bottom: 6),
               padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 17),
               decoration: BoxDecoration(
-                color: isMine ? const Color(0xFF5549C8) : ZayColors.cancel,
+                color: isMine ? ZayColors.primary : ZayColors.cancel,
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(22),
                   topRight: const Radius.circular(22),
@@ -398,7 +397,7 @@ class _MessageComposerState extends State<MessageComposer> {
         children: [
           Expanded(
             child: Container(
-              height: 66,
+              height: 64,
               padding: const EdgeInsets.symmetric(horizontal: 18),
               decoration: BoxDecoration(
                 color: ZayColors.white,
@@ -410,15 +409,11 @@ class _MessageComposerState extends State<MessageComposer> {
                   const Icon(
                     Icons.photo_camera_outlined,
                     color: ZayColors.textSecondary,
-                    size: 28,
+                    size: 24,
                   ),
-                  const SizedBox(width: 14),
-                  Container(
-                    width: 1,
-                    height: 34,
-                    color: ZayColors.inputBorder,
-                  ),
-                  const SizedBox(width: 16),
+                  const SizedBox(width: 10),
+                  Container(width: 1, height: 34, color: ZayColors.inputBorder),
+                  const SizedBox(width: 10),
                   Expanded(
                     child: TextField(
                       controller: _controller,
@@ -428,28 +423,28 @@ class _MessageComposerState extends State<MessageComposer> {
                         border: InputBorder.none,
                         hintStyle: ZayTheme.lightTheme.textTheme.displayMedium
                             ?.copyWith(
-                          color: ZayColors.textPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
+                              color: ZayColors.textPrimary,
+                              fontWeight: FontWeight.w700,
+                            ),
                       ),
-                      style:
-                          ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                        color: ZayColors.textPrimary,
-                        fontWeight: FontWeight.w600,
-                      ),
+                      style: ZayTheme.lightTheme.textTheme.displayMedium
+                          ?.copyWith(
+                            color: ZayColors.textPrimary,
+                            fontWeight: FontWeight.w600,
+                          ),
                     ),
                   ),
-                  const Icon(
-                    Icons.mic_none_rounded,
-                    color: ZayColors.textSecondary,
-                    size: 28,
-                  ),
-                  const SizedBox(width: 12),
-                  const Icon(
-                    Icons.attach_file_rounded,
-                    color: ZayColors.textSecondary,
-                    size: 26,
-                  ),
+                  // const Icon(
+                  //   Icons.mic_none_rounded,
+                  //   color: ZayColors.textSecondary,
+                  //   size: 28,
+                  // ),
+                  // const SizedBox(width: 12),
+                  // const Icon(
+                  //   Icons.attach_file_rounded,
+                  //   color: ZayColors.textSecondary,
+                  //   size: 26,
+                  // ),
                 ],
               ),
             ),
@@ -458,27 +453,29 @@ class _MessageComposerState extends State<MessageComposer> {
           GestureDetector(
             onTap: _send,
             child: Container(
-              width: 66,
-              height: 66,
+              width: 58,
+              height: 58,
               decoration: BoxDecoration(
-                color: widget.isSending
-                    ? const Color(0xFF5549C8).withAlpha(130)
-                    : const Color(0xFF5549C8),
+                color:
+                    widget.isSending
+                        ? ZayColors.primary.withAlpha(130)
+                        : ZayColors.primary,
                 shape: BoxShape.circle,
               ),
-              child: widget.isSending
-                  ? const Padding(
-                      padding: EdgeInsets.all(20),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
+              child:
+                  widget.isSending
+                      ? const Padding(
+                        padding: EdgeInsets.all(15),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: ZayColors.white,
+                        ),
+                      )
+                      : const Icon(
+                        Icons.send_rounded,
                         color: ZayColors.white,
+                        size: 25,
                       ),
-                    )
-                  : const Icon(
-                      Icons.send_rounded,
-                      color: ZayColors.white,
-                      size: 30,
-                    ),
             ),
           ),
         ],
@@ -488,10 +485,7 @@ class _MessageComposerState extends State<MessageComposer> {
 }
 
 class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
-    required this.icon,
-    required this.onTap,
-  });
+  const _HeaderIconButton({required this.icon, required this.onTap});
 
   final IconData icon;
   final VoidCallback? onTap;

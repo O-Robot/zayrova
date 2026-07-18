@@ -48,9 +48,9 @@ class _MessageDetailScreenState extends ConsumerState<MessageDetailScreen> {
       return Future.value();
     }
 
-    return ref.read(messageControllerProvider.notifier).loadMessages(
-          conversationId,
-        );
+    return ref
+        .read(messageControllerProvider.notifier)
+        .loadMessages(conversationId);
   }
 
   Future<void> _sendMessage(String body) async {
@@ -59,10 +59,9 @@ class _MessageDetailScreenState extends ConsumerState<MessageDetailScreen> {
       return;
     }
 
-    final sent = await ref.read(messageControllerProvider.notifier).sendMessage(
-          conversationId: conversationId,
-          body: body,
-        );
+    final sent = await ref
+        .read(messageControllerProvider.notifier)
+        .sendMessage(conversationId: conversationId, body: body);
 
     if (sent) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
@@ -112,10 +111,7 @@ class _MessageDetailScreenState extends ConsumerState<MessageDetailScreen> {
               ),
             ),
             if (hasConversationId)
-              MessageComposer(
-                isSending: state.isSending,
-                onSend: _sendMessage,
-              ),
+              MessageComposer(isSending: state.isSending, onSend: _sendMessage),
           ],
         ),
       ),
@@ -124,10 +120,7 @@ class _MessageDetailScreenState extends ConsumerState<MessageDetailScreen> {
 }
 
 class _ConversationHeader extends StatelessWidget {
-  const _ConversationHeader({
-    required this.title,
-    required this.conversation,
-  });
+  const _ConversationHeader({required this.title, required this.conversation});
 
   final String title;
   final Conversation? conversation;
@@ -135,7 +128,7 @@ class _ConversationHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
       decoration: const BoxDecoration(
         color: ZayColors.white,
         boxShadow: [
@@ -152,8 +145,8 @@ class _ConversationHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          ConversationAvatar(title: title, size: 84),
-          const SizedBox(width: 18),
+          ConversationAvatar(title: title, size: 64),
+          const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,7 +160,7 @@ class _ConversationHeader extends StatelessWidget {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 4),
                 Text(
                   conversation?.isClosed == true ? 'Closed' : 'Active',
                   style: ZayTheme.lightTheme.textTheme.displayLarge?.copyWith(
@@ -182,13 +175,13 @@ class _ConversationHeader extends StatelessWidget {
           const Icon(
             Icons.videocam_outlined,
             color: ZayColors.textPrimary,
-            size: 38,
+            size: 28,
           ),
           const SizedBox(width: 22),
           const Icon(
             Icons.call_outlined,
             color: ZayColors.textPrimary,
-            size: 34,
+            size: 24,
           ),
         ],
       ),
