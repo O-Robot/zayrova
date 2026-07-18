@@ -19,7 +19,8 @@ jobs:
             # Install Flutter
             - uses: subosito/flutter-action@v2
               with:
-                  flutter-version: "stable"
+                  channel: stable
+                  cache: true
 
             # Install dependencies
             - run: flutter pub get
