@@ -176,6 +176,20 @@ For web:
 flutter run -d chrome
 ```
 
+## Test Credentials
+
+The app currently uses DummyJSON auth endpoints for sign-in flows. As of July 18, 2026, DummyJSON’s docs show this working test account:
+
+- Username: `emilys`
+- Password: `emilyspass`
+
+DummyJSON also notes that you can use credentials from its users dataset for testing.
+
+Sources:
+
+- [DummyJSON Auth Docs](https://dummyjson.com/docs/auth)
+- [DummyJSON Users Docs](https://dummyjson.com/docs/users)
+
 ## Build Commands
 
 Build Android APK:
