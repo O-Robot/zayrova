@@ -16,8 +16,10 @@ class SignIn extends ConsumerStatefulWidget {
 }
 
 class _SignInState extends ConsumerState<SignIn> {
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
+  final TextEditingController email = TextEditingController(text: 'emilys');
+  final TextEditingController password = TextEditingController(
+    text: 'emilyspass',
+  );
   bool showPassword = false;
   String? formError;
 
@@ -74,8 +76,6 @@ class _SignInState extends ConsumerState<SignIn> {
         AuthField(
           label: 'Username',
           hint: 'Enter your username',
-          // Username: emilys
-          // Password: emilyspass
           controller: email,
           icon: Icons.person_outline,
           keyboardType: TextInputType.text,
