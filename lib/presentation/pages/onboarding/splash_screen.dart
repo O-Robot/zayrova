@@ -23,7 +23,7 @@ class _SplashscreenState extends ConsumerState<Splashscreen> {
   }
 
   Future<void> _checkSession() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 5));
     await ref.read(authControllerProvider.notifier).restoreSession();
 
     if (!mounted) {
