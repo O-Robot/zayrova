@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:zayrova/core/constants/colors.dart';
@@ -69,20 +72,21 @@ class ProfileHeader extends StatelessWidget {
           SizedBox(
             width: 42,
             height: 42,
-            child: showBack
-                ? GestureDetector(
-                    onTap: () => ZayRouter.goBack(),
-                    behavior: HitTestBehavior.opaque,
-                    child: const Align(
-                      alignment: Alignment.centerLeft,
-                      child: Icon(
-                        Icons.arrow_back,
-                        color: ZayColors.textPrimary,
-                        size: 24,
+            child:
+                showBack
+                    ? GestureDetector(
+                      onTap: () => ZayRouter.goBack(),
+                      behavior: HitTestBehavior.opaque,
+                      child: const Align(
+                        alignment: Alignment.centerLeft,
+                        child: Icon(
+                          Icons.arrow_back,
+                          color: ZayColors.textPrimary,
+                          size: 24,
+                        ),
                       ),
-                    ),
-                  )
-                : const SizedBox.shrink(),
+                    )
+                    : const SizedBox.shrink(),
           ),
           Expanded(
             child: Text(
@@ -97,16 +101,17 @@ class ProfileHeader extends StatelessWidget {
           SizedBox(
             width: 42,
             height: 42,
-            child: showMenu
-                ? const Align(
-                    alignment: Alignment.centerRight,
-                    child: Icon(
-                      Icons.more_vert,
-                      color: ZayColors.textPrimary,
-                      size: 24,
-                    ),
-                  )
-                : const SizedBox.shrink(),
+            child:
+                showMenu
+                    ? const Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        Icons.more_vert,
+                        color: ZayColors.textPrimary,
+                        size: 24,
+                      ),
+                    )
+                    : const SizedBox.shrink(),
           ),
         ],
       ),
@@ -156,7 +161,8 @@ class ProfileActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isDestructive ? const Color(0xFFE53935) : ZayColors.textPrimary;
+    final color =
+        isDestructive ? const Color(0xFFE53935) : ZayColors.textPrimary;
 
     return InkWell(
       onTap: onTap,
@@ -179,20 +185,20 @@ class ProfileActionRow extends StatelessWidget {
           children: [
             assetIcon != null
                 ? SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: SvgPicture.asset(
-                      assetIcon!,
-                      colorFilter: ColorFilter.mode(
-                        isDestructive ? color : ZayColors.textPrimary,
-                        BlendMode.srcIn,
-                      ),
+                  width: 24,
+                  height: 24,
+                  child: SvgPicture.asset(
+                    assetIcon!,
+                    colorFilter: ColorFilter.mode(
+                      isDestructive ? color : ZayColors.textPrimary,
+                      BlendMode.srcIn,
                     ),
-                  )
-                : Icon(
-                    icon,
-                    color: isDestructive ? color : ZayColors.textPrimary,
                   ),
+                )
+                : Icon(
+                  icon,
+                  color: isDestructive ? color : ZayColors.textPrimary,
+                ),
             const SizedBox(width: 18),
             Expanded(
               child: Column(
@@ -200,20 +206,21 @@ class ProfileActionRow extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: ZayTheme.lightTheme.textTheme.displayMedium?.copyWith(
-                      color: isDestructive ? color : ZayColors.textPrimary,
-                      fontWeight: FontWeight.w800,
-                    ),
+                    style: ZayTheme.lightTheme.textTheme.displayMedium
+                        ?.copyWith(
+                          color: isDestructive ? color : ZayColors.textPrimary,
+                          fontWeight: FontWeight.w800,
+                        ),
                   ),
                   if (subtitle != null && subtitle!.isNotEmpty) ...[
                     const SizedBox(height: 4),
                     Text(
                       subtitle!,
-                      style:
-                          ZayTheme.lightTheme.textTheme.displaySmall?.copyWith(
-                        color: ZayColors.textSecondary,
-                        height: 1.35,
-                      ),
+                      style: ZayTheme.lightTheme.textTheme.displaySmall
+                          ?.copyWith(
+                            color: ZayColors.textSecondary,
+                            height: 1.35,
+                          ),
                     ),
                   ],
                 ],
@@ -230,10 +237,7 @@ class ProfileActionRow extends StatelessWidget {
               const SizedBox(width: 10),
             ],
             if (!isDestructive)
-              const Icon(
-                Icons.chevron_right,
-                color: ZayColors.textSecondary,
-              ),
+              const Icon(Icons.chevron_right, color: ZayColors.textSecondary),
           ],
         ),
       ),
@@ -247,61 +251,93 @@ class ProfileAvatar extends StatelessWidget {
     this.imageUrl,
     this.size = 104,
     this.showEditBadge = false,
+    this.onTap,
   });
 
   final String? imageUrl;
   final double size;
   final bool showEditBadge;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    final imageUrl = this.imageUrl;
+    final imageProvider = profileImageProvider(imageUrl);
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            color: ZayColors.cancel,
-            shape: BoxShape.circle,
-            image: imageUrl == null || imageUrl.isEmpty
-                ? null
-                : DecorationImage(
-                    image: NetworkImage(imageUrl),
-                    fit: BoxFit.cover,
-                  ),
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: size,
+            height: size,
+            decoration: const BoxDecoration(
+              color: ZayColors.cancel,
+              shape: BoxShape.circle,
+            ),
+            clipBehavior: Clip.antiAlias,
+            child:
+                imageProvider == null
+                    ? Icon(
+                      Icons.person,
+                      color: ZayColors.textSecondary,
+                      size: size * .46,
+                    )
+                    : Image(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) {
+                        return Icon(
+                          Icons.person,
+                          color: ZayColors.textSecondary,
+                          size: size * .46,
+                        );
+                      },
+                    ),
           ),
-          child: imageUrl == null || imageUrl.isEmpty
-              ? Icon(
-                  Icons.person,
-                  color: ZayColors.textSecondary,
-                  size: size * .46,
-                )
-              : null,
-        ),
-        if (showEditBadge)
-          Positioned(
-            right: 2,
-            bottom: 2,
-            child: Container(
-              width: 34,
-              height: 34,
-              decoration: const BoxDecoration(
-                color: ZayColors.primary,
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.camera_alt_outlined,
-                color: ZayColors.white,
-                size: 18,
+          if (showEditBadge)
+            Positioned(
+              right: 2,
+              bottom: 2,
+              child: Container(
+                width: 34,
+                height: 34,
+                decoration: const BoxDecoration(
+                  color: ZayColors.primary,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.camera_alt_outlined,
+                  color: ZayColors.white,
+                  size: 18,
+                ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
+}
+
+ImageProvider<Object>? profileImageProvider(String? imageUrl) {
+  if (imageUrl == null || imageUrl.isEmpty) {
+    return null;
+  }
+
+  if (kIsWeb) {
+    return NetworkImage(imageUrl);
+  }
+
+  final uri = Uri.tryParse(imageUrl);
+  if (uri != null && (uri.scheme == 'http' || uri.scheme == 'https')) {
+    return NetworkImage(imageUrl);
+  }
+
+  if (uri != null && uri.scheme == 'file') {
+    return FileImage(File.fromUri(uri));
+  }
+
+  return FileImage(File(imageUrl));
 }
 
 class ProfileTextField extends StatelessWidget {
@@ -345,23 +381,27 @@ class ProfileTextField extends StatelessWidget {
           keyboardType: keyboardType,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: icon == null
-                ? null
-                : Icon(icon, color: ZayColors.primary, size: 24),
-            suffixIcon: trailingIcon == null
-                ? null
-                : IconButton(
-                    onPressed: onTrailingTap,
-                    icon: Icon(
-                      trailingIcon,
-                      color: ZayColors.textSecondary,
-                      size: 24,
+            prefixIcon:
+                icon == null
+                    ? null
+                    : Icon(icon, color: ZayColors.primary, size: 24),
+            suffixIcon:
+                trailingIcon == null
+                    ? null
+                    : IconButton(
+                      onPressed: onTrailingTap,
+                      icon: Icon(
+                        trailingIcon,
+                        color: ZayColors.textSecondary,
+                        size: 24,
+                      ),
                     ),
-                  ),
             filled: true,
             fillColor: ZayColors.white,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 18, vertical: 18),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 18,
+              vertical: 18,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: const BorderSide(color: Color(0xFFF0F1F6)),

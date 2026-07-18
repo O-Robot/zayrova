@@ -177,6 +177,7 @@ class AuthController extends Notifier<AuthState> {
   Map<String, dynamic> _profileToMap(UserProfile profile) {
     return {
       'id': profile.id,
+      'username': profile.username,
       'firstName': profile.firstName,
       'lastName': profile.lastName,
       'fullName': profile.fullName,
@@ -203,6 +204,7 @@ class AuthController extends Notifier<AuthState> {
 
     return UserProfile(
       id: _stringValue(data['id']) ?? 'local-user',
+      username: _stringValue(data['username']),
       firstName: _stringValue(data['firstName']),
       lastName: _stringValue(data['lastName']),
       fullName: _stringValue(data['fullName']),

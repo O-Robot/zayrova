@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:zayrova/core/constants/assets.dart';
 import 'package:zayrova/core/constants/colors.dart';
+import 'package:zayrova/presentation/pages/profile/profile_components.dart';
 
 class ProfileImagePicker extends StatefulWidget {
   final void Function(XFile? pickedImage) onImagePicked;
@@ -30,18 +31,17 @@ class _ProfileImagePickerState extends State<ProfileImagePicker> {
 
   @override
   Widget build(BuildContext context) {
+    final imageProvider = profileImageProvider(_selectedImage?.path);
+
     return Stack(
       alignment: Alignment.bottomRight,
       children: [
         CircleAvatar(
           radius: 50,
           backgroundColor: Colors.grey[300],
-          backgroundImage:
-              _selectedImage != null
-                  ? NetworkImage(_selectedImage!.path)
-                  : null,
+          backgroundImage: imageProvider,
           child:
-              _selectedImage == null
+              imageProvider == null
                   ? const Icon(Icons.person, size: 50, color: Colors.white)
                   : null,
         ),

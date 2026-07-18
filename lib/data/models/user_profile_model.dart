@@ -6,6 +6,7 @@ import 'package:zayrova/domain/entities/user_profile_entity.dart';
 class UserProfileModel extends UserProfile {
   const UserProfileModel({
     required super.id,
+    super.username,
     super.firstName,
     super.lastName,
     super.fullName,
@@ -30,6 +31,7 @@ class UserProfileModel extends UserProfile {
 
     return UserProfileModel(
       id: stringValue(json['id']),
+      username: nullableString(json['username']),
       firstName: nullableString(json['firstName']),
       lastName: nullableString(json['lastName']),
       fullName: nullableString(json['fullName'] ?? json['name']),
@@ -50,6 +52,7 @@ class UserProfileModel extends UserProfile {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'username': username,
       'firstName': firstName,
       'lastName': lastName,
       'fullName': fullName,

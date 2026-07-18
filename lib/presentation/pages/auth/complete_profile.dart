@@ -56,6 +56,7 @@ class _CompleteProfileState extends ConsumerState<CompleteProfile> {
           user.copyWith(
             phoneNumber: phoneNumber.text.trim(),
             gender: selectedGender,
+            avatarUrl: pickedImage?.path ?? user.avatarUrl,
           ),
         );
 
@@ -69,14 +70,9 @@ class _CompleteProfileState extends ConsumerState<CompleteProfile> {
       return;
     }
 
-    final includesProfileImage = pickedImage != null;
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          includesProfileImage
-              ? 'Profile updated. Photo upload will be available soon.'
-              : 'Profile updated.',
-        ),
+      const SnackBar(
+        content: Text('Profile updated.'),
         backgroundColor: ZayColors.primary,
       ),
     );

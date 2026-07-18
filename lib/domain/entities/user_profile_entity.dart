@@ -3,6 +3,7 @@ import 'package:zayrova/domain/entities/address_entity.dart';
 class UserProfile {
   const UserProfile({
     required this.id,
+    this.username,
     this.firstName,
     this.lastName,
     this.fullName,
@@ -18,6 +19,7 @@ class UserProfile {
   });
 
   final String id;
+  final String? username;
   final String? firstName;
   final String? lastName;
   final String? fullName;
@@ -42,11 +44,12 @@ class UserProfile {
       return name;
     }
 
-    return email ?? phoneNumber ?? 'Customer';
+    return username ?? email ?? phoneNumber ?? 'Customer';
   }
 
   UserProfile copyWith({
     String? id,
+    String? username,
     String? firstName,
     String? lastName,
     String? fullName,
@@ -62,6 +65,7 @@ class UserProfile {
   }) {
     return UserProfile(
       id: id ?? this.id,
+      username: username ?? this.username,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       fullName: fullName ?? this.fullName,

@@ -12,6 +12,7 @@ import 'package:zayrova/presentation/components/empty_state.dart';
 import 'package:zayrova/presentation/components/error_state.dart';
 import 'package:zayrova/presentation/components/loading_state.dart';
 import 'package:zayrova/presentation/components/zay_network_image.dart';
+import 'package:zayrova/presentation/pages/profile/profile_components.dart';
 import 'package:zayrova/presentation/providers/feature/auth_controller.dart';
 import 'package:zayrova/presentation/providers/feature/catalog_controller.dart';
 import 'package:zayrova/presentation/providers/feature/wishlist_controller.dart';
@@ -102,6 +103,8 @@ class _HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final avatarImage = profileImageProvider(avatarUrl);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
       child: Column(
@@ -114,12 +117,9 @@ class _HomeHeader extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 30,
                   backgroundColor: ZayColors.cancel,
-                  backgroundImage:
-                      avatarUrl == null || avatarUrl!.isEmpty
-                          ? null
-                          : NetworkImage(avatarUrl!),
+                  backgroundImage: avatarImage,
                   child:
-                      avatarUrl == null || avatarUrl!.isEmpty
+                      avatarImage == null
                           ? const Icon(
                             Icons.person,
                             color: ZayColors.textSecondary,
