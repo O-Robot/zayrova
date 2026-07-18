@@ -4,7 +4,7 @@ Zayrova is a Flutter e-commerce application with onboarding, authentication, cat
 
 ## Preview
 
-Live preview: [http://zayrova.ogooluwaniadewale.com/](http://zayrova.ogooluwaniadewale.com/)
+Live preview: [https://zayrova.ogooluwaniadewale.com/](https://zayrova.ogooluwaniadewale.com/)
 
 Repository: [https://github.com/O-Robot/zayrova](https://github.com/O-Robot/zayrova)
 
@@ -229,7 +229,7 @@ The repository includes a GitHub Actions workflow at [.github/workflows/zay.yml]
 
 Current preview URL:
 
-- `http://zayrova.ogooluwaniadewale.com/`
+- `https://zayrova.ogooluwaniadewale.com/`
 
 If the preview is not updating, check:
 
