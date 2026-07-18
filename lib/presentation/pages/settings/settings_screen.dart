@@ -91,6 +91,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return ProfilePageShell(
       title: 'Settings',
+      showMenu: false,
       children: [
         const ProfileSectionTitle(title: 'General'),
         const SizedBox(height: 18),

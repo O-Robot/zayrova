@@ -52,6 +52,7 @@ class _HelpSupportScreenState extends State<HelpSupportScreen> {
 
     return ProfilePageShell(
       title: 'Help and Support',
+      showMenu: false,
       children: [
         TextField(
           controller: searchController,

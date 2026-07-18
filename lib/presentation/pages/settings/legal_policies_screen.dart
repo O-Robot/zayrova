@@ -10,6 +10,7 @@ class LegalPoliciesScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProfilePageShell(
       title: 'Legal and Policies',
+      showMenu: false,
       children: [
         _LegalSection(
           title: 'Terms',
@@ -34,10 +35,7 @@ class LegalPoliciesScreen extends StatelessWidget {
 }
 
 class _LegalSection extends StatelessWidget {
-  const _LegalSection({
-    required this.title,
-    required this.body,
-  });
+  const _LegalSection({required this.title, required this.body});
 
   final String title;
   final String body;

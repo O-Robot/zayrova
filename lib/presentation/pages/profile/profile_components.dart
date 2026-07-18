@@ -80,9 +80,9 @@ class ProfileHeader extends StatelessWidget {
                       child: const Align(
                         alignment: Alignment.centerLeft,
                         child: Icon(
-                          Icons.arrow_back,
+                          Icons.chevron_left,
                           color: ZayColors.textPrimary,
-                          size: 24,
+                          size: 36,
                         ),
                       ),
                     )

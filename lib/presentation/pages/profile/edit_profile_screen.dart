@@ -157,6 +157,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     if (user == null) {
       return const ProfilePageShell(
         title: 'Edit Profile',
+        showMenu: false,
         children: [
           SizedBox(height: 120),
           EmptyStateWidget(
@@ -170,6 +171,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
     return ProfilePageShell(
       title: 'Edit Profile',
+      showMenu: false,
       bottom: _SaveBar(onSave: _saveProfile, isSaving: authState.isLoading),
       children: [
         Center(

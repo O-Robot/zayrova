@@ -11,13 +11,16 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
+  final oldPasswordController = TextEditingController();
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+  bool showOldPassword = false;
   bool showNewPassword = false;
   bool showConfirmPassword = false;
 
   @override
   void dispose() {
+    oldPasswordController.dispose();
     newPasswordController.dispose();
     confirmPasswordController.dispose();
     super.dispose();
@@ -36,8 +39,22 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   Widget build(BuildContext context) {
     return ProfilePageShell(
       title: 'Change Password',
+      showMenu: false,
       bottom: _ChangePasswordBar(onChange: _showDeferredChangeMessage),
       children: [
+        ProfileTextField(
+          label: 'Current Password',
+          hint: 'Enter current password',
+          controller: oldPasswordController,
+          icon: Icons.lock_outline,
+          obscureText: !showOldPassword,
+          trailingIcon:
+              showNewPassword ? Icons.visibility : Icons.visibility_off,
+          onTrailingTap: () {
+            setState(() => showOldPassword = !showOldPassword);
+          },
+        ),
+        const SizedBox(height: 24),
         ProfileTextField(
           label: 'New Password',
           hint: 'Enter new password',

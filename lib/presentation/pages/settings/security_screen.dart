@@ -19,6 +19,7 @@ class _SecurityScreenState extends State<SecurityScreen> {
   Widget build(BuildContext context) {
     return ProfilePageShell(
       title: 'Security',
+      showMenu: false,
       children: [
         Container(
           width: double.infinity,
